@@ -1,47 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { SectionColor } from "@/components/motion/section-color";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 
 export function About() {
   return (
-    <SectionColor color="#2E4A5A">
+    <SectionColor color="#16232B">
       <section id="about" className="section-pad px-6 sm:px-10">
-        <div className="mx-auto max-w-3xl">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
-            className="font-serif text-3xl text-foreground sm:text-4xl"
-          >
-            About
-          </motion.h2>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mt-6 space-y-4 text-lg leading-relaxed text-foreground/85"
-          >
-            <p>
-              I&apos;m a frontend engineer based in Yogyakarta, building interactive web
-              experiences with an eye for motion, detail, and craft — while staying
-              comfortable enough on the backend to ship a feature end to end.
-            </p>
-            <p>
-              Alongside building, I work as a teaching assistant, helping fellow students
-              work through frontend and web development coursework. Teaching keeps me
-              honest about the fundamentals and sharp at explaining the &ldquo;why&rdquo;
-              behind the code, not just the &ldquo;how&rdquo;.
-            </p>
-            <p>
-              Most of what I&apos;ve built so far comes from hackathons and campus
-              projects — and right now, a real-world marketplace connecting village
-              producers to buyers.
-            </p>
-          </motion.div>
+        <div className="mx-auto max-w-4xl">
+          <span className="eyebrow">About</span>
+          <ScrollReveal className="section-title mt-6 text-foreground">
+            I build interactive web experiences — and stay comfortable enough on the backend to ship a feature end to end.
+          </ScrollReveal>
+          <ScrollReveal className="mt-10 text-xl leading-relaxed text-foreground/85">
+            Based in Yogyakarta. I work as a teaching assistant, mentoring students through frontend and web coursework — which keeps me sharp at the fundamentals. Most of what I have built comes from hackathons and campus projects, and right now a real-world marketplace connecting village producers to buyers.
+          </ScrollReveal>
         </div>
       </section>
     </SectionColor>
