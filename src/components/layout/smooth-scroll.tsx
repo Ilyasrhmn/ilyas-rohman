@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import Lenis from "lenis";
+import { registerGsap, gsap, ScrollTrigger } from "@/lib/gsap";
 
 const LenisContext = createContext<Lenis | null>(null);
 
@@ -21,23 +22,17 @@ export default function SmoothScroll({
       gestureOrientation: "vertical",
       smoothWheel: true,
     });
+    setLenis(lenisInstance);
 
-    const frameId = requestAnimationFrame(() => {
-      setLenis(lenisInstance);
-    });
+    registerGsap();
+    lenisInstance.on("scroll", ScrollTrigger.update);
 
-    let rafId: number;
-
-    function raf(time: number) {
-      lenisInstance.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-
-    rafId = requestAnimationFrame(raf);
+    const onTick = (time: number) => lenisInstance.raf(time * 1000);
+    gsap.ticker.add(onTick);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
-      cancelAnimationFrame(frameId);
-      cancelAnimationFrame(rafId);
+      gsap.ticker.remove(onTick);
       lenisInstance.destroy();
       setLenis(null);
     };
