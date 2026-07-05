@@ -30,7 +30,7 @@ export function ChromeShell({ children }: { children: React.ReactNode }) {
         <CustomCursor />
         <ScrollProgress />
         <Navbar onContact={openContact} />
-        {children}
+        <main>{children}</main>
         <Footer />
         <ContactModal open={contactOpen} onOpenChange={setContactOpen} />
       </ContactContext.Provider>

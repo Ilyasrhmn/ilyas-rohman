@@ -15,9 +15,9 @@ export function Cta() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="font-serif text-3xl text-foreground sm:text-5xl"
+          className="display text-foreground"
         >
-          Let&apos;s build something worth shipping.
+          Let&apos;s build.
         </motion.h2>
 
         <motion.p

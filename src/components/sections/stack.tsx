@@ -7,14 +7,15 @@ export function Stack() {
   return (
     <section id="stack" className="section-pad px-6 sm:px-10">
       <div className="mx-auto max-w-5xl">
+        <span className="eyebrow">Stack</span>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="font-serif text-3xl text-foreground sm:text-4xl"
+          className="section-title mt-4 text-foreground"
         >
-          Stack
+          How I think, grouped.
         </motion.h2>
 
         <div className="mt-12 grid gap-8 sm:grid-cols-3">
