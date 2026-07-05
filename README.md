@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ilyas Nur Rohman — Portfolio
 
-## Getting Started
+Cinematic-lite, interaction-rich portfolio built with Next.js 16, TypeScript, Tailwind CSS 4, Framer Motion, GSAP, and Lenis. Fuses three reference designs — see `docs/superpowers/specs/2026-07-05-portfolio-fusion-design.md` in the repo root for the design rationale.
 
-First, run the development server:
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Editing content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All copy lives in typed data files under `src/data/` — no code changes needed to update content:
 
-## Learn More
+- `src/data/profile.ts` — name, role, positioning statement, socials
+- `src/data/projects.ts` — projects (hackathon/campus/in-progress); `status: "building"` shows the "Currently Building" treatment instead of demo links
+- `src/data/journey.ts` — growth timeline items (`kind: "education" | "teaching" | "building" | "learning"`)
+- `src/data/certificates.ts` — Learning & Achievements entries (`program`, `issuer`, `skills`, `credentialUrl`)
+- `src/data/stack.ts` — capability groups shown in the Stack section
 
-To learn more about Next.js, take a look at the following resources:
+## Contact form
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`POST /api/contact` validates and (optionally) emails submissions via `nodemailer`. Without SMTP env vars set, it accepts and logs to the server console — useful for local dev. To send real email in production, set:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+CONTACT_TO=        # defaults to SMTP_USER if unset
+NEXT_PUBLIC_SITE_URL=   # your deployed URL, used for OG image resolution
+```
 
-## Deploy on Vercel
+## Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `/` — single long-scroll home: Hero → Works → About → Journey → Stack → Certificates → CTA
+- `/projects`, `/projects/[slug]` — project grid and case-study detail pages
+- Contact is a modal (triggered from the navbar or the CTA section), not a route
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Testing
+
+```bash
+npx tsx --test src/data/data.test.ts src/app/api/contact/route.test.ts
+```
