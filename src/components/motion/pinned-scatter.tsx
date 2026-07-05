@@ -1,7 +1,7 @@
 "use client";
 
 import { Children, useEffect, useRef } from "react";
-import { registerGsap, gsap } from "@/lib/gsap";
+import { registerGsap, gsap, ScrollTrigger } from "@/lib/gsap";
 import { useReducedMotion, useIsTouch } from "@/hooks/use-reduced-motion";
 
 export function PinnedScatter({ children }: { children: React.ReactNode }) {
@@ -31,13 +31,21 @@ export function PinnedScatter({ children }: { children: React.ReactNode }) {
       const startX = (vw - gridW) / 2;
       const startY = (vh - rows * cellH) / 2;
 
+      // Fade the fixed stage in only while the spacer is in view.
+      gsap.set(stageRef.current, { autoAlpha: 0 });
+      ScrollTrigger.create({
+        trigger: spacerRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        onToggle: (self) => gsap.to(stageRef.current, { autoAlpha: self.isActive ? 1 : 0, duration: 0.3 }),
+      });
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: spacerRef.current,
           start: "top top",
           end: "bottom bottom",
           scrub: 0.5,
-          pin: stageRef.current,
         },
       });
 

@@ -1,65 +1,40 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { certificates } from "@/data/certificates";
-import { SectionColor } from "@/components/motion/section-color";
+import { PinnedScatter } from "@/components/motion/pinned-scatter";
 
 export function Certificates() {
   return (
-    <SectionColor color="#7A5C3E">
-      <section id="certificates" className="section-pad px-6 sm:px-10">
-        <div className="mx-auto max-w-3xl">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
-            className="font-serif text-3xl text-foreground sm:text-4xl"
-          >
-            Learning &amp; Achievements
-          </motion.h2>
+    <section id="certificates" className="relative">
+      <div className="section-pad px-6 text-center sm:px-10">
+        <span className="eyebrow">Learning &amp; Achievements</span>
+        <h2 className="section-title mx-auto mt-4 max-w-3xl text-foreground">
+          Proof of process, not a shelf of PDFs.
+        </h2>
+      </div>
 
-          <div className="mt-10 space-y-8">
-            {certificates.map((cert, i) => (
-              <motion.div
-                key={cert.program}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="border-b border-foreground/15 pb-8 last:border-none"
-              >
-                <h3 className="font-serif text-xl font-medium text-foreground">
-                  {cert.program}
-                </h3>
-                <p className="mt-1 text-sm font-medium text-foreground/90">{cert.issuer}</p>
-
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {cert.skills.map((skill) => (
-                    <li
-                      key={skill}
-                      className="rounded-full border border-foreground/25 px-3 py-1 text-xs text-foreground"
-                    >
-                      {skill}
-                    </li>
-                  ))}
-                </ul>
-
-                {cert.credentialUrl && (
-                  <a
-                    href={cert.credentialUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-block text-sm font-medium text-foreground underline underline-offset-4"
-                  >
-                    View Credential &rarr;
-                  </a>
-                )}
-              </motion.div>
-            ))}
+      <PinnedScatter>
+        {certificates.map((c) => (
+          <div key={c.program} className="flex h-full flex-col justify-between rounded-lg border border-border bg-card p-5">
+            <div>
+              <h3 className="font-serif text-lg text-foreground">{c.program}</h3>
+              <p className="mt-1 text-sm text-foreground/70">{c.issuer}</p>
+            </div>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {c.skills.map((s) => (
+                <li key={s} className="rounded-full border border-foreground/25 px-2.5 py-0.5 text-[0.7rem] text-foreground/90">
+                  {s}
+                </li>
+              ))}
+            </ul>
+            {c.credentialUrl && (
+              <a href={c.credentialUrl} target="_blank" rel="noopener noreferrer" className="mt-3 text-sm text-accent underline underline-offset-4">
+                View Credential &rarr;
+              </a>
+            )}
           </div>
-        </div>
-      </section>
-    </SectionColor>
+        ))}
+      </PinnedScatter>
+    </section>
   );
 }
