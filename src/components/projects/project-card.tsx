@@ -13,6 +13,7 @@ export function ProjectCard({ project }: { project: Project }) {
           src={project.image}
           alt={project.title}
           fill
+          sizes="(min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {project.status === "building" && (

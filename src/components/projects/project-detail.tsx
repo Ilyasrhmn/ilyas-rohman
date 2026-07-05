@@ -12,7 +12,13 @@ export function ProjectDetail({ project }: { project: Project }) {
       <h1 className="mt-3 font-serif text-4xl text-foreground sm:text-5xl">{project.title}</h1>
 
       <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-lg border border-border">
-        <Image src={project.image} alt={project.title} fill className="object-cover" />
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          sizes="(min-width: 768px) 768px, 100vw"
+          className="object-cover"
+        />
       </div>
 
       {project.status === "building" ? (
