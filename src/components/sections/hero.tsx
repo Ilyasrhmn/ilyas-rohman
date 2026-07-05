@@ -37,8 +37,8 @@ export function Hero() {
 
       <div className="hero-clouds absolute inset-0 overflow-hidden opacity-40">
         <div className="hero-clouds__track--left flex h-full w-[200%]">
-          <Image src="/hero/cloud1.webp" alt="" width={1600} height={900} sizes="50vw" className="h-full w-1/2 object-cover object-bottom" aria-hidden />
-          <Image src="/hero/cloud1.webp" alt="" width={1600} height={900} sizes="50vw" className="h-full w-1/2 -scale-x-100 object-cover object-bottom" aria-hidden />
+          <Image src="/hero/cloud1.webp" alt="" width={1600} height={900} sizes="50vw" className="h-full w-1/2 object-cover object-bottom" aria-hidden loading="eager" priority />
+          <Image src="/hero/cloud1.webp" alt="" width={1600} height={900} sizes="50vw" className="h-full w-1/2 -scale-x-100 object-cover object-bottom" aria-hidden loading="eager" />
         </div>
       </div>
 

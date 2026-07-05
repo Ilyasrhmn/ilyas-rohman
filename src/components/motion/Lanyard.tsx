@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unknown-property */
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Component, type ReactNode, Suspense } from 'react';
 import { Canvas, extend, useFrame, type ThreeElement, type ThreeEvent } from '@react-three/fiber';
 import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
 import {
@@ -25,6 +25,24 @@ declare module '@react-three/fiber' {
   }
 }
 
+// ── Error boundary: catches WebGL/asset crashes silently ──────────────────
+class CanvasErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() {
+    if (this.state.failed) return null; // show nothing instead of white box
+    return this.props.children;
+  }
+}
+
+const CARD_GLB = '/assets/lanyard/card.glb';
+const LANYARD_PNG = '/assets/lanyard/lanyard.png';
+
+// Preload outside component so it fires once per module load
+if (typeof window !== 'undefined') {
+  useGLTF.preload(CARD_GLB);
+}
+
 interface LanyardProps {
   transparent?: boolean;
   className?: string;
@@ -34,7 +52,9 @@ export default function Lanyard({
   transparent = true,
   className = '',
 }: LanyardProps) {
-  const [isMobile, setIsMobile] = useState<boolean>(() => typeof window !== 'undefined' && window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState<boolean>(
+    () => typeof window !== 'undefined' && window.innerWidth < 768
+  );
 
   useEffect(() => {
     const handleResize = (): void => setIsMobile(window.innerWidth < 768);
@@ -42,58 +62,41 @@ export default function Lanyard({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Camera tuned for column framing: close enough that the card is large
   const camPos: [number, number, number] = isMobile ? [0, 0, 10] : [0, 0, 13];
   const camFov = isMobile ? 32 : 26;
   const gravity: [number, number, number] = [0, -40, 0];
 
   return (
-    <div className={`relative z-0 w-full pointer-events-none [&_canvas]:pointer-events-auto ${className}`}
-         style={{ height: isMobile ? '480px' : '560px' }}>
-      <Canvas
-        camera={{ position: camPos, fov: camFov }}
-        dpr={[1, isMobile ? 1.5 : 2]}
-        gl={{ alpha: transparent }}
-        onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
-      >
-        <ambientLight intensity={Math.PI} />
-        <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
-          <Band isMobile={isMobile} gravity={gravity} />
-        </Physics>
-        <Environment blur={0.75}>
-          <Lightformer
-            intensity={2}
-            color="white"
-            position={[0, -1, 5]}
-            rotation={[0, 0, Math.PI / 3]}
-            scale={[100, 0.1, 1]}
-          />
-          <Lightformer
-            intensity={3}
-            color="white"
-            position={[-1, -1, 1]}
-            rotation={[0, 0, Math.PI / 3]}
-            scale={[100, 0.1, 1]}
-          />
-          <Lightformer
-            intensity={3}
-            color="white"
-            position={[1, 1, 1]}
-            rotation={[0, 0, Math.PI / 3]}
-            scale={[100, 0.1, 1]}
-          />
-          <Lightformer
-            intensity={10}
-            color="white"
-            position={[-10, 0, 14]}
-            rotation={[0, Math.PI / 2, Math.PI / 3]}
-            scale={[100, 10, 1]}
-          />
-        </Environment>
-      </Canvas>
+    <div
+      className={`relative z-0 w-full pointer-events-none [&_canvas]:pointer-events-auto ${className}`}
+      style={{ height: isMobile ? '480px' : '560px' }}
+    >
+      <CanvasErrorBoundary>
+        <Canvas
+          camera={{ position: camPos, fov: camFov }}
+          dpr={[1, isMobile ? 1.5 : 2]}
+          gl={{ alpha: transparent }}
+          onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
+        >
+          <ambientLight intensity={Math.PI} />
+          <Suspense fallback={null}>
+            <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
+              <Band isMobile={isMobile} />
+            </Physics>
+            <Environment blur={0.75}>
+              <Lightformer intensity={2} color="white" position={[0, -1, 5]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
+              <Lightformer intensity={3} color="white" position={[-1, -1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
+              <Lightformer intensity={3} color="white" position={[1, 1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
+              <Lightformer intensity={10} color="white" position={[-10, 0, 14]} rotation={[0, Math.PI / 2, Math.PI / 3]} scale={[100, 10, 1]} />
+            </Environment>
+          </Suspense>
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface BandProps {
   maxSpeed?: number;
@@ -102,16 +105,13 @@ interface BandProps {
   gravity?: [number, number, number];
 }
 
-type LanyardRigidBody = RapierRigidBody & {
-  lerped?: THREE.Vector3;
-};
+type LanyardRigidBody = RapierRigidBody & { lerped?: THREE.Vector3 };
 
-function Band({
-  maxSpeed = 50,
-  minSpeed = 0,
-  isMobile = false,
-}: BandProps) {
-  const band = useRef<THREE.Mesh<InstanceType<typeof MeshLineGeometry>, InstanceType<typeof MeshLineMaterial>>>(null!);
+function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
+  const band = useRef<THREE.Mesh<
+    InstanceType<typeof MeshLineGeometry>,
+    InstanceType<typeof MeshLineMaterial>
+  >>(null!);
   const fixed = useRef<RapierRigidBody>(null!);
   const j1 = useRef<LanyardRigidBody>(null!);
   const j2 = useRef<LanyardRigidBody>(null!);
@@ -128,26 +128,23 @@ function Band({
     canSleep: true,
     colliders: false,
     angularDamping: 4,
-    linearDamping: 4
+    linearDamping: 4,
   };
 
   const getLerped = (body: LanyardRigidBody): THREE.Vector3 => {
-    if (!body.lerped) {
-      body.lerped = new THREE.Vector3().copy(body.translation());
-    }
+    if (!body.lerped) body.lerped = new THREE.Vector3().copy(body.translation());
     return body.lerped;
   };
 
-  const cardGLBUrl = '/assets/lanyard/card.glb';
-  const lanyardImage = '/assets/lanyard/lanyard.png';
+  // These are loaded inside <Suspense> so they can suspend safely
+  const { nodes, materials } = useGLTF(CARD_GLB) as any;
+  const texture = useTexture(LANYARD_PNG);
 
-  useGLTF.preload(cardGLBUrl);
-  const { nodes, materials } = useGLTF(cardGLBUrl) as any;
-  const texture = useTexture(lanyardImage);
-  
   const [curve] = useState(
-    () =>
-      new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()])
+    () => new THREE.CatmullRomCurve3([
+      new THREE.Vector3(), new THREE.Vector3(),
+      new THREE.Vector3(), new THREE.Vector3(),
+    ])
   );
   const [dragged, drag] = useState<false | THREE.Vector3>(false);
   const [hovered, hover] = useState(false);
@@ -155,17 +152,12 @@ function Band({
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
   useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1]);
-  useSphericalJoint(j3, card, [
-    [0, 0, 0],
-    [0, 1.45, 0]
-  ]);
+  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.45, 0]]);
 
   useEffect(() => {
     if (hovered) {
       document.body.style.cursor = dragged ? 'grabbing' : 'grab';
-      return () => {
-        document.body.style.cursor = 'auto';
-      };
+      return () => { document.body.style.cursor = 'auto'; };
     }
   }, [hovered, dragged]);
 
@@ -174,18 +166,18 @@ function Band({
       vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
       dir.copy(vec).sub(state.camera.position).normalize();
       vec.add(dir.multiplyScalar(state.camera.position.length()));
-      [card, j1, j2, j3, fixed].forEach(ref => ref.current?.wakeUp());
+      [card, j1, j2, j3, fixed].forEach(r => r.current?.wakeUp());
       card.current?.setNextKinematicTranslation({
         x: vec.x - dragged.x,
         y: vec.y - dragged.y,
-        z: vec.z - dragged.z
+        z: vec.z - dragged.z,
       });
     }
     if (fixed.current) {
       [j1, j2].forEach(ref => {
         const lerped = getLerped(ref.current);
-        const clampedDistance = Math.max(0.1, Math.min(1, lerped.distanceTo(ref.current.translation())));
-        lerped.lerp(ref.current.translation(), delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed)));
+        const dist = Math.max(0.1, Math.min(1, lerped.distanceTo(ref.current.translation())));
+        lerped.lerp(ref.current.translation(), delta * (minSpeed + dist * (maxSpeed - minSpeed)));
       });
       curve.points[0].copy(j3.current.translation());
       curve.points[1].copy(getLerped(j2.current));
@@ -255,13 +247,15 @@ function Band({
       <mesh ref={band}>
         <meshLineGeometry />
         <meshLineMaterial
-          color="white"
+          args={[{
+            color: new THREE.Color('white'),
+            resolution: isMobile ? new THREE.Vector2(1000, 2000) : new THREE.Vector2(1000, 1000),
+            useMap: 1,
+            map: texture,
+            repeat: new THREE.Vector2(-4, 1),
+            lineWidth: 1,
+          }]}
           depthTest={false}
-          resolution={isMobile ? [1000, 2000] : [1000, 1000]}
-          useMap={1}
-          map={texture}
-          repeat={[-4, 1]}
-          lineWidth={1}
         />
       </mesh>
     </>
