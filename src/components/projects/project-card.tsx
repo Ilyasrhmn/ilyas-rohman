@@ -6,29 +6,32 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group block overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-accent"
+      className="group relative block overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-accent"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
         <Image
           src={project.image}
           alt={project.title}
           fill
-          sizes="(min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(min-width:640px) 50vw, 100vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-70" />
         {project.status === "building" && (
-          <span className="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-[0.65rem] font-medium uppercase tracking-wide text-accent-foreground">
+          <span className="eyebrow absolute left-4 top-4 rounded-full bg-accent px-3 py-1 !text-[0.6rem] !tracking-widest !text-accent-foreground">
             Currently Building
           </span>
         )}
-      </div>
-      <div className="p-5">
-        <div className="flex items-center justify-between text-xs uppercase tracking-wide text-muted-foreground">
-          <span>{project.category}</span>
-          <span>{project.year}</span>
+        <div className="absolute inset-x-0 bottom-0 p-5">
+          <div className="flex items-center justify-between text-xs uppercase tracking-wide text-foreground/70">
+            <span>{project.category}</span>
+            <span>{project.year}</span>
+          </div>
+          <h3 className="mt-2 font-serif text-2xl text-foreground">{project.title}</h3>
+          <p className="mt-1 max-h-0 overflow-hidden text-sm text-foreground/80 transition-all duration-500 group-hover:max-h-24">
+            {project.summary}
+          </p>
         </div>
-        <h3 className="mt-2 font-serif text-xl text-foreground">{project.title}</h3>
-        <p className="mt-2 text-sm text-muted-foreground">{project.summary}</p>
       </div>
     </Link>
   );
