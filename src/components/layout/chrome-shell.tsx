@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState } from "react";
 import SmoothScroll from "@/components/layout/smooth-scroll";
+import { Backdrop } from "@/components/layout/backdrop";
 import { CustomCursor } from "@/components/layout/custom-cursor";
 import ScrollProgress from "@/components/layout/scroll-progress";
 import { Preloader } from "@/components/layout/preloader";
@@ -24,6 +25,7 @@ export function ChromeShell({ children }: { children: React.ReactNode }) {
   return (
     <SmoothScroll>
       <ContactContext.Provider value={openContact}>
+        <Backdrop />
         <Preloader />
         <CustomCursor />
         <ScrollProgress />
