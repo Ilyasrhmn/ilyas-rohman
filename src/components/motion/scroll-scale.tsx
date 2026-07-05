@@ -1,77 +1,76 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { registerGsap, gsap } from "@/lib/gsap";
 import { useReducedMotion, useIsTouch } from "@/hooks/use-reduced-motion";
 
 export function ScrollScale({
   text,
+  panelColor = "#0A0B0A",
   className = "",
-  children,
 }: {
   text: string;
+  panelColor?: string;
   className?: string;
-  children?: React.ReactNode;
 }) {
-  const reduced = useReducedMotion();
-  const isTouch = useIsTouch();
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const disabled = reduced || isTouch;
+  const panelRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const touch = useIsTouch();
+  const disabled = reduced || touch;
 
   useEffect(() => {
-    if (disabled) return;
-    let ctx: { revert: () => void } | undefined;
-
-    (async () => {
-      const gsap = (await import("gsap")).default;
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      if (!wrapperRef.current || !textRef.current) return;
-
-      ctx = gsap.context(() => {
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: wrapperRef.current,
-            start: "top top",
-            end: "+=100%",
-            scrub: 0.5,
-            pin: true,
-          },
-        }).fromTo(
-          textRef.current,
-          { scale: 1, opacity: 1 },
-          { scale: 14, opacity: 0, ease: "power1.in" }
-        );
-      }, wrapperRef);
-    })();
-
-    return () => ctx?.revert();
+    if (disabled || !wrapRef.current) return;
+    registerGsap();
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: wrapRef.current,
+          start: "top top",
+          end: "+=140%",
+          scrub: 0.5,
+          pin: true,
+        },
+      });
+      tl.fromTo(panelRef.current, { opacity: 0 }, { opacity: 1, ease: "none" }, 0);
+      tl.fromTo(
+        textRef.current,
+        { scale: 1, opacity: 1 },
+        { scale: 14, opacity: 0, ease: "power1.in" },
+        0
+      );
+    }, wrapRef);
+    return () => ctx.revert();
   }, [disabled]);
 
   if (disabled) {
     return (
-      <div className={`section-pad flex items-center justify-center ${className}`}>
-        <div className="text-center text-4xl sm:text-6xl font-serif text-foreground">
-          {text}
-        </div>
-        {children}
+      <div
+        className={`section-pad flex items-center justify-center ${className}`}
+        style={{ backgroundColor: panelColor }}
+      >
+        <div className="display text-center text-foreground">{text}</div>
       </div>
     );
   }
 
   return (
-    <div ref={wrapperRef} className={`relative h-[100vh] overflow-hidden ${className}`}>
+    <div ref={wrapRef} className={`relative h-screen overflow-hidden ${className}`}>
+      <div
+        ref={panelRef}
+        className="absolute inset-0"
+        style={{ backgroundColor: panelColor, opacity: 0 }}
+      />
       <div className="absolute inset-0 flex items-center justify-center">
         <div
           ref={textRef}
-          className="text-center text-4xl sm:text-6xl font-serif text-foreground will-change-transform"
-          style={{ transformOrigin: "center center" }}
+          className="display text-center text-foreground will-change-transform"
+          style={{ transformOrigin: "center" }}
         >
           {text}
         </div>
       </div>
-      {children}
     </div>
   );
 }

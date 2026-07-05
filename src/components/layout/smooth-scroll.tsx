@@ -23,6 +23,7 @@ export default function SmoothScroll({
       smoothWheel: true,
     });
     setLenis(lenisInstance);
+    (window as unknown as { lenis?: Lenis }).lenis = lenisInstance;
 
     registerGsap();
     lenisInstance.on("scroll", ScrollTrigger.update);
