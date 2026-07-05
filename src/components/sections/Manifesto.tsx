@@ -5,10 +5,7 @@ import { GooeyText } from "@/components/ui/gooey-text-morphing";
 
 export default function Manifesto() {
   return (
-    <section className="relative min-h-[100vh] w-full flex flex-col items-center justify-center py-24 md:py-32 px-6 md:px-12 lg:px-24 bg-[var(--world-b-bg)] text-[var(--world-b-text)] z-10 overflow-hidden">
-      
-      {/* Cinematic Background Elements */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--world-b-accent)]/5 rounded-full blur-[120px] pointer-events-none" />
+    <section className="relative w-full flex flex-col items-center justify-start pt-[20vh] pb-32 px-6 md:px-12 lg:px-24 bg-transparent text-[var(--world-b-text)] z-10 overflow-hidden -mt-[40vh] md:-mt-[60vh]">
       
       <div className="max-w-5xl mx-auto w-full flex flex-col items-center text-center gap-6 relative z-10">
         
