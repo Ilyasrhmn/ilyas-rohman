@@ -31,7 +31,7 @@ export function Hero() {
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(10,11,10,0.15) 0%, rgba(10,11,10,0.05) 25%, rgba(10,11,10,0.4) 65%, rgba(10,11,10,0.96) 100%)",
+            "linear-gradient(180deg, rgba(16,22,18,0.15) 0%, rgba(16,22,18,0.05) 25%, rgba(16,22,18,0.4) 65%, rgba(16,22,18,1) 100%)",
         }}
       />
 
@@ -45,18 +45,23 @@ export function Hero() {
       <div className="mist absolute inset-0" />
 
       <motion.div
-        style={{ y: contentY, opacity: contentOpacity }}
+        style={{ 
+          y: contentY, 
+          opacity: contentOpacity,
+          pointerEvents: useTransform(scrollYProgress, (v) => v > 0.7 ? "none" : "auto"),
+          visibility: useTransform(scrollYProgress, (v) => v > 0.8 ? "hidden" : "visible")
+        }}
         className="relative z-10 flex h-full flex-col justify-end px-6 pb-20 sm:px-10 sm:pb-24"
       >
-        <span className="eyebrow mb-4">{profile.role}</span>
-        <h1 className="display max-w-[14ch] text-foreground">{profile.name}</h1>
-        <p className="mt-6 max-w-xl font-serif text-xl italic text-foreground/70 sm:text-2xl">
+        <span className="eyebrow mb-4 text-[var(--world-a-accent)]">{profile.role}</span>
+        <h1 className="display max-w-[14ch] text-[var(--world-a-text)]">{profile.name}</h1>
+        <p className="mt-6 max-w-xl font-serif text-xl italic text-[var(--world-a-muted)] sm:text-2xl">
           {profile.positioning}
         </p>
         <div className="mt-10 flex items-center gap-3">
-          <span className="eyebrow !tracking-[0.3em]">Scroll</span>
-          <span className="relative h-px w-12 overflow-hidden bg-white/20">
-            <span className="hero-scroll-slide absolute inset-y-0 left-[-100%] w-full bg-accent" />
+          <span className="eyebrow !tracking-[0.3em] text-[var(--world-a-accent)]">Scroll</span>
+          <span className="relative h-px w-12 overflow-hidden bg-[var(--world-a-border)]">
+            <span className="hero-scroll-slide absolute inset-y-0 left-[-100%] w-full bg-[var(--world-a-accent)]" />
           </span>
         </div>
       </motion.div>

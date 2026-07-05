@@ -1,7 +1,8 @@
 import type { StackGroup } from "@/types";
 
 export const stackGroups: StackGroup[] = [
-  { label: "Frontend Engineering", items: ["Next.js", "React", "TypeScript"] },
-  { label: "Motion & Interaction", items: ["GSAP", "Framer Motion", "Lenis"] },
-  { label: "Backend & Integration", items: ["Laravel", "REST API", "MySQL"] },
+  { label: "FRONTEND ENGINEERING", items: ["React", "Next.js", "TypeScript", "Tailwind CSS"] },
+  { label: "MOTION & INTERACTION", items: ["GSAP", "Framer Motion", "Lenis", "ScrollTrigger"] },
+  { label: "BACKEND & INTEGRATION", items: ["Laravel", "REST API", "MySQL", "Node.js"] },
+  { label: "TOOLS & DELIVERY", items: ["Git", "GitHub", "Vercel", "Netlify", "Railway"] },
 ];
