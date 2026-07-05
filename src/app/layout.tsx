@@ -42,7 +42,7 @@ export default function RootLayout({
       className={`${playfair.variable} ${inter.variable} ${grotesk.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <ChromeShell>{children}</ChromeShell>
         </ThemeProvider>

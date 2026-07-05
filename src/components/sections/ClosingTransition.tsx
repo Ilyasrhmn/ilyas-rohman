@@ -50,19 +50,19 @@ export default function ClosingTransition() {
           2.0
         )
 
-        // 1.2 → 2.6 : "The Journey Continues" fades out
+        // 1.2 → 2.2 : "The Journey Continues" fades out
         .to(
           ".closing-text",
-          { scale: 1.08, opacity: 0, duration: 1.4, ease: "power1.inOut" },
+          { scale: 1.08, opacity: 0, duration: 1.0, ease: "power1.inOut" },
           1.2
         )
 
-        // 1.2 → 2.6 : "Ready to build?" cross-fades IN at same time — no empty screen
+        // 2.5 → 3.5 : "Ready to build?" fades IN (after a short gap)
         .fromTo(
           ".closing-dark-text",
           { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 1.4, ease: "power1.inOut" },
-          1.2
+          { opacity: 1, y: 0, duration: 1.0, ease: "power1.out" },
+          2.5
         );
     }, containerRef);
 
