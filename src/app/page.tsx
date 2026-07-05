@@ -3,6 +3,7 @@ import { Works } from "@/components/sections/works";
 import { About } from "@/components/sections/about";
 import { Journey } from "@/components/sections/journey";
 import { Stack } from "@/components/sections/stack";
+import { Certificates } from "@/components/sections/certificates";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <About />
       <Journey />
       <Stack />
+      <Certificates />
     </>
   );
 }
