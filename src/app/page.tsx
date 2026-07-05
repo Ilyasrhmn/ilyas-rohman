@@ -3,9 +3,10 @@ import AboutIntro from "@/components/sections/AboutIntro";
 import { Stack } from "@/components/sections/stack";
 import CapabilitiesChoreography from "@/components/sections/CapabilitiesChoreography";
 import { ScrollScale } from "@/components/motion/scroll-scale";
-import ShortJourney from "@/components/sections/ShortJourney";
+import Manifesto from "@/components/sections/Manifesto";
 import HorizontalProjects from "@/components/sections/HorizontalProjects";
 import Achievements from "@/components/sections/Achievements";
+import Roadmap from "@/components/sections/Roadmap";
 import ClosingTransition from "@/components/sections/ClosingTransition";
 import CTASection from "@/components/sections/CTASection";
 import { NavObserver } from "@/components/layout/nav-observer";
@@ -37,11 +38,13 @@ export default function Home() {
           color: 'var(--world-b-text)' 
         } as React.CSSProperties}
       >
-        <ShortJourney />
+        <Manifesto />
         
         <HorizontalProjects />
         
         <Achievements />
+        
+        <Roadmap />
         
         <ClosingTransition />
       </div>
