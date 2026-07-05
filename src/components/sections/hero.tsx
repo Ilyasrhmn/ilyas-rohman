@@ -1,19 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { profile } from "@/data/profile";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0 },
-};
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 export function Hero() {
+  const ref = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", reduced ? "0%" : "18%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", reduced ? "0%" : "-30%"]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, reduced ? 1 : 0]);
+
   return (
-    <section id="hero" className="relative h-screen w-full overflow-hidden">
-      {/* Background forest image */}
-      <div className="absolute inset-0">
+    <section ref={ref} id="hero" className="relative h-screen w-full overflow-hidden">
+      <motion.div style={{ y: bgY }} className="absolute inset-0 scale-110">
         <Image
           src="/hero/forest.webp"
           alt="Misty mountain forest landscape"
@@ -22,87 +25,46 @@ export function Hero() {
           sizes="100vw"
           className="object-cover object-top"
         />
-      </div>
+      </motion.div>
 
-      {/* Dark gradient overlay, heavier toward bottom */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(11,11,11,0.15) 0%, rgba(11,11,11,0.05) 25%, rgba(11,11,11,0.35) 65%, rgba(14,15,14,0.95) 100%)",
+            "linear-gradient(180deg, rgba(10,11,10,0.15) 0%, rgba(10,11,10,0.05) 25%, rgba(10,11,10,0.4) 65%, rgba(10,11,10,0.96) 100%)",
         }}
       />
 
-      {/* Cloud drift layers */}
-      <div className="hero-clouds hero-clouds--back absolute inset-0 overflow-hidden opacity-45">
-        <div className="hero-clouds__track hero-clouds__track--left flex h-full w-[200%]">
-          <Image src="/hero/cloud1.webp" alt="" width={1600} height={900} sizes="50vw" loading="eager" className="h-full w-1/2 object-cover object-bottom" aria-hidden />
-          <Image src="/hero/cloud1.webp" alt="" width={1600} height={900} sizes="50vw" loading="eager" className="h-full w-1/2 object-cover object-bottom -scale-x-100" aria-hidden />
-        </div>
-      </div>
-      <div className="hero-clouds hero-clouds--front absolute inset-0 overflow-hidden opacity-35 blur-[2px]">
-        <div className="hero-clouds__track hero-clouds__track--right flex h-full w-[200%]">
-          <Image src="/hero/cloud2.webp" alt="" width={1600} height={900} sizes="50vw" loading="eager" className="h-full w-1/2 object-cover object-bottom" aria-hidden />
-          <Image src="/hero/cloud2.webp" alt="" width={1600} height={900} sizes="50vw" loading="eager" className="h-full w-1/2 object-cover object-bottom -scale-x-100" aria-hidden />
+      <div className="hero-clouds absolute inset-0 overflow-hidden opacity-40">
+        <div className="hero-clouds__track--left flex h-full w-[200%]">
+          <Image src="/hero/cloud1.webp" alt="" width={1600} height={900} sizes="50vw" className="h-full w-1/2 object-cover object-bottom" aria-hidden />
+          <Image src="/hero/cloud1.webp" alt="" width={1600} height={900} sizes="50vw" className="h-full w-1/2 -scale-x-100 object-cover object-bottom" aria-hidden />
         </div>
       </div>
 
-      {/* Mist wash */}
       <div className="mist absolute inset-0" />
 
-      {/* Content */}
-      <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-20 sm:px-10 sm:pb-24">
-        <motion.h1
-          initial={false}
-          animate="show"
-          variants={fadeUp}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="font-serif text-4xl font-light tracking-tight text-foreground sm:text-6xl lg:text-7xl"
-        >
-          {profile.name}
-        </motion.h1>
-
-        <motion.p
-          initial={false}
-          animate="show"
-          variants={fadeUp}
-          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-          className="mt-4 max-w-xl font-serif text-lg italic text-muted-foreground sm:text-xl"
-        >
+      <motion.div
+        style={{ y: contentY, opacity: contentOpacity }}
+        className="relative z-10 flex h-full flex-col justify-end px-6 pb-20 sm:px-10 sm:pb-24"
+      >
+        <span className="eyebrow mb-4">{profile.role}</span>
+        <h1 className="display max-w-[14ch] text-foreground">{profile.name}</h1>
+        <p className="mt-6 max-w-xl font-serif text-xl italic text-foreground/70 sm:text-2xl">
           {profile.positioning}
-        </motion.p>
-
-        <motion.div
-          initial={false}
-          animate="show"
-          variants={fadeUp}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          className="mt-10 flex items-center gap-3"
-        >
-          <span className="text-[0.65rem] uppercase tracking-[0.3em] text-muted-foreground">
-            Scroll
-          </span>
-          <span className="relative h-px w-10 overflow-hidden bg-white/20">
+        </p>
+        <div className="mt-10 flex items-center gap-3">
+          <span className="eyebrow !tracking-[0.3em]">Scroll</span>
+          <span className="relative h-px w-12 overflow-hidden bg-white/20">
             <span className="hero-scroll-slide absolute inset-y-0 left-[-100%] w-full bg-accent" />
           </span>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
 
       <style>{`
-        @keyframes cloudDriftLeft {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        @keyframes cloudDriftRight {
-          from { transform: translateX(-50%); }
-          to { transform: translateX(0); }
-        }
-        @keyframes scrollLineSlide {
-          from { left: -100%; }
-          to { left: 100%; }
-        }
+        @keyframes cloudDriftLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes scrollLineSlide { from { left: -100%; } to { left: 100%; } }
         .hero-clouds__track--left { animation: cloudDriftLeft 90s linear infinite; }
-        .hero-clouds__track--right { animation: cloudDriftRight 120s linear infinite; }
         .hero-scroll-slide { animation: scrollLineSlide 2.5s ease-in-out infinite; }
       `}</style>
     </section>
