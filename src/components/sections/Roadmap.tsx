@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { BlurReveal } from "@/components/effects/blur-reveal";
+import TextCursor from "@/components/ui/text-cursor";
 
 type RoadmapItem = {
     id: string;
@@ -63,9 +64,22 @@ export default function Roadmap() {
 
     return (
         <section ref={containerRef} className="relative overflow-hidden py-32 xl:py-48 bg-[var(--world-b-bg)] border-t border-[var(--world-b-border)]">
+            {/* Interactive Text Cursor Background */}
+            <div className="absolute inset-0 z-0">
+                <TextCursor 
+                    text="ILYAS NUR ROHMAN " 
+                    spacing={60} 
+                    followMouseDirection={true} 
+                    randomFloat={true} 
+                    exitDuration={1} 
+                    removalInterval={30} 
+                    maxPoints={20} 
+                />
+            </div>
+
             {/* Background Glows */}
             <div className="absolute top-1/4 left-0 w-full max-w-lg h-[500px] bg-[var(--world-b-accent)]/10 blur-[120px] rounded-full pointer-events-none -translate-x-1/2" />
-            <div className="absolute bottom-1/4 right-0 w-full max-w-lg h-[500px] bg-[var(--world-b-accent)]/10 blur-[120px] rounded-full pointer-events-none translate-x-1/2" />
+            <div className="absolute bottom-1/4 right-0 w-full max-w-lg h-[500px] bg-[var(--world-b-accent)]/10 blur-[120px] rounded-full pointer-events-none translate-x-1/2 z-0" />
 
             {/* Background Parallax Text */}
             <motion.div

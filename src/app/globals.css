@@ -71,6 +71,11 @@
   --world-b-accent: #2F5D45;
   --world-b-border: #D3D0C5;
 
+  /* Selection tokens */
+  --selection-bg-dark: #A8BFA5;
+  --selection-text-dark: #101612;
+  --selection-bg-light: #2F5D45;
+  --selection-text-light: #F2F0E8;
   /* Global Fallbacks mapping to World A initially */
   --background: var(--world-a-bg);
   --foreground: var(--world-a-text);
@@ -117,6 +122,26 @@
   --sidebar-accent-foreground: #EDEDE8;
   --sidebar-border: rgba(237, 237, 232, 0.12);
   --sidebar-ring: #2F5D45;
+}
+
+/* Global Selection Styling (World A default) */
+::selection {
+  background-color: var(--selection-bg-dark);
+  color: var(--selection-text-dark);
+}
+::-moz-selection {
+  background-color: var(--selection-bg-dark);
+  color: var(--selection-text-dark);
+}
+
+/* World B Selection Styling */
+#world-b-wrapper ::selection {
+  background-color: var(--selection-bg-light);
+  color: var(--selection-text-light);
+}
+#world-b-wrapper ::-moz-selection {
+  background-color: var(--selection-bg-light);
+  color: var(--selection-text-light);
 }
 
 body[data-nav-theme="world-b"] {
