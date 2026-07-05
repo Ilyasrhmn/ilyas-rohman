@@ -10,6 +10,7 @@
   --color-cool: var(--color-cool);
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
+  --font-grotesk: var(--font-grotesk);
   --font-heading: var(--font-serif);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -130,6 +131,29 @@
 
 .section-pad {
   padding-block: clamp(4rem, 10vw, 9rem);
+}
+
+/* Expressive, varied type scale */
+.display {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-size: clamp(2.75rem, 11vw, 11rem);
+}
+.section-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+}
+.eyebrow {
+  font-family: var(--font-grotesk);
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-size: 0.7rem;
+  color: var(--color-accent-2);
 }
 
 @media (prefers-reduced-motion: reduce) {

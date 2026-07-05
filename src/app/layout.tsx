@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
+import { Playfair_Display, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ChromeShell } from "@/components/layout/chrome-shell";
 import { profile } from "@/data/profile";
@@ -11,6 +11,11 @@ const playfair = Playfair_Display({
 
 const inter = Inter({
   variable: "--font-sans",
+  subsets: ["latin"],
+});
+
+const grotesk = Space_Grotesk({
+  variable: "--font-grotesk",
   subsets: ["latin"],
 });
 
@@ -33,7 +38,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${inter.variable} h-full antialiased`}
+      className={`${playfair.variable} ${inter.variable} ${grotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <ChromeShell>{children}</ChromeShell>
