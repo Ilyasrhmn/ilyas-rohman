@@ -52,6 +52,9 @@
 
 /* Cinematic-lite portfolio palette: dark-anchored, no light/dark toggle (deferred per spec). */
 :root {
+  /* Layout tokens */
+  --navbar-h: 72px;
+
   /* World A (Deep Forest Night) */
   --world-a-bg: #101612;
   --world-a-surface: #172019;
