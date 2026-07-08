@@ -2,6 +2,7 @@
 
 import { certificates } from "@/data/certificates";
 import { PinnedScatter } from "@/components/motion/pinned-scatter";
+import Image from "next/image";
 
 export function Certificates() {
   return (
@@ -15,24 +16,36 @@ export function Certificates() {
 
       <PinnedScatter>
         {certificates.map((c) => (
-          <div key={c.program} className="flex h-full flex-col justify-between rounded-lg border border-border bg-card p-5">
-            <div>
-              <h3 className="font-serif text-lg text-foreground">{c.program}</h3>
-              <p className="mt-1 text-sm text-foreground/70">{c.issuer}</p>
+          <a
+            key={c.slug}
+            href={c.credentialUrl || undefined}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-full flex-col justify-between rounded-lg border border-border bg-card overflow-hidden group"
+          >
+            <div className="relative aspect-[16/10] w-full overflow-hidden bg-card">
+              <Image
+                src={c.image}
+                alt={c.program}
+                fill
+                sizes="(max-width: 768px) 100vw, 300px"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {c.skills.map((s) => (
-                <li key={s} className="rounded-full border border-foreground/25 px-2.5 py-0.5 text-[0.7rem] text-foreground/90">
-                  {s}
-                </li>
-              ))}
-            </ul>
-            {c.credentialUrl && (
-              <a href={c.credentialUrl} target="_blank" rel="noopener noreferrer" className="mt-3 text-sm text-accent underline underline-offset-4">
-                View Credential &rarr;
-              </a>
-            )}
-          </div>
+            <div className="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <h3 className="font-serif text-lg text-foreground">{c.program}</h3>
+                <p className="mt-1 text-sm text-foreground/70">{c.issuer}</p>
+              </div>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {c.skills.slice(0, 3).map((s) => (
+                  <li key={s} className="rounded-full border border-foreground/25 px-2.5 py-0.5 text-[0.7rem] text-foreground/90">
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </a>
         ))}
       </PinnedScatter>
     </section>

@@ -37,16 +37,17 @@ interface CertificateHeroScrollProps {
 }
 
 const CERTIFICATE_POOL = [
-    "Data Analytics on Google Cloud.png",
-    "Deep Learning Beginner.jpg",
-    "Docker, Kubernetes dan DevOps.jpg",
-    "Fullstack Programming Untuk Pemula.jpg",
-    "Introduction to Generative AI.png",
-    "Machine Learning Foundations.png",
-    "Mastering Smart Contract.jpg",
-    "Started with Databases.png",
-    "Supervised Machine Learning Regression and Classification.jpeg",
-    "elevAIte with Dicoding Program 2025.png"
+    "Belajar Dasar AI-1.webp",
+    "Belajar Dasar Pemrograman JavaScript-1.webp",
+    "Belajar Dasar Pemrograman Web-1.webp",
+    "Belajar Dasar UX Design-1.webp",
+    "Belajar Fundamental Front-End Web Development-1.webp",
+    "Belajar Membuat Front-End Web untuk Pemula-1.webp",
+    "Belajar Penerapan AI di Aplikasi Web-1.webp",
+    "Belajar Penerapan Data Science dengan Microsoft Fabric-1.webp",
+    "Belajar Pengembangan Web Intermediate-1.webp",
+    "Bulan Literasi Blockchain.png",
+    "Problem Solving (Basic) Certificate.png"
 ];
 
 const CertificateHeroScroll: FC<CertificateHeroScrollProps> = ({ onDownloadClick, isLowPowerMode: isLowPowerModeProp }) => {

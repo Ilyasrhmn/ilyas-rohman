@@ -7,16 +7,17 @@ import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 
 const certificates = [
-  "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1000",
-  "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000",
-  "https://images.unsplash.com/photo-1537432376769-00f5c2f4c8d2?q=80&w=1000",
-  "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1000",
-  "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000",
-  "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000",
-  "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1000",
-  "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000",
-  "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1000",
-  "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1000",
+  "/certificate/Belajar Dasar AI-1.webp",
+  "/certificate/Belajar Dasar Pemrograman JavaScript-1.webp",
+  "/certificate/Belajar Dasar Pemrograman Web-1.webp",
+  "/certificate/Belajar Dasar UX Design-1.webp",
+  "/certificate/Belajar Fundamental Front-End Web Development-1.webp",
+  "/certificate/Belajar Membuat Front-End Web untuk Pemula-1.webp",
+  "/certificate/Belajar Penerapan AI di Aplikasi Web-1.webp",
+  "/certificate/Belajar Penerapan Data Science dengan Microsoft Fabric-1.webp",
+  "/certificate/Belajar Pengembangan Web Intermediate-1.webp",
+  "/certificate/Bulan Literasi Blockchain.png",
+  "/certificate/Problem Solving (Basic) Certificate.png",
 ];
 
 function ScrambleButton({ href }: { href: string }) {
@@ -84,7 +85,6 @@ const Column = ({ images, y }: ColumnProps) => {
             src={src}
             alt={`Certificate ${i}`}
             fill
-            unoptimized
             sizes="(max-width: 1024px) 50vw, 33vw"
             className="pointer-events-none object-cover grayscale hover:grayscale-0 transition-all duration-700"
           />
@@ -165,9 +165,9 @@ export default function Achievements() {
           ref={gallery}
           className="relative box-border flex h-[100vh] md:h-[130vh] gap-[2vw] md:gap-[3vw] overflow-hidden rounded-3xl border border-[var(--world-b-border)]/50 p-[2vw]"
         >
-          <Column images={[certificates[0], certificates[1], certificates[2], certificates[3], certificates[4], certificates[5]]} y={y} />
+          <Column images={[certificates[0], certificates[1], certificates[2], certificates[3], certificates[10], certificates[5]]} y={y} />
           <Column images={[certificates[5], certificates[6], certificates[7], certificates[8], certificates[9], certificates[0]]} y={y2} />
-          <Column images={[certificates[9], certificates[8], certificates[7], certificates[6], certificates[5], certificates[4]]} y={y3} />
+          <Column images={[certificates[10], certificates[8], certificates[7], certificates[6], certificates[4], certificates[3]]} y={y3} />
         </div>
       </div>
     </section>

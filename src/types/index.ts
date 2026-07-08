@@ -26,11 +26,16 @@ export type JourneyItem = {
 };
 
 export type Certificate = {
+  slug: string;
   program: string;
   issuer: string;
   skills: string[];
   credentialUrl?: string;
+  credentialId?: string;
   track?: string;
+  image: string;
+  issuedDate: string;
+  expiryDate?: string;
 };
 
 export type StackGroup = {
