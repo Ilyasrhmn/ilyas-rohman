@@ -50,7 +50,7 @@ export function FooterSignature() {
               lengthAdjust="spacingAndGlyphs"
               textAnchor="start"
               fill="#E8E5DA"
-              fillOpacity={0.12}
+              fillOpacity={0.2}
               style={{ fontFamily: "var(--font-serif)", letterSpacing: "-0.02em" }}
             >
               {profile.name.toUpperCase()}
