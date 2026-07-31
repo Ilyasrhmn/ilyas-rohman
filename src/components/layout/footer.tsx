@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { profile } from "@/data/profile";
 import { InfiniteRibbon } from "@/components/ui/infinite-ribbon";
-import { PromptingIsAllYouNeed } from "@/components/ui/animated-hero-section";
+import { FooterSignature } from "@/components/layout/footer-signature";
 
 export function Footer() {
   return (
@@ -44,9 +44,8 @@ export function Footer() {
         </p>
       </div>
 
-      {/* Pong Game spelling ILYASRHMN - Placed at the very bottom */}
       <div className="w-full border-t border-[#29342C] pb-8">
-        <PromptingIsAllYouNeed />
+        <FooterSignature />
       </div>
     </footer>
   );
