@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
 // Let's use the forest theme colors instead of purely black and white
 const COLOR = "rgba(232, 229, 218, 0.2)" // muted for untouched pixels
@@ -108,6 +109,8 @@ export function PromptingIsAllYouNeed() {
   const ballRef = useRef<Ball>({ x: 0, y: 0, dx: 0, dy: 0, radius: 0 })
   const paddlesRef = useRef<Paddle[]>([])
   const scaleRef = useRef(1)
+  const dimsRef = useRef({ width: 0, height: 0 })
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -118,13 +121,19 @@ export function PromptingIsAllYouNeed() {
     if (!ctx) return
 
     const resizeCanvas = () => {
-      canvas.width = container.clientWidth
-      canvas.height = container.clientHeight
-      scaleRef.current = Math.min(canvas.width / 1000, canvas.height / 1000)
+      const width = container.clientWidth
+      const height = container.clientHeight
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      dimsRef.current = { width, height }
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      scaleRef.current = Math.min(width / 1000, height / 1000)
       initializeGame()
     }
 
     const initializeGame = () => {
+      const { width, height } = dimsRef.current
       const scale = scaleRef.current
       const LARGE_PIXEL_SIZE = 12 * scale
       const BALL_SPEED = 6 * scale
@@ -134,27 +143,27 @@ export function PromptingIsAllYouNeed() {
 
       const calculateWordWidth = (word: string, pixelSize: number) => {
         return (
-          word.split("").reduce((width, letter) => {
+          word.split("").reduce((w, letter) => {
             const letterWidth = PIXEL_MAP[letter as keyof typeof PIXEL_MAP]?.[0]?.length ?? 0
-            return width + letterWidth * pixelSize + LETTER_SPACING * pixelSize
+            return w + letterWidth * pixelSize + LETTER_SPACING * pixelSize
           }, 0) -
           LETTER_SPACING * pixelSize
         )
       }
 
       const totalWidth = calculateWordWidth(words[0], LARGE_PIXEL_SIZE)
-      const scaleFactor = (canvas.width * 0.9) / totalWidth
+      const scaleFactor = (width * 0.9) / totalWidth
 
       const adjustedLargePixelSize = LARGE_PIXEL_SIZE * scaleFactor
       const largeTextHeight = 5 * adjustedLargePixelSize
 
-      let startY = (canvas.height - largeTextHeight) / 2
+      const startY = (height - largeTextHeight) / 2
 
       words.forEach((word, wordIndex) => {
         const pixelSize = adjustedLargePixelSize
         const totalWordWidth = calculateWordWidth(word, adjustedLargePixelSize)
 
-        let startX = (canvas.width - totalWordWidth) / 2
+        let startX = (width - totalWordWidth) / 2
 
         word.split("").forEach((letter) => {
           const pixelMap = PIXEL_MAP[letter as keyof typeof PIXEL_MAP]
@@ -174,8 +183,8 @@ export function PromptingIsAllYouNeed() {
       })
 
       // Initialize ball position near the top right corner
-      const ballStartX = canvas.width * 0.9
-      const ballStartY = canvas.height * 0.1
+      const ballStartX = width * 0.9
+      const ballStartY = height * 0.1
 
       ballRef.current = {
         x: ballStartX,
@@ -192,50 +201,51 @@ export function PromptingIsAllYouNeed() {
       paddlesRef.current = [
         {
           x: INSET,
-          y: canvas.height / 2 - paddleLength / 2,
+          y: height / 2 - paddleLength / 2,
           width: paddleWidth,
           height: paddleLength,
-          targetY: canvas.height / 2 - paddleLength / 2,
+          targetY: height / 2 - paddleLength / 2,
           isVertical: true,
         },
         {
-          x: canvas.width - paddleWidth - INSET,
-          y: canvas.height / 2 - paddleLength / 2,
+          x: width - paddleWidth - INSET,
+          y: height / 2 - paddleLength / 2,
           width: paddleWidth,
           height: paddleLength,
-          targetY: canvas.height / 2 - paddleLength / 2,
+          targetY: height / 2 - paddleLength / 2,
           isVertical: true,
         },
         {
-          x: canvas.width / 2 - paddleLength / 2,
+          x: width / 2 - paddleLength / 2,
           y: INSET,
           width: paddleLength,
           height: paddleWidth,
-          targetY: canvas.width / 2 - paddleLength / 2,
+          targetY: width / 2 - paddleLength / 2,
           isVertical: false,
         },
         {
-          x: canvas.width / 2 - paddleLength / 2,
-          y: canvas.height - paddleWidth - INSET, // Pull it up from the absolute bottom
+          x: width / 2 - paddleLength / 2,
+          y: height - paddleWidth - INSET, // Pull it up from the absolute bottom
           width: paddleLength,
           height: paddleWidth,
-          targetY: canvas.width / 2 - paddleLength / 2,
+          targetY: width / 2 - paddleLength / 2,
           isVertical: false,
         },
       ]
     }
 
     const updateGame = () => {
+      const { width, height } = dimsRef.current
       const ball = ballRef.current
       const paddles = paddlesRef.current
 
       ball.x += ball.dx
       ball.y += ball.dy
 
-      if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+      if (ball.y - ball.radius < 0 || ball.y + ball.radius > height) {
         ball.dy = -ball.dy
       }
-      if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+      if (ball.x - ball.radius < 0 || ball.x + ball.radius > width) {
         ball.dx = -ball.dx
       }
 
@@ -264,11 +274,11 @@ export function PromptingIsAllYouNeed() {
       paddles.forEach((paddle) => {
         if (paddle.isVertical) {
           paddle.targetY = ball.y - paddle.height / 2
-          paddle.targetY = Math.max(0, Math.min(canvas.height - paddle.height, paddle.targetY))
+          paddle.targetY = Math.max(0, Math.min(height - paddle.height, paddle.targetY))
           paddle.y += (paddle.targetY - paddle.y) * 0.1
         } else {
           paddle.targetY = ball.x - paddle.width / 2
-          paddle.targetY = Math.max(0, Math.min(canvas.width - paddle.width, paddle.targetY))
+          paddle.targetY = Math.max(0, Math.min(width - paddle.width, paddle.targetY))
           paddle.x += (paddle.targetY - paddle.x) * 0.1
         }
       })
@@ -293,16 +303,19 @@ export function PromptingIsAllYouNeed() {
       })
     }
 
-    const drawGame = () => {
+    const drawGame = (staticFrame = false) => {
       if (!ctx) return
+      const { width, height } = dimsRef.current
 
       ctx.fillStyle = BACKGROUND_COLOR
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillRect(0, 0, width, height)
 
       pixelsRef.current.forEach((pixel) => {
         ctx.fillStyle = pixel.hit ? HIT_COLOR : COLOR
         ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size)
       })
+
+      if (staticFrame) return
 
       ctx.fillStyle = BALL_COLOR
       ctx.beginPath()
@@ -315,28 +328,62 @@ export function PromptingIsAllYouNeed() {
       })
     }
 
+    let rafId: number | null = null
+    let running = false
+
     const gameLoop = () => {
       updateGame()
       drawGame()
-      requestAnimationFrame(gameLoop)
+      rafId = requestAnimationFrame(gameLoop)
+    }
+
+    const stop = () => {
+      running = false
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId)
+        rafId = null
+      }
+    }
+
+    const start = () => {
+      if (running || reducedMotion) return
+      running = true
+      gameLoop()
     }
 
     resizeCanvas()
-    const observer = new ResizeObserver(resizeCanvas)
-    observer.observe(container)
-    gameLoop()
+    if (reducedMotion) {
+      drawGame(true)
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      resizeCanvas()
+      if (reducedMotion) drawGame(true)
+    })
+    resizeObserver.observe(container)
+
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        start()
+      } else {
+        stop()
+      }
+    })
+    intersectionObserver.observe(container)
 
     return () => {
-      observer.disconnect()
+      stop()
+      resizeObserver.disconnect()
+      intersectionObserver.disconnect()
     }
-  }, [])
+  }, [reducedMotion])
 
   return (
-    <div ref={containerRef} className="relative w-full h-[50vh] min-h-[400px] sm:h-[70vh]">
+    <div ref={containerRef} className="relative w-full h-[38vh] min-h-[260px] sm:h-[45vh]">
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full cursor-none"
-        aria-label="Pong game spelling ILYASRRHMN"
+        aria-label="Pong game spelling ILYASRHMN"
       />
     </div>
   )
