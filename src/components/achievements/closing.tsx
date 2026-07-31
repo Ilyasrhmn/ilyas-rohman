@@ -5,7 +5,6 @@ import Link from "next/link";
 import { gsap, ScrollTrigger, registerGsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useContact } from "@/components/layout/chrome-shell";
-import { cn } from "@/lib/utils";
 
 export function AchievementsClosing() {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -40,7 +39,7 @@ export function AchievementsClosing() {
           scrollTrigger: {
             trigger: wrapperRef.current,
             start: "top bottom",
-            end: "bottom bottom",
+            end: "center center",
             scrub: 1,
             invalidateOnRefresh: true,
           },
@@ -59,13 +58,10 @@ export function AchievementsClosing() {
   }, [reducedMotion]);
 
   return (
-    <section ref={wrapperRef} className={reducedMotion ? "relative" : "relative h-[100vh]"}>
+    <section ref={wrapperRef} className="relative">
       <div
         ref={stickyRef}
-        className={cn(
-          "flex flex-col items-center justify-center gap-8 px-6 text-center sm:px-10",
-          reducedMotion ? "py-24 md:py-32" : "sticky top-0 h-screen"
-        )}
+        className="flex flex-col items-center justify-center gap-8 px-6 py-32 text-center sm:px-10 md:py-40"
       >
         <p className="font-serif text-3xl md:text-5xl" style={{ color: "inherit" }}>
           That&apos;s the whole shelf.
