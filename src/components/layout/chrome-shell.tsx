@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import { usePathname } from "next/navigation";
 import SmoothScroll from "@/components/layout/smooth-scroll";
 import { Backdrop } from "@/components/layout/backdrop";
 import { CustomCursor } from "@/components/layout/custom-cursor";
@@ -21,6 +22,9 @@ export function useContact() {
 export function ChromeShell({ children }: { children: React.ReactNode }) {
   const [contactOpen, setContactOpen] = useState(false);
   const openContact = () => setContactOpen(true);
+  const pathname = usePathname();
+  // The achievements route supplies its own bespoke footer, so skip the site-wide one here.
+  const isAchievements = pathname === "/achievements";
 
   return (
     <SmoothScroll>
@@ -31,7 +35,7 @@ export function ChromeShell({ children }: { children: React.ReactNode }) {
         <ScrollProgress />
         <Navbar onContact={openContact} />
         <main>{children}</main>
-        <Footer />
+        {!isAchievements && <Footer />}
         <ContactModal open={contactOpen} onOpenChange={setContactOpen} />
       </ContactContext.Provider>
     </SmoothScroll>

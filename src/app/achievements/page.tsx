@@ -5,6 +5,7 @@ import { AchievementsHero } from "@/components/achievements/hero";
 import { AchievementsThreshold } from "@/components/achievements/threshold";
 import { AchievementsIndex } from "@/components/achievements/index-section";
 import { AchievementsClosing } from "@/components/achievements/closing";
+import { AchievementsFooter } from "@/components/achievements/footer";
 
 const trackCount = new Set(certificates.map((c) => c.track ?? "Other")).size;
 
@@ -22,6 +23,7 @@ export default function AchievementsPage() {
         <AchievementsIndex />
       </Suspense>
       <AchievementsClosing />
+      <AchievementsFooter />
     </div>
   );
 }
