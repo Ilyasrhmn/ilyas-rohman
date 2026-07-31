@@ -5,20 +5,10 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { certificates as certificateData } from "@/data/certificates";
 
-const certificates = [
-  "/certificate/Belajar Dasar AI-1.webp",
-  "/certificate/Belajar Dasar Pemrograman JavaScript-1.webp",
-  "/certificate/Belajar Dasar Pemrograman Web-1.webp",
-  "/certificate/Belajar Dasar UX Design-1.webp",
-  "/certificate/Belajar Fundamental Front-End Web Development-1.webp",
-  "/certificate/Belajar Membuat Front-End Web untuk Pemula-1.webp",
-  "/certificate/Belajar Penerapan AI di Aplikasi Web-1.webp",
-  "/certificate/Belajar Penerapan Data Science dengan Microsoft Fabric-1.webp",
-  "/certificate/Belajar Pengembangan Web Intermediate-1.webp",
-  "/certificate/Bulan Literasi Blockchain.png",
-  "/certificate/Problem Solving (Basic) Certificate.png",
-];
+// Single source of truth: image paths come from src/data/certificates.ts.
+const certificates = certificateData.map((c) => c.image);
 
 function ScrambleButton({ href }: { href: string }) {
   const [displayText, setDisplayText] = useState("View All Achievements");
