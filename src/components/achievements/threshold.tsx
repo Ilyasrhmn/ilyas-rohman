@@ -42,7 +42,7 @@ export function AchievementsThreshold() {
           trigger: wrapperRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: 1,
+          scrub: 1.5,
           invalidateOnRefresh: true,
         },
       });
@@ -50,22 +50,32 @@ export function AchievementsThreshold() {
       tl.fromTo(
         stickyRef.current,
         { backgroundColor: bBg, color: bText },
-        { backgroundColor: aBg, color: aText, ease: "none" },
+        { backgroundColor: aBg, color: aText, duration: 1, ease: "none" },
         0
       );
 
       if (watermarkRef.current) {
-        tl.fromTo(watermarkRef.current, { yPercent: -15 }, { yPercent: 15, ease: "none" }, 0);
+        tl.fromTo(
+          watermarkRef.current,
+          { yPercent: -15 },
+          { yPercent: 15, duration: 1, ease: "none" },
+          0
+        );
       }
       if (grainRef.current) {
-        tl.fromTo(grainRef.current, { opacity: 0 }, { opacity: 0.05, ease: "none" }, 0);
+        tl.fromTo(
+          grainRef.current,
+          { opacity: 0 },
+          { opacity: 0.05, duration: 1, ease: "none" },
+          0
+        );
       }
       if (manifestRef.current) {
         tl.fromTo(
           manifestRef.current.children,
           { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, stagger: 0.08, ease: "none" },
-          0.2
+          { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "none" },
+          0.35
         );
       }
 
@@ -81,7 +91,7 @@ export function AchievementsThreshold() {
   }, [reducedMotion]);
 
   return (
-    <section ref={wrapperRef} className={reducedMotion ? "relative" : "relative h-[120vh]"}>
+    <section ref={wrapperRef} className={reducedMotion ? "relative" : "relative h-[220vh]"}>
       <div
         ref={stickyRef}
         className={

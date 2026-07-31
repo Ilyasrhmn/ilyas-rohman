@@ -39,8 +39,8 @@ export function AchievementsClosing() {
           scrollTrigger: {
             trigger: wrapperRef.current,
             start: "top bottom",
-            end: "center center",
-            scrub: 1,
+            end: "bottom bottom",
+            scrub: 1.5,
             invalidateOnRefresh: true,
           },
         }
