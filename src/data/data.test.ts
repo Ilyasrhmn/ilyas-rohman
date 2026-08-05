@@ -18,9 +18,9 @@ test("every project slug is unique", () => {
   assert.equal(new Set(slugs).size, slugs.length);
 });
 
-test("stack has exactly the three capability groups", () => {
+test("stack has exactly the four capability groups", () => {
   assert.deepEqual(
     stackGroups.map((g) => g.label),
-    ["Frontend Engineering", "Motion & Interaction", "Backend & Integration"]
+    ["FRONTEND ENGINEERING", "MOTION & INTERACTION", "BACKEND & INTEGRATION", "TOOLS & DELIVERY"]
   );
 });
