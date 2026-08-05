@@ -9,6 +9,7 @@ import TextCursor from "@/components/ui/text-cursor";
 type RoadmapItem = {
     id: string;
     year: string;
+    title: string;
     description: string;
     stack: string[];
 };
@@ -16,33 +17,38 @@ type RoadmapItem = {
 const roadmapData: RoadmapItem[] = [
     {
         id: "01",
-        year: "2022",
-        description: "I first got introduced to software development in high school. I learned the fundamentals and logic of programming using C# in an object-oriented programming class.",
-        stack: ["C#"],
+        year: "2023",
+        title: "First Steps into Web Development",
+        description: "I was first introduced to web development during high school, where I learned the fundamentals of HTML and basic CSS, gaining an understanding of how web pages are structured, styled, and rendered in the browser.",
+        stack: ["HTML", "CSS"],
     },
     {
         id: "02",
-        year: "2023",
-        description: "I started developing static and dynamic websites by learning HTML, CSS, and ASP.NET. During this period, I also learned how to use databases in my projects.",
-        stack: ["HTML", "CSS", "ASP.NET", "MySQL"],
+        year: "2024",
+        title: "Building the Foundation",
+        description: "Started my journey as an Information Systems student by strengthening programming fundamentals through algorithms, object-oriented programming, databases, and hands-on academic projects. Every programming course concluded with a final project and presentation, allowing me to transform theoretical concepts into practical applications.",
+        stack: ["C++", "Kotlin", "MySQL", "HTML", "CSS", "Bootstrap", "Figma"],
     },
     {
         id: "03",
-        year: "2024",
-        description: "It was my last year of high school. I significantly improved my UI development skills with CSS and continued working with ASP.NET at my internship.",
-        stack: ["HTML", "CSS", "ASP.NET", "MySQL"],
+        year: "2025",
+        title: "Expanding My Development Skills",
+        description: "Strengthened my software engineering fundamentals by building full-stack academic projects with PHP Native, MySQL, and Android Studio while exploring JavaScript and Laravel. Outside the classroom, I joined the IDCamp Scholarship Program to broaden my knowledge of modern web development beyond the university curriculum.",
+        stack: ["PHP", "JavaScript", "Laravel", "Kotlin", "MySQL"],
     },
     {
         id: "04",
-        year: "2025",
-        description: "After high school, I turned to modern technologies like React, Node.js, Tailwind CSS, and MongoDB. During this period, I developed many websites and applications. Additionally, I started writing various tools in Python for my personal use.",
-        stack: ["React", "Node.js", "TailwindCSS", "MongoDB"],
+        year: "2026",
+        title: "Beyond the Classroom",
+        description: "Expanded my experience beyond the classroom through hackathons, teaching, and industry learning programs. Started building modern web applications with React and Next.js while exploring Progressive Web Apps (PWA), AI-assisted development, and modern software engineering practices. Also served as a Laboratory Teaching Assistant, mentoring students during web development practical sessions while strengthening my technical and communication skills.",
+        stack: ["Teaching Assistant", "Hackathons", "React", "Next.js", "TypeScript", "PostgreSQL", "PWA"],
     },
     {
         id: "05",
-        year: "2026",
-        description: "I started working as an intern at PostAjans, where I focused mainly on Laravel. In addition, I develop web projects using Next.js in my free time and build various personal projects utilizing technologies like Tauri and FFmpeg.",
-        stack: ["Laravel", "Next.js", "PostgreSQL"],
+        year: "Present",
+        title: "The Journey Continues",
+        description: "Currently participating in ASAH 2026 by Dicoding while continuously building personal projects, exploring interactive web experiences, and expanding my knowledge through workshops, competitions, and self-directed learning.",
+        stack: ["ASAH 2026", "GSAP", "Framer Motion", "Lenis", "Three.js"],
     },
 ];
 
@@ -109,7 +115,7 @@ export default function Roadmap() {
 
                     <BlurReveal>
                         <p className="text-lg md:text-xl mt-3 max-w-2xl font-serif text-[var(--world-b-muted)]">
-                            A roadmap where I share the experiences I've gained throughout my software journey and the technologies I've learned.
+                            A roadmap where I share the experiences I&apos;ve gained throughout my software journey and the technologies I&apos;ve learned.
                         </p>
                     </BlurReveal>
                 </div>
@@ -179,6 +185,11 @@ const TimelineNode = ({ item, isEven }: { item: RoadmapItem, isEven: boolean }) 
                                 {item.year}
                             </h3>
 
+                            {/* Entry Title */}
+                            <p className="text-lg md:text-xl font-serif font-medium text-[var(--world-b-text)]">
+                                {item.title}
+                            </p>
+
                             {/* Description */}
                             <p className="text-[var(--world-b-muted)] text-sm md:text-base leading-relaxed mt-2 max-w-sm ml-0 md:max-w-md"
                                 style={{ marginLeft: isEven ? 'auto' : '0' }}>
@@ -200,10 +211,11 @@ const TimelineNode = ({ item, isEven }: { item: RoadmapItem, isEven: boolean }) 
 
                         {/* Background Watermark Year */}
                         <div className={cn(
-                            "absolute top-1/2 -translate-y-1/2 text-[8rem] font-serif font-bold text-[var(--world-b-border)]/30 select-none pointer-events-none transition-all duration-700",
+                            "absolute top-1/2 -translate-y-1/2 font-serif font-bold text-[var(--world-b-border)]/30 select-none pointer-events-none transition-all duration-700",
+                            /^\d{4}$/.test(item.year) ? "text-[8rem]" : "text-[3.5rem] uppercase tracking-tight",
                             isEven ? "-left-12" : "-right-12 text-right"
                         )}>
-                            {item.year.slice(2)}
+                            {/^\d{4}$/.test(item.year) ? item.year.slice(2) : item.year}
                         </div>
 
                     </div>
