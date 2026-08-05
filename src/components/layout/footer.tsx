@@ -11,8 +11,10 @@ export function Footer() {
         </p>
       </div>
 
-      <div className="flex h-screen min-h-screen flex-col">
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-4">
+      <div className="flex flex-col">
+        {/* Compact, narrow info row — separate block, own space, nothing overlapping the
+            game below it. The game box stays completely clear of any overlay/obstruction. */}
+        <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-6 md:flex-nowrap">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="font-serif text-lg font-bold text-[#E8E5DA]">{profile.name}</span>
             <span className="text-[#98A39A]" aria-hidden="true">
@@ -49,14 +51,8 @@ export function Footer() {
           </ul>
         </div>
 
-        <div className="min-h-0 w-full flex-1">
+        <div className="w-full border-t border-[#29342C]">
           <PongGame />
-        </div>
-
-        <div className="mx-auto w-full max-w-7xl px-6 py-3">
-          <p className="text-xs font-mono text-[#98A39A]">
-            &copy; {new Date().getFullYear()} {profile.name}
-          </p>
         </div>
       </div>
     </footer>
