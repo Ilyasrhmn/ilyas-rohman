@@ -2,22 +2,9 @@ import type { Project } from "@/types";
 
 export const projects: Project[] = [
   {
-    slug: "marketplace-desa",
-    title: "Marketplace Desa",
-    category: "Web App",
-    year: "2026",
-    status: "building",
-    summary: "A marketplace connecting village producers to buyers.",
-    description:
-      "Currently building. Problem, approach, and stack will be documented here as the project progresses.",
-    image: "/projects/placeholder.svg",
-    stack: ["Next.js", "Laravel", "MySQL"],
-    featured: true,
-  },
-  {
     slug: "nutrio",
     title: "Nutrio",
-    category: "Hackathon",
+    category: "Food Program Management System",
     year: "2026",
     status: "shipped",
     summary:
@@ -40,7 +27,7 @@ export const projects: Project[] = [
   {
     slug: "muterin",
     title: "Muterin",
-    category: "Competition",
+    category: "Vehicle Maintenance Information System",
     year: "2026",
     status: "shipped",
     summary:
@@ -62,7 +49,7 @@ export const projects: Project[] = [
   {
     slug: "nocap",
     title: "NoCap",
-    category: "Personal Project",
+    category: "Fashion E-Commerce Marketplace",
     year: "2026",
     status: "shipped",
     summary: "Fashion e-commerce frontend prototype — browsing, wishlist, cart, checkout, membership.",

@@ -9,7 +9,7 @@ test("featured projects are a subset of all projects", () => {
 });
 
 test("getProject finds by slug and misses cleanly", () => {
-  assert.equal(getProject("marketplace-desa")?.slug, "marketplace-desa");
+  assert.equal(getProject("nutrio")?.slug, "nutrio");
   assert.equal(getProject("nope"), undefined);
 });
 
