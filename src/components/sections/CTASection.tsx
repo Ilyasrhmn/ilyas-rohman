@@ -1,11 +1,11 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-import { Mail, Layers } from "lucide-react";
-import { InfiniteRibbon } from "@/components/ui/infinite-ribbon";
+import { GooeyText } from "@/components/ui/gooey-text-morphing";
+import { useContact } from "@/components/layout/chrome-shell";
+import { profile } from "@/data/profile";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
@@ -13,15 +13,7 @@ if (typeof window !== "undefined") {
 
 export default function CTASection() {
     const sectionRef = useRef<HTMLElement>(null);
-    const words = ["Amazing", "Innovative", "Intelligent", "Creative"];
-    const [currentWord, setCurrentWord] = useState(0);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentWord((prev) => (prev + 1) % words.length);
-        }, 2500);
-        return () => clearInterval(interval);
-    }, [words.length]);
+    const openContact = useContact();
 
     useEffect(() => {
         if (!sectionRef.current) return;
@@ -45,65 +37,52 @@ export default function CTASection() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative py-12 lg:py-16 overflow-hidden bg-[var(--world-a-bg)]">
-            <div className="relative flex h-[300px] w-full items-center justify-center overflow-hidden pointer-events-none mb-10">
-                <InfiniteRibbon 
-                    rotation={6} 
-                    bgClass="bg-[var(--world-a-surface)] z-10 py-5 border-y border-[var(--world-a-border)] shadow-xl absolute top-1/2 left-0 -translate-y-[120%]" 
-                    textClass="text-[var(--world-a-muted)] font-mono tracking-tighter"
-                    text="// SCALABLE ARCHITECTURE // PREDICTIVE AI // DATA ENGINEERING // CLOUD NATIVE //"
-                />
-                <InfiniteRibbon 
-                    rotation={-6} 
-                    reverse={true} 
-                    bgClass="bg-[var(--world-a-border)] z-20 py-5 border-y border-[var(--world-a-border)] shadow-2xl absolute top-1/2 left-0 translate-y-[20%]" 
-                    textClass="text-[var(--world-a-accent)] font-bold tracking-widest uppercase"
-                    text="AVAILABLE FOR OPPORTUNITIES • READY TO BUILD •"
-                />
-            </div>
-
+        <section ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden bg-[var(--world-a-bg)]">
             <div className="max-w-[1600px] mx-auto relative z-10 px-6 md:px-12 lg:px-24 text-center cta-content text-[var(--world-a-text)]">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-12">
-                    Let's build something
-                    <br />
-                    <span className="inline-grid place-items-center text-[var(--world-a-accent)]">
-                        {/* Invisible longest word ensures the container NEVER changes width/height */}
-                        <span className="col-start-1 row-start-1 invisible pointer-events-none mx-2">
-                            {words.reduce((a, b) => a.length > b.length ? a : b, "")}
-                        </span>
-                        <AnimatePresence>
-                            <motion.span
-                                key={words[currentWord]}
-                                initial={{ y: 50, opacity: 0, rotateX: -90 }}
-                                animate={{ y: 0, opacity: 1, rotateX: 0 }}
-                                exit={{ y: -50, opacity: 0, rotateX: 90 }}
-                                transition={{ duration: 0.4, ease: "easeOut" }}
-                                className="col-start-1 row-start-1 inline-block mx-2"
-                            >
-                                {words[currentWord]}
-                            </motion.span>
-                        </AnimatePresence>
+                <div className="mb-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-wide text-[var(--world-a-muted)]">
+                    <span>Available for work</span>
+                    <span aria-hidden className="text-[var(--world-a-border)]">
+                        ·
                     </span>
-                    <span className="whitespace-nowrap">together.</span>
-                </h2>
+                    <span>{profile.location}</span>
+                    <span aria-hidden className="text-[var(--world-a-border)]">
+                        ·
+                    </span>
+                    <span>Remote-friendly</span>
+                </div>
 
-                <p className="text-xl text-[var(--world-a-muted)] max-w-2xl mx-auto mb-16">
-                    Have an idea in mind? Let's turn it into reality with scalable architecture and intelligent systems.
+                <div className="mb-8">
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-semibold tracking-tight leading-tight">
+                        Got an idea? Let&apos;s build
+                    </h2>
+                    <div className="h-[64px] md:h-[80px] lg:h-[96px] w-full flex items-center justify-center">
+                        <GooeyText
+                            texts={["it.", "something real.", "an interface.", "a system."]}
+                            morphTime={1.2}
+                            cooldownTime={1.5}
+                            textClassName="text-4xl md:text-5xl lg:text-6xl font-bold font-serif tracking-tighter text-[var(--world-a-accent)]"
+                        />
+                    </div>
+                </div>
+
+                <p className="text-lg text-[var(--world-a-muted)] max-w-xl mx-auto mb-14">
+                    I build things end-to-end, interface down to database, and I&apos;d rather show you than pitch you.
                 </p>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Link href="/contact" className="bg-[var(--world-a-accent)] text-[var(--world-a-bg)] rounded-full text-lg px-10 py-5 inline-flex items-center gap-3 font-semibold shadow-xl hover:opacity-90 transition-opacity">
-                            <Mail className="w-5 h-5" />
-                            <span>Start a project</span>
-                        </Link>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Link href="/resume" className="border-2 border-[var(--world-a-accent)] text-[var(--world-a-accent)] rounded-full text-lg px-10 py-5 inline-flex items-center gap-3 font-semibold hover:bg-[var(--world-a-accent)]/10 transition-colors">
-                            <Layers className="w-5 h-5" />
-                            <span>View my work</span>
-                        </Link>
-                    </motion.div>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button
+                        type="button"
+                        onClick={openContact}
+                        className="inline-flex min-h-[44px] items-center justify-center gap-2 border border-[var(--world-a-accent)] px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-accent)] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    >
+                        Start a project
+                    </button>
+                    <Link
+                        href="/projects"
+                        className="inline-flex min-h-[44px] items-center justify-center gap-2 border border-[var(--world-a-border)] px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-text)] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    >
+                        View my work
+                    </Link>
                 </div>
             </div>
         </section>

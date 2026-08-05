@@ -1,18 +1,14 @@
 import Link from "next/link";
 import { profile } from "@/data/profile";
-import { InfiniteRibbon } from "@/components/ui/infinite-ribbon";
 import { PromptingIsAllYouNeed } from "@/components/ui/animated-hero-section";
 
 export function Footer() {
   return (
     <footer className="relative bg-[#101612] overflow-hidden border-t border-[var(--world-b-border)] flex flex-col">
-      <div className="w-full z-10">
-        <InfiniteRibbon
-          text="THANK YOU FOR SCROLLING"
-          bgClass="bg-[var(--world-b-accent)] text-[#101612]"
-          textClass="text-[#101612]"
-          speed="30s"
-        />
+      <div className="w-full z-10 bg-[var(--world-b-accent)] py-3">
+        <p className="text-center font-mono text-xs uppercase tracking-widest text-[#101612]">
+          Available for work · {profile.email} · {profile.location}
+        </p>
       </div>
 
       <div className="mx-auto w-full max-w-7xl px-6 py-16 flex flex-col md:flex-row items-center justify-between gap-8 text-[var(--world-b-text)]">
