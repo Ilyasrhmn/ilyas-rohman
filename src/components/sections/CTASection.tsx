@@ -5,7 +5,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { GooeyText } from "@/components/ui/gooey-text-morphing";
 import { useContact } from "@/components/layout/chrome-shell";
-import { profile } from "@/data/profile";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
@@ -39,18 +38,6 @@ export default function CTASection() {
     return (
         <section ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden bg-[var(--world-a-bg)]">
             <div className="max-w-[1600px] mx-auto relative z-10 px-6 md:px-12 lg:px-24 text-center cta-content text-[var(--world-a-text)]">
-                <div className="mb-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-wide text-[var(--world-a-muted)]">
-                    <span>Available for work</span>
-                    <span aria-hidden className="text-[var(--world-a-border)]">
-                        ·
-                    </span>
-                    <span>{profile.location}</span>
-                    <span aria-hidden className="text-[var(--world-a-border)]">
-                        ·
-                    </span>
-                    <span>Remote-friendly</span>
-                </div>
-
                 <div className="mb-8">
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-semibold tracking-tight leading-tight">
                         Got an idea? Let&apos;s build

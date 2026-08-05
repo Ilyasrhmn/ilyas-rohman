@@ -4,7 +4,7 @@ import { PongGame } from "@/components/ui/pong-game";
 
 export function Footer() {
   return (
-    <footer className="relative bg-[#101612] overflow-hidden border-t border-[var(--world-b-border)] flex flex-col">
+    <footer className="relative bg-[#101612] overflow-hidden border-t border-[#29342C] flex flex-col">
       <div className="flex flex-col">
         {/* Full-width info row — name/location/email pinned to the left edge, socials to
             the right edge. Own space, nothing overlapping the game below it. The game box
