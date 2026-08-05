@@ -42,4 +42,8 @@ next-env.d.ts
 __pycache__/
 *.pyc
 
-.vercel
+# AI coding-agent tooling — not part of the shipped app
+.claude/
+CLAUDE.md
+AGENTS.md
+docs/superpowers/

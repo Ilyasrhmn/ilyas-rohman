@@ -1,6 +1,6 @@
 # Ilyas Nur Rohman — Portfolio
 
-Cinematic-lite, interaction-rich portfolio built with Next.js 16, TypeScript, Tailwind CSS 4, Framer Motion, GSAP, and Lenis. Fuses three reference designs — see `docs/superpowers/specs/2026-07-05-portfolio-fusion-design.md` in the repo root for the design rationale.
+Interaction-rich portfolio built with Next.js 16, TypeScript, Tailwind CSS 4, Framer Motion, GSAP, and Lenis.
 
 ## Getting started
 
@@ -16,9 +16,8 @@ Open [http://localhost:3000](http://localhost:3000).
 All copy lives in typed data files under `src/data/` — no code changes needed to update content:
 
 - `src/data/profile.ts` — name, role, positioning statement, socials
-- `src/data/projects.ts` — projects (hackathon/campus/in-progress); `status: "building"` shows the "Currently Building" treatment instead of demo links
-- `src/data/journey.ts` — growth timeline items (`kind: "education" | "teaching" | "building" | "learning"`)
-- `src/data/certificates.ts` — Learning & Achievements entries (`program`, `issuer`, `skills`, `credentialUrl`)
+- `src/data/projects.ts` — projects, including `achievement` and `contributions`; `status: "building"` shows the "Currently Building" treatment instead of demo links
+- `src/data/certificates.ts` — certifications shown on `/achievements`
 - `src/data/stack.ts` — capability groups shown in the Stack section
 
 ## Contact form
@@ -36,12 +35,13 @@ NEXT_PUBLIC_SITE_URL=   # your deployed URL, used for OG image resolution
 
 ## Structure
 
-- `/` — single long-scroll home: Hero → Works → About → Journey → Stack → Certificates → CTA
+- `/` — single long-scroll home
 - `/projects`, `/projects/[slug]` — project grid and case-study detail pages
+- `/achievements` — certification archive
 - Contact is a modal (triggered from the navbar or the CTA section), not a route
 
 ## Testing
 
 ```bash
-npx tsx --test src/data/data.test.ts src/app/api/contact/route.test.ts
+npx tsx --test src/data/data.test.ts src/app/api/contact/route.test.ts src/components/motion/scroll-reveal.test.ts
 ```
