@@ -486,7 +486,7 @@ export function PongGame() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[50vh] min-h-[400px] sm:h-[70vh]"
+      className="relative w-full h-full min-h-[300px]"
       data-reduced-motion={reducedMotion ? "true" : "false"}
     >
       <canvas
