@@ -1,6 +1,5 @@
 import { Hero } from "@/components/sections/hero";
 import AboutIntro from "@/components/sections/AboutIntro";
-import { Stack } from "@/components/sections/stack";
 import CapabilitiesChoreography from "@/components/sections/CapabilitiesChoreography";
 import { ScrollScale } from "@/components/motion/scroll-scale";
 import Manifesto from "@/components/sections/Manifesto";
