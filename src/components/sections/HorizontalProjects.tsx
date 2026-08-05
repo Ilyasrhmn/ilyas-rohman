@@ -16,26 +16,33 @@ interface HorizontalProjectItem {
 
 const projectList: HorizontalProjectItem[] = [
     {
-        id: "aether-media",
-        title: "Aether Media",
-        category: "Media Tool",
+        id: "nutrio",
+        title: "Nutrio",
+        category: "Hackathon",
         year: "2026",
-        image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2000&auto=format&fit=crop", 
+        image: "/projects/nutrio.png",
     },
     {
-        id: "aether-js",
-        title: "Aether JS",
-        category: "Library",
+        id: "muterin",
+        title: "Muterin",
+        category: "Competition",
         year: "2026",
-        image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2000&auto=format&fit=crop", 
+        image: "/projects/muterin.png",
     },
     {
-        id: "file-manager",
-        title: "File Manager",
-        category: "Web Application",
-        year: "2025",
-        image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2000&auto=format&fit=crop", 
-    }
+        id: "nocap",
+        title: "NoCap",
+        category: "Personal Project",
+        year: "2026",
+        image: "/projects/nocap.png",
+    },
+    {
+        id: "rootfacts",
+        title: "RootFacts",
+        category: "AI Tool",
+        year: "2026",
+        image: "/projects/rootfacts.png",
+    },
 ];
 
 export default function HorizontalProjects() {
