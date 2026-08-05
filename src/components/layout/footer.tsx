@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { profile } from "@/data/profile";
-import { PromptingIsAllYouNeed } from "@/components/ui/animated-hero-section";
+import { PongGame } from "@/components/ui/pong-game";
 
 export function Footer() {
   return (
@@ -42,7 +42,7 @@ export function Footer() {
 
       {/* Pong Game spelling ILYASRHMN - Placed at the very bottom */}
       <div className="w-full border-t border-[var(--world-b-border)] pb-8">
-        <PromptingIsAllYouNeed />
+        <PongGame />
       </div>
     </footer>
   );
