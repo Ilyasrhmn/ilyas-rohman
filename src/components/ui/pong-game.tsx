@@ -474,7 +474,11 @@ export function PongGame() {
 
   const buttonClass =
     "inline-flex min-h-[44px] min-w-[44px] items-center justify-center border px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-  const buttonStyle = { color: BALL_COLOR, borderColor: PADDLE_COLOR }
+  const buttonStyle = { color: BALL_COLOR, borderColor: PADDLE_COLOR, backgroundColor: BACKGROUND_COLOR }
+  // Overlay text sits on top of the pixel letters, which are the same green as some of this
+  // text/border — a solid backdrop keeps it legible regardless of which pixels are lit behind it.
+  const panelStyle = { backgroundColor: BACKGROUND_COLOR, borderColor: PADDLE_COLOR }
+  const panelClass = "border px-8 py-6 flex flex-col items-center gap-4"
 
   return (
     <div
@@ -490,28 +494,34 @@ export function PongGame() {
 
       {gameState === "idle" && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <button type="button" onClick={() => startGameRef.current()} className={buttonClass} style={buttonStyle}>
-            Start
-          </button>
+          <div className={panelClass} style={panelStyle}>
+            <button type="button" onClick={() => startGameRef.current()} className={buttonClass} style={buttonStyle}>
+              Start
+            </button>
+          </div>
         </div>
       )}
 
       {gameState === "life-lost" && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="font-mono text-xs uppercase tracking-[0.2em]" style={{ color: BALL_COLOR }}>
-            Life lost
-          </p>
+          <div className={panelClass} style={panelStyle}>
+            <p className="font-mono text-xs uppercase tracking-[0.2em]" style={{ color: BALL_COLOR }}>
+              Life lost
+            </p>
+          </div>
         </div>
       )}
 
       {(gameState === "gameover" || gameState === "win") && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-          <p className="font-mono text-sm uppercase tracking-[0.2em]" style={{ color: BALL_COLOR }}>
-            {gameState === "win" ? "You spelled it." : "Game Over"}
-          </p>
-          <button type="button" onClick={() => playAgainRef.current()} className={buttonClass} style={buttonStyle}>
-            Play Again
-          </button>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className={panelClass} style={panelStyle}>
+            <p className="font-mono text-sm uppercase tracking-[0.2em]" style={{ color: BALL_COLOR }}>
+              {gameState === "win" ? "You spelled it." : "Game Over"}
+            </p>
+            <button type="button" onClick={() => playAgainRef.current()} className={buttonClass} style={buttonStyle}>
+              Play Again
+            </button>
+          </div>
         </div>
       )}
     </div>
