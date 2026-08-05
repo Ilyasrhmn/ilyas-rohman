@@ -6,7 +6,7 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group relative block h-full w-full overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-accent"
+      className="group relative block aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-accent"
     >
       <div className="relative h-full w-full overflow-hidden">
         <Image
