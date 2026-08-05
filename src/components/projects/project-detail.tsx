@@ -11,6 +11,15 @@ export function ProjectDetail({ project }: { project: Project }) {
 
       <h1 className="mt-3 font-serif text-4xl text-foreground sm:text-5xl">{project.title}</h1>
 
+      {project.achievement && (
+        <div className="mt-4 inline-flex items-start gap-2 rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-foreground">
+          <span className="mt-0.5 shrink-0 text-xs font-medium uppercase tracking-wide text-accent">
+            Achievement
+          </span>
+          <span className="text-foreground/90">{project.achievement}</span>
+        </div>
+      )}
+
       <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-lg border border-border">
         <Image
           src={project.image}
@@ -54,6 +63,22 @@ export function ProjectDetail({ project }: { project: Project }) {
       )}
 
       <p className="mt-8 text-lg leading-relaxed text-foreground/85">{project.description}</p>
+
+      {project.contributions && project.contributions.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+            Contributions
+          </h2>
+          <ul className="mt-3 flex flex-col gap-2">
+            {project.contributions.map((item) => (
+              <li key={item} className="flex gap-3 text-base leading-relaxed text-foreground/85">
+                <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="mt-8">
         <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">

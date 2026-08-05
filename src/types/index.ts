@@ -8,6 +8,8 @@ export type Project = {
   status: ProjectStatus;
   summary: string;
   description: string;
+  achievement?: string;
+  contributions?: string[];
   image: string;
   stack: string[];
   demo?: string;
