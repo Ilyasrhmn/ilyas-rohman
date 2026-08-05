@@ -1,7 +1,10 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { Press_Start_2P } from "next/font/google"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
+
+const pixelFont = Press_Start_2P({ weight: "400", subsets: ["latin"] })
 
 // Let's use the forest theme colors instead of purely black and white
 const COLOR = "rgba(232, 229, 218, 0.2)" // muted for untouched pixels
@@ -472,13 +475,13 @@ export function PongGame() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [gameState])
 
-  const buttonClass =
-    "inline-flex min-h-[44px] min-w-[44px] items-center justify-center border px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+  const buttonClass = `${pixelFont.className} inline-flex min-h-[44px] min-w-[44px] items-center justify-center border px-6 py-3 text-xs uppercase tracking-[0.05em] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2`
   const buttonStyle = { color: BALL_COLOR, borderColor: PADDLE_COLOR, backgroundColor: BACKGROUND_COLOR }
   // Overlay text sits on top of the pixel letters, which are the same green as some of this
   // text/border — a solid backdrop keeps it legible regardless of which pixels are lit behind it.
+  // border-4 (vs. the site's usual hairline border) reads as a chunky arcade-cabinet frame.
   const panelStyle = { backgroundColor: BACKGROUND_COLOR, borderColor: PADDLE_COLOR }
-  const panelClass = "border px-8 py-6 flex flex-col items-center gap-4"
+  const panelClass = "border-4 px-8 py-6 flex flex-col items-center gap-4"
 
   return (
     <div
@@ -493,19 +496,25 @@ export function PongGame() {
       />
 
       {gameState === "idle" && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className={panelClass} style={panelStyle}>
-            <button type="button" onClick={() => startGameRef.current()} className={buttonClass} style={buttonStyle}>
-              Start
-            </button>
-          </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
+          <p
+            className={`${pixelFont.className} text-[10px] uppercase leading-relaxed tracking-[0.05em]`}
+            style={{ color: PADDLE_COLOR }}
+          >
+            A game is hiding here
+            <br />
+            Try to spell my name
+          </p>
+          <button type="button" onClick={() => startGameRef.current()} className={buttonClass} style={buttonStyle}>
+            Press Start
+          </button>
         </div>
       )}
 
       {gameState === "life-lost" && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className={panelClass} style={panelStyle}>
-            <p className="font-mono text-xs uppercase tracking-[0.2em]" style={{ color: BALL_COLOR }}>
+            <p className={`${pixelFont.className} text-xs uppercase tracking-[0.05em]`} style={{ color: BALL_COLOR }}>
               Life lost
             </p>
           </div>
@@ -515,7 +524,7 @@ export function PongGame() {
       {(gameState === "gameover" || gameState === "win") && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className={panelClass} style={panelStyle}>
-            <p className="font-mono text-sm uppercase tracking-[0.2em]" style={{ color: BALL_COLOR }}>
+            <p className={`${pixelFont.className} text-sm uppercase tracking-[0.05em]`} style={{ color: BALL_COLOR }}>
               {gameState === "win" ? "You spelled it." : "Game Over"}
             </p>
             <button type="button" onClick={() => playAgainRef.current()} className={buttonClass} style={buttonStyle}>
