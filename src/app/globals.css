@@ -167,23 +167,6 @@ body[data-nav-theme="world-a"] {
   --nav-contact-border: var(--world-a-accent);
 }
 
-/* Light mode inversion */
-.light {
-  --world-a-bg: #F2F0E8; 
-  --world-a-surface: #E8E5DA;
-  --world-a-text: #172019;
-  --world-a-muted: #687269;
-  --world-a-accent: #2F5D45;
-  --world-a-border: #D3D0C5;
-
-  --world-b-bg: #101612;
-  --world-b-surface: #172019;
-  --world-b-text: #E8E5DA;
-  --world-b-muted: #98A39A;
-  --world-b-accent: #8FAF8F;
-  --world-b-border: #29342C;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;

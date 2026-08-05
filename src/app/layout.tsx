@@ -3,7 +3,6 @@ import { Playfair_Display, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ChromeShell } from "@/components/layout/chrome-shell";
 import { profile } from "@/data/profile";
-import { ThemeProvider } from "@/components/theme-provider";
 
 const playfair = Playfair_Display({
   variable: "--font-serif",
@@ -40,12 +39,9 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${playfair.variable} ${inter.variable} ${grotesk.variable} h-full antialiased`}
-      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <ChromeShell>{children}</ChromeShell>
-        </ThemeProvider>
+      <body className="min-h-full flex flex-col">
+        <ChromeShell>{children}</ChromeShell>
       </body>
     </html>
   );

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Navbar({ onContact }: { onContact: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -70,12 +69,6 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
             >
               Contact
             </button>
-            <div className="mt-8 flex flex-col items-center gap-4">
-              <span className="font-sans text-[0.625rem] uppercase tracking-[0.3em] text-[var(--world-a-muted)]">
-                Theme
-              </span>
-              <ThemeToggle />
-            </div>
           </div>
         </div>
       )}
