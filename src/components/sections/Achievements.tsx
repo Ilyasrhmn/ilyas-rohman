@@ -10,54 +10,6 @@ import { certificates as certificateData } from "@/data/certificates";
 // Single source of truth: image paths come from src/data/certificates.ts.
 const certificates = certificateData.map((c) => c.image);
 
-function ScrambleButton({ href }: { href: string }) {
-  const [displayText, setDisplayText] = useState("View All Achievements");
-  const [isScrambling, setIsScrambling] = useState(false);
-  const originalText = "View All Achievements";
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-
-  const scramble = () => {
-    if (isScrambling) return;
-    setIsScrambling(true);
-    
-    let iteration = 0;
-    const maxIterations = originalText.length;
-
-    const interval = setInterval(() => {
-      setDisplayText((prev) =>
-        originalText
-          .split("")
-          .map((letter, index) => {
-            if (index < iteration) {
-              return originalText[index];
-            }
-            return chars[Math.floor(Math.random() * chars.length)];
-          })
-          .join("")
-      );
-
-      if (iteration >= maxIterations) {
-        clearInterval(interval);
-        setIsScrambling(false);
-      }
-
-      iteration += 1 / 3;
-    }, 30);
-  };
-
-  return (
-    <Link
-      href={href}
-      onMouseEnter={scramble}
-      className="group relative inline-flex items-center gap-2 px-8 py-4 bg-[var(--world-b-text)] text-[var(--world-b-bg)] rounded-full font-bold overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg"
-    >
-      <span className="relative z-10">{displayText}</span>
-      <ArrowRight className="w-4 h-4 relative z-10 transition-transform group-hover:translate-x-1" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[var(--world-b-text)]/0 via-[var(--world-b-bg)]/10 to-[var(--world-b-text)]/0 translate-x-[-100%] group-hover:animate-[move-x_1.5s_infinite]" />
-    </Link>
-  );
-}
-
 type ColumnProps = {
   images: string[];
   y: MotionValue<number>;
@@ -131,21 +83,25 @@ export default function Achievements() {
         >
           <div className="space-y-6 w-full max-w-4xl">
             <div className="space-y-4">
-              <h2 className="text-sm font-mono tracking-[0.2em] text-[var(--world-b-accent)] uppercase">
+              <h2 className="text-xs font-mono tracking-[0.25em] text-[var(--world-b-accent)] uppercase">
                 Certifications & Achievements
               </h2>
-              <h3 className="text-4xl md:text-5xl lg:text-7xl font-black leading-[0.9] tracking-tighter text-[var(--world-b-text)] uppercase">
-                Validating <span className="italic text-[var(--world-b-accent)] pr-2">Excellence</span> <br/> through Global Standards.
+              <h3 className="font-serif italic text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-[var(--world-b-text)]">
+                Proof I stopped <span className="text-[var(--world-b-accent)]">guessing.</span>
               </h3>
-              <p className="text-lg md:text-xl text-[var(--world-b-muted)] font-light max-w-2xl mx-auto mt-6">
-                A collection of my professional certifications in AI, Web Development, and Cloud Engineering from industry leaders.
+              <p className="text-lg md:text-xl text-[var(--world-b-muted)] font-serif max-w-xl mx-auto mt-6">
+                Eleven certificates, mostly Dicoding. The full archive is one click away.
               </p>
             </div>
           </div>
-          
-          <div className="flex justify-center mt-8">
-            <ScrambleButton href="/achievements" />
-          </div>
+
+          <Link
+            href="/achievements"
+            className="group mt-4 inline-flex items-center gap-2 border border-[var(--world-b-border)] px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-b-text)] transition-colors hover:border-[var(--world-b-accent)] hover:text-[var(--world-b-accent)]"
+          >
+            View the archive
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+          </Link>
         </motion.div>
       </div>
 
