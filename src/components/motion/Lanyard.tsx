@@ -141,7 +141,17 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   };
 
   const getLerped = (body: LanyardRigidBody): THREE.Vector3 => {
-    if (!body.lerped) body.lerped = new THREE.Vector3().copy(body.translation());
+    const real = body.translation();
+    if (!body.lerped) {
+      body.lerped = new THREE.Vector3().copy(real);
+    } else if (body.lerped.distanceTo(real as unknown as THREE.Vector3) > 50) {
+      // The cache can end up far from reality if this was first read before Rapier's
+      // WASM-backed rigid body was fully valid -- rather than slowly lerping in from
+      // garbage over dozens of frames (which is what produced the huge card-anchor/rope
+      // gaps the Band useFrame clamp logs), snap back when the divergence is implausible
+      // for this scene's scale (everything here lives within single-digit units).
+      body.lerped.copy(real);
+    }
     return body.lerped;
   };
 
