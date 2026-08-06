@@ -148,6 +148,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   const dir = new THREE.Vector3();
   const cardQuat = new THREE.Quaternion();
   const clipWorld = new THREE.Vector3();
+  const hasLoggedFrameCrash = useRef(false);
 
   const segmentProps: RigidBodyProps = {
     type: 'dynamic',
@@ -215,7 +216,13 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
     try {
       runBandFrame(state, delta);
     } catch (error) {
-      console.error('[Lanyard] useFrame threw and was caught to avoid breaking the render loop:', error);
+      // If the failure persists (e.g. a NaN propagating through physics state every tick),
+      // this would otherwise log up to 60x/sec forever -- report only the first occurrence
+      // per mount so the one useful stack trace doesn't get buried under a duplicate flood.
+      if (!hasLoggedFrameCrash.current) {
+        hasLoggedFrameCrash.current = true;
+        console.error('[Lanyard] useFrame threw and was caught to avoid breaking the render loop:', error);
+      }
     }
   });
 
