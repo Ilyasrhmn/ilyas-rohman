@@ -90,6 +90,17 @@ export default function Lanyard({
             <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
               <Band isMobile={isMobile} />
             </Physics>
+            {/* PMREMGenerator (used internally by <Environment>) is a well-documented source of a
+                benign "X4122 sum of 1 and [tiny epsilon] cannot be represented accurately" shader
+                compiler warning on some GPU/driver combinations -- a cosmetic Three.js/PMREM
+                artifact that doesn't affect rendered output. It didn't reproduce in this session's
+                automated test browser (no console entry via the JS console API or the CDP Log
+                domain, on a real hardware-accelerated ANGLE/D3D11 NVIDIA backend, with or without
+                this block present), so a local before/after repro wasn't possible here; the
+                attribution to PMREMGenerator is based on the warning's known signature and prior
+                confirmation (via git history) that it already existed before any work this session,
+                not a fresh local reproduction. Not something to "fix" by patching library internals
+                -- doing so would risk silencing real warnings too. */}
             <Environment blur={0.75}>
               <Lightformer intensity={2} color="white" position={[0, -1, 5]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
               <Lightformer intensity={3} color="white" position={[-1, -1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
