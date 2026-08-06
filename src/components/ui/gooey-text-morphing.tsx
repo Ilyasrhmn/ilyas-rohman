@@ -3,6 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useInViewport } from "@/hooks/use-in-viewport";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 interface GooeyTextProps {
   texts: string[];
@@ -23,9 +24,23 @@ export function GooeyText({
   const text2Ref = React.useRef<HTMLSpanElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const inView = useInViewport(containerRef, { rootMargin: "200px" });
+  const reducedMotion = useReducedMotion();
 
   React.useEffect(() => {
     if (!inView) return;
+
+    if (reducedMotion) {
+      if (text1Ref.current) {
+        text1Ref.current.textContent = texts[0] ?? "";
+        text1Ref.current.style.filter = "";
+        text1Ref.current.style.opacity = "100%";
+      }
+      if (text2Ref.current) {
+        text2Ref.current.textContent = "";
+        text2Ref.current.style.opacity = "0%";
+      }
+      return;
+    }
 
     let textIndex = texts.length - 1;
     let time = new Date();
@@ -98,7 +113,7 @@ export function GooeyText({
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [inView, texts, morphTime, cooldownTime]);
+  }, [inView, reducedMotion, texts, morphTime, cooldownTime]);
 
   return (
     <div ref={containerRef} className={cn("relative w-full h-full", className)}>

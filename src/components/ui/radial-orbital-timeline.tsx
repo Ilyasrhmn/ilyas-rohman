@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useInViewport } from "@/hooks/use-in-viewport";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useLenis } from "@/components/layout/smooth-scroll";
 
 export interface TimelineItem {
@@ -39,6 +40,7 @@ export default function RadialOrbitalTimeline({
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const inView = useInViewport(containerRef, { rootMargin: "200px" });
+  const reducedMotion = useReducedMotion();
 
   // Lenis doesn't expose a ready-made "is the user actively scrolling" boolean we can
   // trust across versions, so derive one from its scroll event + a short idle debounce.
@@ -122,7 +124,7 @@ export default function RadialOrbitalTimeline({
   useEffect(() => {
     let rotationTimer: ReturnType<typeof setInterval> | undefined;
     let rafId: number | undefined;
-    if (autoRotate && viewMode === "orbital" && inView && !isScrolling) {
+    if (autoRotate && viewMode === "orbital" && inView && !isScrolling && !reducedMotion) {
       // Defer by one frame so the interval doesn't start in the exact same tick as the
       // IntersectionObserver callback that flipped inView -- which, for this component,
       // tends to coincide with CapabilitiesChoreography's ScrollTrigger pin engaging.
@@ -139,7 +141,7 @@ export default function RadialOrbitalTimeline({
       if (rafId !== undefined) cancelAnimationFrame(rafId);
       if (rotationTimer) clearInterval(rotationTimer);
     };
-  }, [autoRotate, viewMode, inView, isScrolling]);
+  }, [autoRotate, viewMode, inView, isScrolling, reducedMotion]);
 
   const calculateNodePosition = (index: number, total: number) => {
     const angle = ((index / total) * 360 + rotationAngle) % 360;
