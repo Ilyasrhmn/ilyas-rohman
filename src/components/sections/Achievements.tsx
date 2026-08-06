@@ -27,7 +27,7 @@ const Column = ({ images, y }: ColumnProps) => {
             src={src}
             alt={`Certificate ${i}`}
             fill
-            sizes="(max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 768px) 30vw, (max-width: 1024px) 50vw, 33vw"
             className="pointer-events-none object-cover grayscale hover:grayscale-0 transition-all duration-700"
           />
         </div>

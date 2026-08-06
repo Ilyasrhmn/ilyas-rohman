@@ -2,7 +2,6 @@
 
 import { useRef, useEffect } from "react";
 import { gsap } from "@/lib/gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 export function ScrollScale() {
@@ -20,8 +19,6 @@ export function ScrollScale() {
 
   useEffect(() => {
     if (reduced || !containerRef.current || !worldALayerRef.current) return;
-
-    let clearZoomDataCache = () => {};
 
     const ctx = gsap.context(() => {
       // We will measure dynamically using invalidateOnRefresh
@@ -77,10 +74,6 @@ export function ScrollScale() {
       if (!zoomDataCache) zoomDataCache = getZoomData();
       return zoomDataCache;
     };
-    clearZoomDataCache = () => {
-      zoomDataCache = null;
-    };
-    ScrollTrigger.addEventListener("refresh", clearZoomDataCache);
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -89,6 +82,9 @@ export function ScrollScale() {
         end: "bottom bottom",
         scrub: 1.0, // Smoother scrub for the narrative flow
         invalidateOnRefresh: true, // Recalculates getZoomData() on resize/font load
+        onRefreshInit: () => {
+          zoomDataCache = null;
+        },
       }
     });
 
@@ -130,10 +126,7 @@ export function ScrollScale() {
 
     }); // close ctx
 
-    return () => {
-      ScrollTrigger.removeEventListener("refresh", clearZoomDataCache);
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, [reduced]);
 
   if (reduced) {

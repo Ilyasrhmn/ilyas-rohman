@@ -158,9 +158,10 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   const [dragged, drag] = useState<false | THREE.Vector3>(false);
   const [hovered, hover] = useState(false);
 
-  // The point on the card where the rope visually attaches (matches the clip/clamp mesh's
-  // position in the GLB). Named so the joint below and the band's render-time endpoint in
-  // useFrame can never drift apart from each other.
+  // The card-side anchor point for the rope's spherical joint. Named so the joint below
+  // and the band's render-time endpoint in useFrame read from the same value and can
+  // never drift apart -- the band always terminates exactly at this rigidly-attached
+  // anchor, regardless of where the visual clip mesh is positioned relative to it.
   const CARD_CLIP_OFFSET: [number, number, number] = [0, 1.45, 0];
 
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
@@ -193,12 +194,8 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
         const dist = Math.max(0.1, Math.min(1, lerped.distanceTo(ref.current.translation())));
         lerped.lerp(ref.current.translation(), delta * (minSpeed + dist * (maxSpeed - minSpeed)));
       });
-      cardQuat.set(
-        card.current.rotation().x,
-        card.current.rotation().y,
-        card.current.rotation().z,
-        card.current.rotation().w
-      );
+      const cardRotation = card.current.rotation();
+      cardQuat.set(cardRotation.x, cardRotation.y, cardRotation.z, cardRotation.w);
       clipWorld.set(...CARD_CLIP_OFFSET).applyQuaternion(cardQuat).add(card.current.translation() as unknown as THREE.Vector3);
       curve.points[0].copy(clipWorld);
       curve.points[1].copy(getLerped(j2.current));
@@ -206,7 +203,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
       curve.points[3].copy(fixed.current.translation());
       band.current.geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));
       ang.copy(card.current.angvel());
-      rot.copy(card.current.rotation());
+      rot.copy(cardRotation);
       card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z }, true);
     }
   });
