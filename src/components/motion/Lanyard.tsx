@@ -31,6 +31,12 @@ declare module '@react-three/fiber' {
 class CanvasErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch(error: Error, info: { componentStack?: string | null }) {
+    // The canvas renders nothing rather than a white-box crash when this fires -- log
+    // loudly so a silent "the lanyard just isn't there" report has a stack trace behind it
+    // instead of nothing, unlike every attempt so far to reproduce that report.
+    console.error('[Lanyard] Canvas crashed and was hidden:', error, info.componentStack);
+  }
   render() {
     if (this.state.failed) return null; // show nothing instead of white box
     return this.props.children;
