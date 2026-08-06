@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useInViewport } from "@/hooks/use-in-viewport";
 
 interface GooeyTextProps {
   texts: string[];
@@ -20,8 +21,12 @@ export function GooeyText({
 }: GooeyTextProps) {
   const text1Ref = React.useRef<HTMLSpanElement>(null);
   const text2Ref = React.useRef<HTMLSpanElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const inView = useInViewport(containerRef, { rootMargin: "200px" });
 
   React.useEffect(() => {
+    if (!inView) return;
+
     let textIndex = texts.length - 1;
     let time = new Date();
     let morph = 0;
@@ -93,10 +98,10 @@ export function GooeyText({
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [texts, morphTime, cooldownTime]);
+  }, [inView, texts, morphTime, cooldownTime]);
 
   return (
-    <div className={cn("relative w-full h-full", className)}>
+    <div ref={containerRef} className={cn("relative w-full h-full", className)}>
       <svg className="absolute h-0 w-0" aria-hidden="true" focusable="false">
         <defs>
           <filter id="threshold">

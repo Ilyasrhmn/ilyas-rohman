@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useInViewport } from "@/hooks/use-in-viewport";
@@ -11,6 +11,13 @@ export default function AboutIntro() {
   const lanyardRef = useRef<HTMLDivElement>(null);
   // Hold the 3D chunk back until the section is close — it is ~3.3MB of JS.
   const nearViewport = useInViewport(lanyardRef, { rootMargin: "600px" });
+  // Once mounted, stay mounted: unmounting/remounting tears down and rebuilds the WebGL
+  // context on every pass through the 600px window, which is far more expensive than the
+  // frameloop pause Lanyard already does internally while off-screen.
+  const [hasBeenNear, setHasBeenNear] = useState(false);
+  useEffect(() => {
+    if (nearViewport) setHasBeenNear(true);
+  }, [nearViewport]);
 
   return (
     <section
@@ -66,7 +73,7 @@ export default function AboutIntro() {
             transition={{ duration: 0.9, delay: 0.35 }}
             className="w-full max-w-[420px] lg:max-w-none -mt-4 lg:-mt-6 min-h-[480px] lg:min-h-[560px]"
           >
-            {nearViewport && <Lanyard />}
+            {hasBeenNear && <Lanyard />}
           </motion.div>
         </div>
 
