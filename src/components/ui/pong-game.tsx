@@ -140,6 +140,7 @@ export function PongGame() {
   const lifeLostTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const startGameRef = useRef<() => void>(() => {})
   const playAgainRef = useRef<() => void>(() => {})
+  const redrawRef = useRef<() => void>(() => {})
 
   const [gameState, setGameState] = useState<GameState>("idle")
   const reducedMotion = useReducedMotion()
@@ -147,6 +148,7 @@ export function PongGame() {
   // Keep gameState (for the DOM overlay) and gameStateRef (for the rAF loop) in lockstep.
   const setGameStateBoth = (next: GameState) => {
     gameStateRef.current = next
+    redrawRef.current()
     setGameState(next)
   }
 
@@ -168,6 +170,7 @@ export function PongGame() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       scaleRef.current = Math.min(width / 1000, height / 1000)
       initializeGame()
+      redrawRef.current()
     }
 
     const initializeGame = () => {
@@ -392,11 +395,22 @@ export function PongGame() {
       rafId = requestAnimationFrame(gameLoop)
     }
 
+    // The idle, game-over and win screens are static pictures — repainting them
+    // 60x a second is pure waste while the footer sits on screen.
+    let needsRedraw = true
+    redrawRef.current = () => {
+      needsRedraw = true
+    }
+
     function gameLoop() {
-      if (gameStateRef.current === "playing") {
+      const state = gameStateRef.current
+      if (state === "playing") {
         updateGame()
+        drawGame(state)
+      } else if (needsRedraw) {
+        drawGame(state)
+        needsRedraw = false
       }
-      drawGame(gameStateRef.current)
       scheduleFrame()
     }
 
