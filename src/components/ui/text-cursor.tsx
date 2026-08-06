@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useInViewport } from '@/hooks/use-in-viewport';
 
 interface TextCursorProps {
   text: string;
@@ -37,11 +38,13 @@ const TextCursor: React.FC<TextCursorProps> = ({
   const [trail, setTrail] = useState<TrailItem[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const lastMoveTimeRef = useRef<number>(Date.now());
+  const rectRef = useRef<DOMRect | null>(null);
+  const inView = useInViewport(containerRef);
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    
+    const rect = rectRef.current;
+    if (!rect) return;
+
     // Check if mouse is within the container bounds
     if (e.clientY < rect.top || e.clientY > rect.bottom || e.clientX < rect.left || e.clientX > rect.right) {
       return;
@@ -111,14 +114,35 @@ const TextCursor: React.FC<TextCursorProps> = ({
     lastMoveTimeRef.current = Date.now();
   };
 
+  // Cache the container rect instead of reading layout on every pointer move.
   useEffect(() => {
+    if (!inView) return;
+
+    const measure = () => {
+      if (containerRef.current) rectRef.current = containerRef.current.getBoundingClientRect();
+    };
+
+    measure();
+    window.addEventListener('scroll', measure, { passive: true });
+    window.addEventListener('resize', measure);
+    return () => {
+      window.removeEventListener('scroll', measure);
+      window.removeEventListener('resize', measure);
+    };
+  }, [inView]);
+
+  useEffect(() => {
+    if (!inView) return;
     window.addEventListener('mousemove', handleMouseMove);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [spacing, followMouseDirection, randomFloat, text]); // rebind if props change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView, spacing, followMouseDirection, randomFloat, text]); // rebind if props change
 
   useEffect(() => {
+    if (!inView || trail.length === 0) return;
+
     const interval = setInterval(() => {
       // Increased from 100ms to 500ms so the user can read the letters before they disappear
       if (Date.now() - lastMoveTimeRef.current > 500) {
@@ -126,7 +150,7 @@ const TextCursor: React.FC<TextCursorProps> = ({
       }
     }, removalInterval);
     return () => clearInterval(interval);
-  }, [removalInterval]);
+  }, [inView, trail.length, removalInterval]);
 
   return (
     <div ref={containerRef} className="absolute inset-0 w-full h-full overflow-hidden pointer-events-auto">
