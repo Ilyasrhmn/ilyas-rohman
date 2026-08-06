@@ -73,7 +73,7 @@ export default function AboutIntro() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, delay: 0.35 }}
-            className="w-full max-w-[420px] lg:max-w-none -mt-4 lg:-mt-6 min-h-[480px] lg:min-h-[560px]"
+            className="w-full max-w-[420px] lg:max-w-none mt-8 lg:-mt-6 min-h-[480px] lg:min-h-[560px]"
           >
             {hasBeenNear && <Lanyard />}
           </motion.div>
