@@ -32,16 +32,16 @@ export default async function ProjectDetailPage({
   if (!project) notFound();
 
   return (
-    <div className="section-pad px-6 sm:px-10">
+    <div className="min-h-screen bg-[var(--world-a-bg)] px-6 pb-16 pt-32 sm:px-10 md:pt-40">
       <div className="mx-auto max-w-3xl">
         <Link
           href="/projects"
-          className="inline-flex min-h-[44px] items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)] transition-colors hover:text-[var(--world-a-accent)]"
         >
           &larr; Back to projects
         </Link>
       </div>
-      <div className="mt-4">
+      <div className="mt-8">
         <ProjectDetail project={project} />
       </div>
     </div>
