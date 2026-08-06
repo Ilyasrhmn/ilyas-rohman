@@ -149,6 +149,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   const cardQuat = new THREE.Quaternion();
   const clipWorld = new THREE.Vector3();
   const hasLoggedFrameCrash = useRef(false);
+  const hasLoggedAnchorGap = useRef(false);
 
   const segmentProps: RigidBodyProps = {
     type: 'dynamic',
@@ -230,26 +231,28 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
       curve.points[2].copy(getLerped(j1.current));
       curve.points[3].copy(fixed.current.translation());
 
-      // curve.points[0] (the card's rigid anchor) is no longer physically constrained to
-      // curve.points[1] (j2's rope-physics position) the way the old j3-based endpoint was --
-      // the rope joints only constrain fixed->j1->j2->j3, and the card can now rotate
-      // independently of that chain. If the two ever diverge further than a rope segment can
-      // naturally stretch (1 unit, per the useRopeJoint max-length args below), pull
-      // points[1] back toward points[0] so the curve can't render a sharp, physically
-      // impossible bend near the clip.
-      const cardAnchorGap = curve.points[0].distanceTo(curve.points[1]);
+      // curve.points[1] is j2's deliberately-lagging smoothed position (getLerped), not its
+      // real rope-constrained one -- exceeding a rope segment's natural length here during
+      // fast motion is expected smoothing lag, not necessarily a bug. So the warning below
+      // checks j2's REAL (unlerped) position against the card anchor instead: the rope joints
+      // (useRopeJoint calls above) constrain that real position to 1 unit, so exceeding it
+      // there is genuine evidence of the card diverging from the rope-physics chain. The
+      // clamp, separately, always operates on the rendered gap (points[0] to points[1]),
+      // since a visual kink is a kink regardless of whether it's smoothing lag or a real bug.
       const MAX_SEGMENT_GAP = 1;
-      if (cardAnchorGap > MAX_SEGMENT_GAP) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn(
-            `[Lanyard] card-anchor/rope gap ${cardAnchorGap.toFixed(2)} exceeded ${MAX_SEGMENT_GAP}, clamping. ` +
-            'This means the card rotated far enough, or fast enough, that the rendered band ' +
-            'would have kinked without this clamp -- if you see this warning a lot, that is ' +
-            'concrete evidence for investigating why (e.g. log cardRotation and the rope ' +
-            'bodies\' positions at this moment).'
-          );
-        }
-        curve.points[1].lerp(curve.points[0], 1 - MAX_SEGMENT_GAP / cardAnchorGap);
+      const realAnchorGap = clipWorld.distanceTo(j2.current.translation() as unknown as THREE.Vector3);
+      if (realAnchorGap > MAX_SEGMENT_GAP && process.env.NODE_ENV !== 'production' && !hasLoggedAnchorGap.current) {
+        hasLoggedAnchorGap.current = true;
+        console.warn(
+          `[Lanyard] card-anchor/j2 real-position gap ${realAnchorGap.toFixed(2)} exceeded ${MAX_SEGMENT_GAP}. ` +
+          'This means the card diverged from the rope-physics chain by more than a rope segment ' +
+          'can naturally stretch -- concrete evidence for investigating why (e.g. log cardRotation ' +
+          'and the rope bodies\' positions at this moment). Logged once per mount to avoid spam.'
+        );
+      }
+      const renderGap = curve.points[0].distanceTo(curve.points[1]);
+      if (renderGap > MAX_SEGMENT_GAP) {
+        curve.points[1].lerp(curve.points[0], 1 - MAX_SEGMENT_GAP / renderGap);
       }
 
       band.current.geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));

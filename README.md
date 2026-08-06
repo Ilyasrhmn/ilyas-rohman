@@ -153,20 +153,26 @@ real under realistic input before spending more time on it.
 in response to a further user report (a visible band kink, noisy console
 warnings, and an unreproduced "the lanyard sometimes isn't there" report):
 
-- **Band kink, root-caused (not just papered over):** the kink turned out
-  to come from `getLerped` (in `Lanyard.tsx`'s `Band` component) caching a
-  rigid body's position the first time it was read — which could happen
-  before Rapier's WASM-backed body was fully valid, caching values wildly
-  far from reality (observed: a cached position of `{-14, -87, -2.8}`
-  units while the body's real position was `{1.0, 2.4, -0.15}`). The
-  render loop then spent many frames slowly blending in from that garbage.
-  Fixed at the source: the cache now snaps back to the real position if
-  it's ever implausibly far away, instead of slowly lerping in from
-  garbage. A defense-in-depth clamp (bounding how far the card's rigid
-  anchor point and the rope-physics chain can render apart) stays in
-  place too. Measured effect: the clamp's own diagnostic logging went
-  from firing with gaps up to 359–507 units to a normal range of 0–4.5
-  units across repeated test runs.
+- **Band kink — a garbage-cache bug found and fixed, not just papered
+  over, though the user's original kink was never itself reproduced to
+  confirm it's the same cause.** Chasing the clamp's own diagnostic
+  numbers (see below) turned up a real bug in `getLerped` (`Lanyard.tsx`'s
+  `Band` component): it caches a rigid body's position the first time
+  it's read, which could happen before Rapier's WASM-backed body was
+  fully valid, caching values wildly far from reality (observed: a cached
+  position of `{-14, -87, -2.8}` units while the body's real position was
+  `{1.0, 2.4, -0.15}`). The render loop then spent many frames slowly
+  blending in from that garbage. Fixed at the source: the cache now snaps
+  back to the real position if it's ever implausibly far away, instead of
+  slowly lerping in from garbage. A defense-in-depth clamp (bounding how
+  far the rendered band can visually diverge from the card's rigid anchor
+  point) stays in place too, still engaging occasionally during fast
+  drags — it's cheap and harmless, so it stays as a backstop even after
+  the garbage-cache fix. The clamp's own warning is now based on the rope
+  bodies' real (unsmoothed) positions rather than their deliberately-lagged
+  rendering values, and is logged once per mount rather than every frame,
+  after a code review caught both as real gaps in the first version of
+  this fix.
 - **Console warnings, confirmed pre-existing and mostly unfixable
   upstream:** checked out the lanyard component from before any work this
   session and reproduced the identical warnings, ruling out application
