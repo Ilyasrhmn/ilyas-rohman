@@ -39,7 +39,7 @@ export default async function ProjectDetailPage({
         <div className="mx-auto max-w-3xl">
           <Link
             href="/projects"
-            className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)] transition-colors hover:text-[var(--world-a-accent)]"
+            className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)] transition-colors hover:text-[var(--world-a-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             &larr; Back to projects
           </Link>

@@ -11,7 +11,7 @@ export function NextProject({ currentSlug }: { currentSlug: string }) {
     <BlurReveal delay={0.1}>
       <Link
         href={`/projects/${next.slug}`}
-        className="group mx-auto mt-16 flex max-w-3xl flex-col items-center gap-2 border-t border-[var(--world-a-border)] py-10 text-center transition-colors hover:border-[var(--world-a-accent)]"
+        className="group mx-auto mt-16 flex max-w-3xl flex-col items-center gap-2 border-t border-[var(--world-a-border)] py-10 text-center transition-colors hover:border-[var(--world-a-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)]">
           Next project

@@ -11,7 +11,7 @@ export function ProjectsHero() {
     <section className="relative overflow-hidden bg-[var(--world-a-bg)] px-6 pb-20 pt-32 text-[var(--world-a-text)] sm:px-10 md:pb-28 md:pt-44">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-0 flex select-none items-center justify-center overflow-hidden opacity-[0.04]"
+        className="pointer-events-none absolute inset-0 flex select-none items-center justify-center overflow-hidden opacity-[0.04]"
       >
         <span className="whitespace-nowrap font-serif text-[20vw] leading-none">WORK</span>
       </div>
@@ -20,7 +20,7 @@ export function ProjectsHero() {
         <BlurReveal>
           <Link
             href="/"
-            className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)] transition-colors hover:text-[var(--world-a-accent)]"
+            className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)] transition-colors hover:text-[var(--world-a-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             &larr; Index
           </Link>
@@ -28,7 +28,7 @@ export function ProjectsHero() {
 
         <BlurReveal delay={0.05}>
           <p className="mt-10 font-mono text-xs uppercase tracking-[0.25em] text-[var(--world-a-accent)]">
-            [002] Projects
+            Index &mdash; {String(total).padStart(3, "0")} projects
           </p>
         </BlurReveal>
 
@@ -41,17 +41,23 @@ export function ProjectsHero() {
         <BlurReveal delay={0.15}>
           <p className="mt-6 max-w-[65ch] font-serif text-lg text-[var(--world-a-muted)]">
             Hackathon platforms, campus systems, and the odd late-night prototype —{" "}
-            {shipped} shipped, the rest still building.
+            {shipped < total
+              ? `${shipped} shipped, the rest still building.`
+              : `all ${shipped} shipped.`}
           </p>
         </BlurReveal>
 
         <BlurReveal delay={0.2}>
           <div className="mt-12 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-wide text-[var(--world-a-muted)]">
             <span>{total} projects</span>
-            <span aria-hidden className="text-[var(--world-a-border)]">
-              &middot;
-            </span>
-            <span>{shipped} shipped</span>
+            {shipped < total && (
+              <>
+                <span aria-hidden className="text-[var(--world-a-border)]">
+                  &middot;
+                </span>
+                <span>{shipped} shipped</span>
+              </>
+            )}
             <span aria-hidden className="text-[var(--world-a-border)]">
               &middot;
             </span>
