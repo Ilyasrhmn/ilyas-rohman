@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useInViewport } from "@/hooks/use-in-viewport";
@@ -13,11 +13,13 @@ export default function AboutIntro() {
   const nearViewport = useInViewport(lanyardRef, { rootMargin: "600px" });
   // Once mounted, stay mounted: unmounting/remounting tears down and rebuilds the WebGL
   // context on every pass through the 600px window, which is far more expensive than the
-  // frameloop pause Lanyard already does internally while off-screen.
+  // frameloop pause Lanyard already does internally while off-screen. Adjusting state
+  // during render (not in an effect) is React's documented pattern for latching a value
+  // from a previous render: https://react.dev/reference/react/useState#storing-information-from-previous-renders
   const [hasBeenNear, setHasBeenNear] = useState(false);
-  useEffect(() => {
-    if (nearViewport) setHasBeenNear(true);
-  }, [nearViewport]);
+  if (nearViewport && !hasBeenNear) {
+    setHasBeenNear(true);
+  }
 
   return (
     <section
