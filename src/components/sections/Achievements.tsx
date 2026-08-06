@@ -97,7 +97,7 @@ export default function Achievements() {
 
           <Link
             href="/achievements"
-            className="group mt-4 inline-flex items-center gap-2 border border-[var(--world-b-border)] px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-b-text)] transition-colors hover:border-[var(--world-b-accent)] hover:text-[var(--world-b-accent)]"
+            className="group mt-4 inline-flex min-h-[44px] items-center gap-2 border border-[var(--world-b-border)] px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-b-text)] transition-colors hover:border-[var(--world-b-accent)] hover:text-[var(--world-b-accent)]"
           >
             View the archive
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />

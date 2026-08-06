@@ -36,7 +36,7 @@ export default async function ProjectDetailPage({
       <div className="mx-auto max-w-3xl">
         <Link
           href="/projects"
-          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex min-h-[44px] items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           &larr; Back to projects
         </Link>

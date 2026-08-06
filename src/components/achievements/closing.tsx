@@ -73,7 +73,7 @@ export function AchievementsClosing() {
         <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/projects"
-            className="inline-flex items-center gap-2 border px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="inline-flex min-h-[44px] items-center gap-2 border px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: "inherit", borderColor: "currentColor" }}
           >
             See the work →
@@ -81,7 +81,7 @@ export function AchievementsClosing() {
           <button
             type="button"
             onClick={openContact}
-            className="inline-flex items-center gap-2 px-2 py-3 font-mono text-xs uppercase tracking-[0.2em] underline underline-offset-4 transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="inline-flex min-h-[44px] items-center gap-2 px-2 py-3 font-mono text-xs uppercase tracking-[0.2em] underline underline-offset-4 transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: "inherit" }}
           >
             Start a conversation

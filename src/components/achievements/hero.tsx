@@ -22,7 +22,7 @@ export function AchievementsHero() {
         <BlurReveal>
           <Link
             href="/"
-            className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-b-muted)] transition-colors hover:text-[var(--world-b-accent)]"
+            className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-b-muted)] transition-colors hover:text-[var(--world-b-accent)]"
           >
             ← Index
           </Link>

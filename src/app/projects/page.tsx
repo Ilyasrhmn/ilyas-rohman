@@ -12,7 +12,10 @@ export default function ProjectsPage() {
   return (
     <div className="section-pad px-6 sm:px-10">
       <div className="mx-auto max-w-6xl">
-        <Link href="/#works" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+        <Link
+          href="/#works"
+          className="inline-flex min-h-[44px] items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
           &larr; Back to home
         </Link>
 

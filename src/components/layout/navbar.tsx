@@ -14,7 +14,7 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
       >
         <nav className="flex items-start justify-between w-full pointer-events-auto">
           {/* Brand */}
-          <Link href="/" className="flex flex-col gap-0.5 group">
+          <Link href="/" className="group flex min-h-[44px] min-w-[44px] flex-col justify-center gap-0.5">
             <span className="font-serif text-sm sm:text-lg font-medium tracking-[0.15em] uppercase text-[var(--nav-text)] transition-opacity group-hover:opacity-70">
               INR
             </span>
@@ -23,7 +23,7 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
           {/* Menu Button */}
           <button
             onClick={() => setMenuOpen(true)}
-            className="group relative cursor-pointer py-2 font-sans text-[0.625rem] font-normal tracking-[0.3em] uppercase text-[var(--nav-text)] transition-colors duration-400 hover:text-[var(--nav-contact-border)]"
+            className="group relative inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center font-sans text-[0.625rem] font-normal tracking-[0.3em] uppercase text-[var(--nav-text)] transition-colors duration-400 hover:text-[var(--nav-contact-border)]"
           >
             MENU
             <span className="absolute bottom-1 left-0 h-px w-0 bg-[var(--nav-contact-border)] transition-all duration-400 ease-in-out group-hover:w-full" />
@@ -45,7 +45,7 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
             </div>
             <button
               onClick={() => setMenuOpen(false)}
-              className="group relative cursor-pointer py-2 font-sans text-[0.625rem] font-normal tracking-[0.3em] uppercase transition-colors duration-400 hover:text-[var(--world-a-accent)]"
+              className="group relative inline-flex min-h-[44px] cursor-pointer items-center font-sans text-[0.625rem] font-normal tracking-[0.3em] uppercase transition-colors duration-400 hover:text-[var(--world-a-accent)]"
             >
               CLOSE
               <span className="absolute bottom-1 left-0 h-px w-0 bg-[var(--world-a-accent)] transition-all duration-400 ease-in-out group-hover:w-full" />

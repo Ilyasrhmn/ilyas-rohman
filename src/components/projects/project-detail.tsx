@@ -43,7 +43,7 @@ export function ProjectDetail({ project }: { project: Project }) {
                 href={project.demo}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full bg-accent px-5 py-2 text-sm font-medium text-accent-foreground"
+                className="inline-flex min-h-[44px] items-center rounded-full bg-accent px-5 py-2 text-sm font-medium text-accent-foreground"
               >
                 Live demo
               </a>
@@ -53,7 +53,7 @@ export function ProjectDetail({ project }: { project: Project }) {
                 href={project.repo}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full border border-border px-5 py-2 text-sm font-medium text-foreground"
+                className="inline-flex min-h-[44px] items-center rounded-full border border-border px-5 py-2 text-sm font-medium text-foreground"
               >
                 Repository
               </a>
