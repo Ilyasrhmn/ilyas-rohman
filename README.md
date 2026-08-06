@@ -129,6 +129,16 @@ out here rather than quietly changing what the regression guard measures.
   directly from the card's rigidly-attached joint-anchor point, so the
   band's endpoint can never drift from the card regardless of drag speed.
 
+**Follow-up fix (user-reported):** even after the band's endpoint could no
+longer overshoot past the card, the band mesh still visually drew *over*
+the card's face whenever the curve geometrically passed behind it —
+`meshLineMaterial` had `depthTest={false}`, which makes a mesh ignore the
+depth buffer entirely and always render on top regardless of actual 3D
+position. Removed it (back to the Three.js default of depth-tested
+rendering); verified via screenshots across idle sway and dragged
+positions that the band now correctly renders behind the card where
+geometry says it should, with no z-fighting.
+
 **Known residual:** an occasional single-frame stall under the
 `scrollBy`-based harness still lands around the Capabilities section's
 pinned-ScrollTrigger-engage point — smaller and less frequent after this

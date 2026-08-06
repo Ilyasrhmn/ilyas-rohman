@@ -273,7 +273,6 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
             repeat: new THREE.Vector2(-4, 1),
             lineWidth: 1,
           }]}
-          depthTest={false}
         />
       </mesh>
     </>
