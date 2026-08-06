@@ -67,6 +67,18 @@ export function ScrollScale() {
       return { x: finalX, y: finalY, scale: requiredScale };
     };
 
+    // getZoomData() does a forced layout read; the three tween properties below each
+    // called it independently (3x the layout cost for one measurement). Cache the result
+    // per ScrollTrigger refresh cycle so it's computed once and reused for scale/x/y.
+    let zoomDataCache: { x: number; y: number; scale: number } | null = null;
+    const getZoomDataCached = () => {
+      if (!zoomDataCache) zoomDataCache = getZoomData();
+      return zoomDataCache;
+    };
+    ScrollTrigger.addEventListener("refresh", () => {
+      zoomDataCache = null;
+    });
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
@@ -92,9 +104,9 @@ export function ScrollScale() {
 
     // PHASE D: Small-to-Extreme Typography Zoom targeting 'T' stem (Progress 0.60 -> 0.90)
     tl.to(portalScaleLayerRef.current, {
-      scale: () => getZoomData().scale,
-      x: () => getZoomData().x,
-      y: () => getZoomData().y,
+      scale: () => getZoomDataCached().scale,
+      x: () => getZoomDataCached().x,
+      y: () => getZoomDataCached().y,
       duration: 2,
       ease: "power3.in",
       force3D: false // Prevents bitmap rasterization, keeps DOM text sharp during extreme zoom
