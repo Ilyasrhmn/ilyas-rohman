@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useInViewport } from "@/hooks/use-in-viewport";
+import { useLenis } from "@/components/layout/smooth-scroll";
 
 export interface TimelineItem {
   id: number;
@@ -38,6 +39,25 @@ export default function RadialOrbitalTimeline({
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const inView = useInViewport(containerRef, { rootMargin: "200px" });
+
+  // Lenis doesn't expose a ready-made "is the user actively scrolling" boolean we can
+  // trust across versions, so derive one from its scroll event + a short idle debounce.
+  const lenis = useLenis();
+  const [isScrolling, setIsScrolling] = useState(false);
+  useEffect(() => {
+    if (!lenis) return;
+    let idleTimer: ReturnType<typeof setTimeout>;
+    const onScroll = () => {
+      setIsScrolling(true);
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => setIsScrolling(false), 150);
+    };
+    lenis.on("scroll", onScroll);
+    return () => {
+      lenis.off("scroll", onScroll);
+      clearTimeout(idleTimer);
+    };
+  }, [lenis]);
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === containerRef.current || e.target === orbitRef.current) {
@@ -100,21 +120,26 @@ export default function RadialOrbitalTimeline({
   }, []);
 
   useEffect(() => {
-    let rotationTimer: NodeJS.Timeout;
-    if (autoRotate && viewMode === "orbital" && inView) {
-      rotationTimer = setInterval(() => {
-        setRotationAngle((prev) => {
-          const newAngle = (prev + 0.3) % 360;
-          return Number(newAngle.toFixed(3));
-        });
-      }, 50);
+    let rotationTimer: ReturnType<typeof setInterval> | undefined;
+    let rafId: number | undefined;
+    if (autoRotate && viewMode === "orbital" && inView && !isScrolling) {
+      // Defer by one frame so the interval doesn't start in the exact same tick as the
+      // IntersectionObserver callback that flipped inView -- which, for this component,
+      // tends to coincide with CapabilitiesChoreography's ScrollTrigger pin engaging.
+      rafId = requestAnimationFrame(() => {
+        rotationTimer = setInterval(() => {
+          setRotationAngle((prev) => {
+            const newAngle = (prev + 0.3) % 360;
+            return Number(newAngle.toFixed(3));
+          });
+        }, 50);
+      });
     }
     return () => {
-      if (rotationTimer) {
-        clearInterval(rotationTimer);
-      }
+      if (rafId !== undefined) cancelAnimationFrame(rafId);
+      if (rotationTimer) clearInterval(rotationTimer);
     };
-  }, [autoRotate, viewMode, inView]);
+  }, [autoRotate, viewMode, inView, isScrolling]);
 
   const calculateNodePosition = (index: number, total: number) => {
     const angle = ((index / total) * 360 + rotationAngle) % 360;
