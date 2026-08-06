@@ -58,7 +58,11 @@ This drives headless Chrome at a 375×812 viewport with 4× CPU throttling
 (roughly a mid-range Android phone), scrolls each route, and reports frame
 rate, jank percentage, payload, horizontal overflow, and any tap target
 under 44px. It exits non-zero if home-page scroll performance falls below
-45 FPS, so regressions surface as a failure rather than a feeling.
+45 FPS, so regressions surface as a failure rather than a feeling. That gate
+is currently expected-red on `/` given the documented residual below (home
+scroll measures ~30-34 FPS, short of the 45 FPS floor), pending either a
+harness methodology fix (see the `scrollBy` vs `wheel` caveat below) or
+further investigation of the residual itself.
 
 Dev mode (`next dev`) ships unminified React with extra validation
 (`jsxDEV`), so its numbers are consistently worse than what actually
@@ -78,7 +82,7 @@ Measured history for the home page at 4× throttle:
 | Original baseline (dev) | 22.1 | 48.3% | 1036ms |
 | After canvas/image/cursor/pong fixes (dev) | ~30 | ~30% | 220–1040ms |
 | + fixed 3 perpetual/thrashing loops (production) | 33.4 | 6.8% | 945ms |
-| + cached ScrollScale measurement, deferred/scroll-paused orbital timer, mobile cert-gallery fix, lanyard band-overshoot fix (dev, `npm run perf`) | 29.8 | 16.4% | 983.5ms |
+| + cached ScrollScale measurement, deferred/scroll-paused orbital timer, mobile cert-gallery fix, lanyard band-overshoot fix (production) | 33.6 | 8.4% | 900ms |
 
 `/projects` and `/achievements` hold a clean 58–60 FPS / <1.5% jank
 throughout, confirming the Lenis/GSAP scroll system itself was never the
@@ -122,8 +126,8 @@ out here rather than quietly changing what the regression guard measures.
   clip onto the card face under fast drag motion, because its rendered
   endpoint trusted an independently-simulated (compliant, not rigid)
   physics body instead of the card's actual transform — now derived
-  directly from the card's position/rotation, which by construction
-  cannot overshoot past it.
+  directly from the card's rigidly-attached joint-anchor point, so the
+  band's endpoint can never drift from the card regardless of drag speed.
 
 **Known residual:** an occasional single-frame stall under the
 `scrollBy`-based harness still lands around the Capabilities section's
