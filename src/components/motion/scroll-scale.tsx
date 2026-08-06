@@ -21,6 +21,8 @@ export function ScrollScale() {
   useEffect(() => {
     if (reduced || !containerRef.current || !worldALayerRef.current) return;
 
+    let clearZoomDataCache = () => {};
+
     const ctx = gsap.context(() => {
       // We will measure dynamically using invalidateOnRefresh
     const getZoomData = () => {
@@ -75,9 +77,10 @@ export function ScrollScale() {
       if (!zoomDataCache) zoomDataCache = getZoomData();
       return zoomDataCache;
     };
-    ScrollTrigger.addEventListener("refresh", () => {
+    clearZoomDataCache = () => {
       zoomDataCache = null;
-    });
+    };
+    ScrollTrigger.addEventListener("refresh", clearZoomDataCache);
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -127,7 +130,10 @@ export function ScrollScale() {
 
     }); // close ctx
 
-    return () => ctx.revert();
+    return () => {
+      ScrollTrigger.removeEventListener("refresh", clearZoomDataCache);
+      ctx.revert();
+    };
   }, [reduced]);
 
   if (reduced) {
