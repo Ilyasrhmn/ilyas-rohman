@@ -148,3 +148,52 @@ measures clean, further chasing this specific harness number is likely
 chasing a test artifact rather than a real user-facing problem. If it's
 revisited, retest with `page.mouse.wheel()` first to confirm it's still
 real under realistic input before spending more time on it.
+
+**Lanyard debug follow-up** (`docs/superpowers/plans/2026-08-06-lanyard-debug-followup.md`),
+in response to a further user report (a visible band kink, noisy console
+warnings, and an unreproduced "the lanyard sometimes isn't there" report):
+
+- **Band kink, root-caused (not just papered over):** the kink turned out
+  to come from `getLerped` (in `Lanyard.tsx`'s `Band` component) caching a
+  rigid body's position the first time it was read — which could happen
+  before Rapier's WASM-backed body was fully valid, caching values wildly
+  far from reality (observed: a cached position of `{-14, -87, -2.8}`
+  units while the body's real position was `{1.0, 2.4, -0.15}`). The
+  render loop then spent many frames slowly blending in from that garbage.
+  Fixed at the source: the cache now snaps back to the real position if
+  it's ever implausibly far away, instead of slowly lerping in from
+  garbage. A defense-in-depth clamp (bounding how far the card's rigid
+  anchor point and the rope-physics chain can render apart) stays in
+  place too. Measured effect: the clamp's own diagnostic logging went
+  from firing with gaps up to 359–507 units to a normal range of 0–4.5
+  units across repeated test runs.
+- **Console warnings, confirmed pre-existing and mostly unfixable
+  upstream:** checked out the lanyard component from before any work this
+  session and reproduced the identical warnings, ruling out application
+  code as the cause. `THREE.Clock`-deprecated and "deprecated parameters"
+  come from `@react-three/fiber` and `@dimforge/rapier3d-compat`
+  respectively — confirmed still present even at each package's latest
+  version, so no safe fix is available without an upstream release
+  actively addressing them. The repeated `X4122` precision warning is a
+  well-documented, benign Three.js/`PMREMGenerator` shader-compiler
+  artifact (used internally by the lighting `<Environment>` component) —
+  documented in a code comment rather than patched, since patching a
+  library-internal warning risks silencing real ones too.
+- **Missing-canvas report: still not reproduced, but a real gap in error
+  visibility was found and closed regardless.** 35+ automated trials
+  across multiple methodologies never reproduced a missing canvas.
+  However, verifying the canvas's error boundary turned up a real
+  finding: React error boundaries (`componentDidCatch`) only catch errors
+  during React's render phase — they cannot catch errors thrown inside
+  `useFrame` callbacks, which is where nearly all of this component's
+  actual logic runs (confirmed by reading `@react-three/fiber`'s source).
+  Added logging in both places: `componentDidCatch` for render-phase
+  crashes, and a try/catch around the `useFrame` body (with a log-once
+  guard, so a persistent failure can't spam the console 60×/sec) for
+  runtime-phase crashes. If this is reported again, the browser console
+  will have a concrete stack trace instead of nothing. **If you can
+  reproduce this, the single most useful thing to check is whether it
+  also happens on the deployed production site** (not just
+  `localhost:3000` during active development) — that would rule in or
+  out a dev-only Fast Refresh/HMR cause versus something the new logging
+  above should now catch anywhere.
