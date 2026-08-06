@@ -47,3 +47,7 @@ __pycache__/
 CLAUDE.md
 AGENTS.md
 docs/superpowers/
+
+# playwright is installed on demand by `npm run perf`, never committed
+/playwright-report
+/test-results
