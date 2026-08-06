@@ -204,29 +204,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
     }
   }, [hovered, dragged]);
 
-  useFrame((state, delta) => {
-    // R3F invokes useFrame callbacks from its own render loop, outside React's
-    // render/commit cycle -- an uncaught throw here does NOT reach CanvasErrorBoundary's
-    // componentDidCatch (confirmed: React error boundaries only catch render-phase errors).
-    // Nearly all of this component's actual logic runs in this callback, so without this
-    // try/catch, a bug here would surface only as an uncaught pageerror at best, or a
-    // silently frozen/broken canvas at worst -- exactly the "the lanyard just isn't there"
-    // shape of bug reported and never reproduced. Logging here, not just at the React
-    // error boundary, covers the code path where the real logic actually runs.
-    try {
-      runBandFrame(state, delta);
-    } catch (error) {
-      // If the failure persists (e.g. a NaN propagating through physics state every tick),
-      // this would otherwise log up to 60x/sec forever -- report only the first occurrence
-      // per mount so the one useful stack trace doesn't get buried under a duplicate flood.
-      if (!hasLoggedFrameCrash.current) {
-        hasLoggedFrameCrash.current = true;
-        console.error('[Lanyard] useFrame threw and was caught to avoid breaking the render loop:', error);
-      }
-    }
-  });
-
-  function runBandFrame(state: Parameters<Parameters<typeof useFrame>[0]>[0], delta: number) {
+  const runBandFrame = (state: Parameters<Parameters<typeof useFrame>[0]>[0], delta: number) => {
     if (dragged && typeof dragged !== 'boolean') {
       vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
       dir.copy(vec).sub(state.camera.position).normalize();
@@ -279,7 +257,29 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
       rot.copy(cardRotation);
       card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z }, true);
     }
-  }
+  };
+
+  useFrame((state, delta) => {
+    // R3F invokes useFrame callbacks from its own render loop, outside React's
+    // render/commit cycle -- an uncaught throw here does NOT reach CanvasErrorBoundary's
+    // componentDidCatch (confirmed: React error boundaries only catch render-phase errors).
+    // Nearly all of this component's actual logic runs in this callback, so without this
+    // try/catch, a bug here would surface only as an uncaught pageerror at best, or a
+    // silently frozen/broken canvas at worst -- exactly the "the lanyard just isn't there"
+    // shape of bug reported and never reproduced. Logging here, not just at the React
+    // error boundary, covers the code path where the real logic actually runs.
+    try {
+      runBandFrame(state, delta);
+    } catch (error) {
+      // If the failure persists (e.g. a NaN propagating through physics state every tick),
+      // this would otherwise log up to 60x/sec forever -- report only the first occurrence
+      // per mount so the one useful stack trace doesn't get buried under a duplicate flood.
+      if (!hasLoggedFrameCrash.current) {
+        hasLoggedFrameCrash.current = true;
+        console.error('[Lanyard] useFrame threw and was caught to avoid breaking the render loop:', error);
+      }
+    }
+  });
 
   curve.curveType = 'chordal';
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
