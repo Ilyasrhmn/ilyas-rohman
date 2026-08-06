@@ -20,28 +20,28 @@ const projectList: HorizontalProjectItem[] = [
         title: "Nutrio",
         category: "Food Program Management System",
         year: "2026",
-        image: "/projects/nutrio.png",
+        image: "/projects/nutrio.webp",
     },
     {
         id: "muterin",
         title: "Muterin",
         category: "Vehicle Maintenance Information System",
         year: "2026",
-        image: "/projects/muterin.png",
+        image: "/projects/muterin.webp",
     },
     {
         id: "nocap",
         title: "NoCap",
         category: "Fashion E-Commerce Marketplace",
         year: "2026",
-        image: "/projects/nocap.png",
+        image: "/projects/nocap.webp",
     },
     {
         id: "rootfacts",
         title: "RootFacts",
         category: "AI Plant Recognition Tool",
         year: "2026",
-        image: "/projects/rootfacts.png",
+        image: "/projects/rootfacts.webp",
     },
 ];
 
