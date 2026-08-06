@@ -129,6 +129,8 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   const ang = new THREE.Vector3();
   const rot = new THREE.Vector3();
   const dir = new THREE.Vector3();
+  const cardQuat = new THREE.Quaternion();
+  const clipWorld = new THREE.Vector3();
 
   const segmentProps: RigidBodyProps = {
     type: 'dynamic',
@@ -156,10 +158,15 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   const [dragged, drag] = useState<false | THREE.Vector3>(false);
   const [hovered, hover] = useState(false);
 
+  // The point on the card where the rope visually attaches (matches the clip/clamp mesh's
+  // position in the GLB). Named so the joint below and the band's render-time endpoint in
+  // useFrame can never drift apart from each other.
+  const CARD_CLIP_OFFSET: [number, number, number] = [0, 1.45, 0];
+
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
   useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1]);
-  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.45, 0]]);
+  useSphericalJoint(j3, card, [[0, 0, 0], CARD_CLIP_OFFSET]);
 
   useEffect(() => {
     if (hovered) {
@@ -186,7 +193,14 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
         const dist = Math.max(0.1, Math.min(1, lerped.distanceTo(ref.current.translation())));
         lerped.lerp(ref.current.translation(), delta * (minSpeed + dist * (maxSpeed - minSpeed)));
       });
-      curve.points[0].copy(j3.current.translation());
+      cardQuat.set(
+        card.current.rotation().x,
+        card.current.rotation().y,
+        card.current.rotation().z,
+        card.current.rotation().w
+      );
+      clipWorld.set(...CARD_CLIP_OFFSET).applyQuaternion(cardQuat).add(card.current.translation() as unknown as THREE.Vector3);
+      curve.points[0].copy(clipWorld);
       curve.points[1].copy(getLerped(j2.current));
       curve.points[2].copy(getLerped(j1.current));
       curve.points[3].copy(fixed.current.translation());
