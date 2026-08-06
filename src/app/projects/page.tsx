@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { projects } from "@/data/projects";
 import { ProjectsHero } from "@/components/projects/hero";
 import { ProjectsGrid } from "@/components/projects/grid";
+import { ProjectsFooter } from "@/components/projects/footer";
 
 export const metadata: Metadata = {
   title: "Projects — Ilyas Nur Rohman",
@@ -13,6 +14,7 @@ export default function ProjectsPage() {
     <div className="min-h-screen bg-[var(--world-a-bg)]">
       <ProjectsHero />
       <ProjectsGrid projects={projects} />
+      <ProjectsFooter />
     </div>
   );
 }
