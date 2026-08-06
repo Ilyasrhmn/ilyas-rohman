@@ -15,6 +15,8 @@ import {
 } from '@react-three/rapier';
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 import * as THREE from 'three';
+import { useInViewport } from '@/hooks/use-in-viewport';
+import { useReducedMotion } from '@/hooks/use-reduced-motion';
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
@@ -55,6 +57,9 @@ export default function Lanyard({
   const [isMobile, setIsMobile] = useState<boolean>(
     () => typeof window !== 'undefined' && window.innerWidth < 768
   );
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const inView = useInViewport(wrapperRef);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const handleResize = (): void => setIsMobile(window.innerWidth < 768);
@@ -68,11 +73,13 @@ export default function Lanyard({
 
   return (
     <div
+      ref={wrapperRef}
       className={`relative z-0 w-full pointer-events-none [&_canvas]:pointer-events-auto ${className}`}
       style={{ height: isMobile ? '480px' : '560px' }}
     >
       <CanvasErrorBoundary>
         <Canvas
+          frameloop={inView && !reducedMotion ? 'always' : 'never'}
           camera={{ position: camPos, fov: camFov }}
           dpr={[1, isMobile ? 1.5 : 2]}
           gl={{ alpha: transparent }}
