@@ -78,6 +78,7 @@ Measured history for the home page at 4× throttle:
 | Original baseline (dev) | 22.1 | 48.3% | 1036ms |
 | After canvas/image/cursor/pong fixes (dev) | ~30 | ~30% | 220–1040ms |
 | + fixed 3 perpetual/thrashing loops (production) | 33.4 | 6.8% | 945ms |
+| + cached ScrollScale measurement, deferred/scroll-paused orbital timer, mobile cert-gallery fix, lanyard band-overshoot fix (dev, `npm run perf`) | 29.8 | 16.4% | 983.5ms |
 
 `/projects` and `/achievements` hold a clean 58–60 FPS / <1.5% jank
 throughout, confirming the Lenis/GSAP scroll system itself was never the
@@ -86,13 +87,50 @@ now a clean 60 FPS / 0% jank in production, versus real jank before this
 work; the three fixes are documented in the
 `perf(home): stop three perpetual/thrashing animations` commit.
 
-**Known residual:** an occasional single-frame stall (roughly 600–1000ms
-under 4× throttle, still present unthrottled on some passes) lands
-consistently around the point the Capabilities section's pinned
-ScrollTrigger engages. It looks like several scroll-driven systems
-(ScrollTrigger pinning, an IntersectionObserver callback, and the orbital
-timeline's interval starting) landing in the same frame rather than a
-single fixable bug, and it doesn't reproduce on every run. It's the reason
-`npm run perf` still exits non-zero on home even though jank dropped
-6.7×  — a fresh profile of that one collision is the honest next step,
-not another speculative edit.
+**A measurement-methodology caveat, found while chasing the residual above:**
+`npm run perf` drives scroll via `window.scrollBy()`. Lenis (this site's
+smooth-scroll library) renders the page from its own lerped virtual scroll
+position, not native `scrollTop` — it doesn't reconcile external
+`scrollBy()` jumps the way it processes real wheel/touch input, so the
+harness's scroll pattern forces artificial "catch-up" stalls that a real
+user scrolling normally does not experience anywhere near as often. Retested
+the same page with `page.mouse.wheel()` (which Lenis does handle natively)
+at 1440×900, no throttle: worst frame **39–52ms**, ~**60 FPS**, **<2% jank**
+across five separate runs, both before and after the fixes below — the page
+was already close to smooth under realistic input. The fixes still produced
+a real, measurable tightening under that same realistic test (52/49ms →
+43/39/40ms worst frame), just a smaller one than the `scrollBy`-based number
+in the table above suggests. The harness itself is unchanged (still
+`window.scrollBy()`-based, matching its original design) — pointing this
+out here rather than quietly changing what the regression guard measures.
+
+**Root causes found and fixed in this pass** (`docs/superpowers/plans/2026-08-06-scroll-cert-lanyard-fixes.md`):
+- `ScrollScale.tsx`'s zoom-transition tween called an expensive
+  `getBoundingClientRect()`-based measurement 3 times per evaluation
+  (once each for scale/x/y) instead of once — now cached per
+  ScrollTrigger refresh cycle.
+- The Capabilities section's orbital timeline ran a 50ms rotation
+  `setInterval` continuously for the entire time it was visible (most of
+  a 500vh pinned scroll range), competing with the scroll gesture the
+  whole way through, and its start could land in the same frame as the
+  section's `ScrollTrigger` pin engaging. Now deferred by one frame and
+  paused entirely while Lenis reports active scrolling.
+- The home-page certificate gallery teaser hard-clipped its 2nd and 3rd
+  columns on mobile (`min-w-[250px]` × 3 doesn't fit a 375px viewport) —
+  now responsive.
+- The 3D lanyard's band mesh could visually overshoot through the metal
+  clip onto the card face under fast drag motion, because its rendered
+  endpoint trusted an independently-simulated (compliant, not rigid)
+  physics body instead of the card's actual transform — now derived
+  directly from the card's position/rotation, which by construction
+  cannot overshoot past it.
+
+**Known residual:** an occasional single-frame stall under the
+`scrollBy`-based harness still lands around the Capabilities section's
+pinned-ScrollTrigger-engage point — smaller and less frequent after this
+pass, but not eliminated under that specific synthetic test. Given the
+methodology caveat above, and that realistic wheel-driven scroll already
+measures clean, further chasing this specific harness number is likely
+chasing a test artifact rather than a real user-facing problem. If it's
+revisited, retest with `page.mouse.wheel()` first to confirm it's still
+real under realistic input before spending more time on it.
