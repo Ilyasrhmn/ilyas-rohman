@@ -46,9 +46,14 @@ class CanvasErrorBoundary extends Component<{ children: ReactNode }, { failed: b
 const CARD_GLB = '/assets/lanyard/card.glb';
 const LANYARD_PNG = '/assets/lanyard/lanyard.png';
 
-// Preload outside component so it fires once per module load
+// Preload outside component so it fires once per module load. Importing this module at all
+// (even without rendering <Lanyard />, e.g. AboutIntro's idle-time prefetch) is enough to
+// trigger both -- the GLB and the texture were previously only requested once the component
+// actually mounted, which measured ~1s after scrolling into position (texture alone took
+// ~1.4s over the network in one test) because nothing about them started loading until then.
 if (typeof window !== 'undefined') {
   useGLTF.preload(CARD_GLB);
+  useTexture.preload(LANYARD_PNG);
 }
 
 interface LanyardProps {
@@ -64,7 +69,14 @@ export default function Lanyard({
     () => typeof window !== 'undefined' && window.innerWidth < 768
   );
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const inView = useInViewport(wrapperRef);
+  // Match AboutIntro's own 600px mount-gate margin (default is 200px). Lanyard only ever
+  // mounts once AboutIntro's own check already confirmed it's within 600px of the viewport --
+  // if this component's own check used a tighter margin, there was a real window where the
+  // canvas was mounted but this hook's freshly-created IntersectionObserver hadn't yet fired
+  // its first callback for the (still out of its narrower range) element, leaving frameloop
+  // stuck on 'never' for up to ~1s after mount even with no further scrolling. Matching the
+  // margin means this check is already satisfied the instant it mounts.
+  const inView = useInViewport(wrapperRef, { rootMargin: '600px' });
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
