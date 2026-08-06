@@ -1,11 +1,17 @@
 "use client";
 
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import { useInViewport } from "@/hooks/use-in-viewport";
 
 const Lanyard = dynamic(() => import("../motion/Lanyard"), { ssr: false });
 
 export default function AboutIntro() {
+  const lanyardRef = useRef<HTMLDivElement>(null);
+  // Hold the 3D chunk back until the section is close — it is ~3.3MB of JS.
+  const nearViewport = useInViewport(lanyardRef, { rootMargin: "600px" });
+
   return (
     <section
       id="about"
@@ -53,13 +59,14 @@ export default function AboutIntro() {
 
           {/* Lanyard — rope naturally continues the vertical flow */}
           <motion.div
+            ref={lanyardRef}
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, delay: 0.35 }}
-            className="w-full max-w-[420px] lg:max-w-none -mt-4 lg:-mt-6"
+            className="w-full max-w-[420px] lg:max-w-none -mt-4 lg:-mt-6 min-h-[480px] lg:min-h-[560px]"
           >
-            <Lanyard />
+            {nearViewport && <Lanyard />}
           </motion.div>
         </div>
 
