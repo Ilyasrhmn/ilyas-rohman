@@ -201,6 +201,29 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
       curve.points[1].copy(getLerped(j2.current));
       curve.points[2].copy(getLerped(j1.current));
       curve.points[3].copy(fixed.current.translation());
+
+      // curve.points[0] (the card's rigid anchor) is no longer physically constrained to
+      // curve.points[1] (j2's rope-physics position) the way the old j3-based endpoint was --
+      // the rope joints only constrain fixed->j1->j2->j3, and the card can now rotate
+      // independently of that chain. If the two ever diverge further than a rope segment can
+      // naturally stretch (1 unit, per the useRopeJoint max-length args below), pull
+      // points[1] back toward points[0] so the curve can't render a sharp, physically
+      // impossible bend near the clip.
+      const cardAnchorGap = curve.points[0].distanceTo(curve.points[1]);
+      const MAX_SEGMENT_GAP = 1;
+      if (cardAnchorGap > MAX_SEGMENT_GAP) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            `[Lanyard] card-anchor/rope gap ${cardAnchorGap.toFixed(2)} exceeded ${MAX_SEGMENT_GAP}, clamping. ` +
+            'This means the card rotated far enough, or fast enough, that the rendered band ' +
+            'would have kinked without this clamp -- if you see this warning a lot, that is ' +
+            'concrete evidence for investigating why (e.g. log cardRotation and the rope ' +
+            'bodies\' positions at this moment).'
+          );
+        }
+        curve.points[1].lerp(curve.points[0], 1 - MAX_SEGMENT_GAP / cardAnchorGap);
+      }
+
       band.current.geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));
       ang.copy(card.current.angvel());
       rot.copy(cardRotation);
