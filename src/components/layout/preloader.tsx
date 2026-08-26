@@ -1,21 +1,44 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { profile } from "@/data/profile";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "@/lib/utils";
 
-// Already hidden when we mount (opened in a background tab) — nothing to cover, skip the show.
-function isTabHidden() {
-    return typeof document !== "undefined" && document.visibilityState === "hidden";
+// Nothing ever fires this tab's visibilitychange for us to react to here -- we only need the
+// snapshot value, not live updates -- so the subscription is a no-op.
+function subscribeNoop() {
+    return () => {};
+}
+function getTabHiddenSnapshot() {
+    return document.visibilityState === "hidden";
+}
+// SSR has no document, so there's nothing to be "hidden" yet -- always false here, which is
+// also what guarantees hydration matches: useSyncExternalStore renders this exact value on the
+// client's first pass too, then re-renders once with the real client value right after.
+function getServerTabHiddenSnapshot() {
+    return false;
 }
 
 export function Preloader() {
-    const [isLoading, setIsLoading] = useState(() => !isTabHidden());
-    // ponytail: hard fallback so a paused-rAF background tab can't leave the overlay stuck forever
-    const [removed, setRemoved] = useState(isTabHidden);
+    // Reading document.visibilityState directly (e.g. in a useState lazy initializer or a
+    // synchronous useEffect setState) is unsafe here: SSR always resolves it as "not hidden"
+    // (no document in Node), but the client's very first render can legitimately see it as
+    // hidden (backgrounded tab, mobile OS backgrounding, prerendering) -- a real, reproducible
+    // hydration mismatch (React error #418), confirmed via a clean build with
+    // document.visibilityState === "hidden". useSyncExternalStore is React's dedicated
+    // mechanism for exactly this class of problem: it renders getServerTabHiddenSnapshot()'s
+    // value during hydration (guaranteeing a match) and only picks up the real client value in
+    // a follow-up render afterward.
+    const tabWasHidden = useSyncExternalStore(subscribeNoop, getTabHiddenSnapshot, getServerTabHiddenSnapshot);
+    const [isLoadingState, setIsLoadingState] = useState(true);
+    const [removedState, setRemovedState] = useState(false);
     const reduced = useReducedMotion();
+
+    // Already hidden when we mounted -- nothing to cover, skip the show.
+    const isLoading = isLoadingState && !tabWasHidden;
+    const removed = removedState || tabWasHidden;
 
     useEffect(() => {
         if (!isLoading) {
@@ -26,7 +49,7 @@ export function Preloader() {
         document.body.style.overflow = "hidden";
         const timer = setTimeout(
             () => {
-                setIsLoading(false);
+                setIsLoadingState(false);
                 document.body.style.overflow = "";
             },
             reduced ? 200 : 1200
@@ -42,7 +65,7 @@ export function Preloader() {
     // (rAF-based tweens never advance in a hidden tab, so we can't rely on "on complete").
     useEffect(() => {
         if (isLoading || removed) return;
-        const timer = setTimeout(() => setRemoved(true), reduced ? 0 : 1000);
+        const timer = setTimeout(() => setRemovedState(true), reduced ? 0 : 1000);
         return () => clearTimeout(timer);
     }, [isLoading, removed, reduced]);
 
