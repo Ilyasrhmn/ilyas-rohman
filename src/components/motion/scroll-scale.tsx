@@ -6,6 +6,7 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 export function ScrollScale() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const stickyStageRef = useRef<HTMLDivElement>(null);
   const worldALayerRef = useRef<HTMLDivElement>(null);
   
   const statement1Ref = useRef<HTMLHeadingElement>(null);
@@ -21,72 +22,90 @@ export function ScrollScale() {
     if (reduced || !containerRef.current || !worldALayerRef.current) return;
 
     const ctx = gsap.context(() => {
-      // We will measure dynamically using invalidateOnRefresh
-    const getZoomData = () => {
-      if (!tStemRef.current || !portalScaleLayerRef.current) return { x: 0, y: 0, scale: 1 };
-      
-      // We must reset transforms to get natural measurements during resize refresh
-      const currentX = gsap.getProperty(portalScaleLayerRef.current, "x");
-      const currentY = gsap.getProperty(portalScaleLayerRef.current, "y");
-      const currentScale = gsap.getProperty(portalScaleLayerRef.current, "scale");
-      
-      gsap.set(portalScaleLayerRef.current, { x: 0, y: 0, scale: 1 });
-      
-      const tRect = tStemRef.current.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      
-      const cx = vw / 2;
-      const cy = vh / 2;
-      
-      const tCenterX = tRect.left + tRect.width / 2;
-      const tCenterY = tRect.top + tRect.height / 2;
-      
-      // Distance from screen center to the 'T' stem center
-      const deltaX = tCenterX - cx;
-      const deltaY = tCenterY - cy;
-      
-      // Calculate scale to ensure the vertical stem covers the entire viewport.
-      // A standard 'T' stem is approx 35% of the glyph's total width.
-      // Using 20% width and 50% height to guarantee massive over-coverage.
-      const stemWidth = tRect.width * 0.2; 
-      const stemHeight = tRect.height * 0.5;
-      
-      const scaleX = vw / stemWidth;
-      const scaleY = vh / stemHeight;
-      const requiredScale = Math.max(scaleX, scaleY) * 2.0; // 2x Safety margin for full corner coverage
+      // The zoom's target (how big, how far to shift) and its progress (how far through
+      // the zoom we are) are measured and animated by two different mechanisms, and used
+      // to be conflated: the target used to be measured lazily on first access and cached
+      // for the rest of the scroll session, so if that first measurement ever landed
+      // before layout had genuinely settled (fonts still swapping, content above this
+      // section still shifting height), the bad measurement stuck for the whole session --
+      // the "T" zoomed to a near-zero scale instead of flooding the screen. Keeping the
+      // measured target and the animated progress as two separate values, recombined fresh
+      // on every scrub tick, means a stale target can only ever affect the NEXT measurement
+      // (taken on every ScrollTrigger refresh, not just the first) rather than being baked
+      // permanently into the tween itself.
+      const zoomTarget = { x: 0, y: 0, scale: 1 };
 
-      // Translation required while scaling to bring the 'T' stem to the center
-      const finalX = -deltaX * requiredScale;
-      const finalY = -deltaY * requiredScale;
-      
-      // Restore the active transforms so we don't break the current animation state
-      gsap.set(portalScaleLayerRef.current, { x: currentX, y: currentY, scale: currentScale });
-      
-      return { x: finalX, y: finalY, scale: requiredScale };
-    };
+      const measureZoomTarget = () => {
+        if (!tStemRef.current || !portalScaleLayerRef.current || !stickyStageRef.current) return;
 
-    // getZoomData() does a forced layout read; the three tween properties below each
-    // called it independently (3x the layout cost for one measurement). Cache the result
-    // per ScrollTrigger refresh cycle so it's computed once and reused for scale/x/y.
-    let zoomDataCache: { x: number; y: number; scale: number } | null = null;
-    const getZoomDataCached = () => {
-      if (!zoomDataCache) zoomDataCache = getZoomData();
-      return zoomDataCache;
-    };
+        // We must reset transforms to get natural measurements during resize refresh
+        const currentX = gsap.getProperty(portalScaleLayerRef.current, "x");
+        const currentY = gsap.getProperty(portalScaleLayerRef.current, "y");
+        const currentScale = gsap.getProperty(portalScaleLayerRef.current, "scale");
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1.0, // Smoother scrub for the narrative flow
-        invalidateOnRefresh: true, // Recalculates getZoomData() on resize/font load
-        onRefreshInit: () => {
-          zoomDataCache = null;
-        },
-      }
-    });
+        gsap.set(portalScaleLayerRef.current, { x: 0, y: 0, scale: 1 });
+
+        const tRect = tStemRef.current.getBoundingClientRect();
+        // The sticky stage is w-full h-[100svh] and only ever actually sits flush with the
+        // viewport (top:0) once scrolled into its pinned range -- measuring the "T" against
+        // window.innerWidth/Height directly (as raw viewport-relative coordinates) is only
+        // correct while that's true. Before the stage engages position:sticky (e.g. at page
+        // load, scrolled to the top), it still sits in normal document flow, thousands of
+        // pixels below the viewport, so tRect.top/left would be measured against the wrong
+        // reference frame and produce a wildly wrong translate. Measuring the T's offset
+        // relative to the stage itself instead is scroll-position-independent: the stage's
+        // internal layout doesn't change shape based on scroll, only its absolute position
+        // does, and once it's actually stuck it's flush with the viewport by definition.
+        const stageRect = stickyStageRef.current.getBoundingClientRect();
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        const cx = vw / 2;
+        const cy = vh / 2;
+
+        const tCenterX = (tRect.left - stageRect.left) + tRect.width / 2;
+        const tCenterY = (tRect.top - stageRect.top) + tRect.height / 2;
+
+        // Distance from screen center to the 'T' stem center
+        const deltaX = tCenterX - cx;
+        const deltaY = tCenterY - cy;
+
+        // Calculate scale to ensure the vertical stem covers the entire viewport.
+        // A standard 'T' stem is approx 35% of the glyph's total width.
+        // Using 20% width and 50% height to guarantee massive over-coverage.
+        const stemWidth = tRect.width * 0.2;
+        const stemHeight = tRect.height * 0.5;
+
+        const scaleX = vw / stemWidth;
+        const scaleY = vh / stemHeight;
+        const requiredScale = Math.max(scaleX, scaleY) * 2.0; // 2x Safety margin for full corner coverage
+
+        // Restore the active transforms so we don't break the current animation state
+        gsap.set(portalScaleLayerRef.current, { x: currentX, y: currentY, scale: currentScale });
+
+        // Translation required while scaling to bring the 'T' stem to the center
+        zoomTarget.x = -deltaX * requiredScale;
+        zoomTarget.y = -deltaY * requiredScale;
+        zoomTarget.scale = requiredScale;
+      };
+
+      // Zoom progress is a plain 0->1 number GSAP scrubs and eases -- nothing about it is
+      // ever measured from the DOM, so there is nothing here for a layout-timing race to
+      // poison. It gets recombined with zoomTarget (always the latest measurement) on
+      // every tick in Phase D's onUpdate below.
+      const zoomProgress = { value: 0 };
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1.0, // Smoother scrub for the narrative flow
+          invalidateOnRefresh: true, // Re-measures zoomTarget on resize/font load
+          onRefreshInit: measureZoomTarget,
+        }
+      });
+      measureZoomTarget(); // seed an initial value before the first refresh fires
 
     // Initial States
     gsap.set(portalScaleLayerRef.current, { autoAlpha: 0, scale: 0.85, transformOrigin: "50% 50%" });
@@ -102,13 +121,19 @@ export function ScrollScale() {
       .to(portalScaleLayerRef.current, { scale: 1, duration: 1, ease: "power2.out" }, 1.0);
 
     // PHASE D: Small-to-Extreme Typography Zoom targeting 'T' stem (Progress 0.60 -> 0.90)
-    tl.to(portalScaleLayerRef.current, {
-      scale: () => getZoomDataCached().scale,
-      x: () => getZoomDataCached().x,
-      y: () => getZoomDataCached().y,
+    tl.to(zoomProgress, {
+      value: 1,
       duration: 2,
       ease: "power3.in",
-      force3D: false // Prevents bitmap rasterization, keeps DOM text sharp during extreme zoom
+      onUpdate: () => {
+        const p = zoomProgress.value;
+        gsap.set(portalScaleLayerRef.current, {
+          scale: 1 + p * (zoomTarget.scale - 1),
+          x: p * zoomTarget.x,
+          y: p * zoomTarget.y,
+          force3D: false, // Prevents bitmap rasterization, keeps DOM text sharp during extreme zoom
+        });
+      },
     }, 2.2);
 
     // Fade out navbar opacity as we zoom to avoid visual collision
@@ -140,7 +165,7 @@ export function ScrollScale() {
   return (
     <section ref={containerRef} className="relative h-[280vh] md:h-[320vh] w-full">
       {/* Sticky Stage */}
-      <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-[var(--world-b-bg)]">
+      <div ref={stickyStageRef} className="sticky top-0 h-[100svh] w-full overflow-hidden bg-[var(--world-b-bg)]">
         
         {/* World A Layer (Dark) */}
         <div 
