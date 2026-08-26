@@ -100,7 +100,16 @@ export function ScrollScale() {
           trigger: containerRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: 1.0, // Smoother scrub for the narrative flow
+          // scrub used to be 1.0 (a full second of lag behind the real scroll position).
+          // Stacked on top of Lenis's own scroll smoothing (lerp: 0.1 in smooth-scroll.tsx),
+          // that meant the whole timeline -- including this section's zoom -- visibly
+          // "caught up" after reversing scroll direction rather than tracking it immediately,
+          // which reads as the effect intermittently not being there. Verified the zoom math
+          // itself is direction-symmetric (same scroll position -> same output either way);
+          // the lag was purely this extra layer of smoothing on top of Lenis's own. Lower
+          // value keeps some smoothing (avoids a harsh 1:1 jump on wheel notches) while
+          // staying tightly linked to the actual scroll position in both directions.
+          scrub: 0.3,
           invalidateOnRefresh: true, // Re-measures zoomTarget on resize/font load
           onRefreshInit: measureZoomTarget,
         }
