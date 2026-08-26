@@ -55,7 +55,7 @@ export function ScrollScale() {
       const scaleX = vw / stemWidth;
       const scaleY = vh / stemHeight;
       const requiredScale = Math.max(scaleX, scaleY) * 2.0; // 2x Safety margin for full corner coverage
-      
+
       // Translation required while scaling to bring the 'T' stem to the center
       const finalX = -deltaX * requiredScale;
       const finalY = -deltaY * requiredScale;
