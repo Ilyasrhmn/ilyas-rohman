@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { originFromEvent } from "@/components/layout/route-reveal";
+import { originOfElement } from "@/components/layout/route-reveal";
 
 // Must stay >= the reveal-out animation in globals.css, so the overlay isn't yanked
 // out of the DOM before the collapse has finished playing.
@@ -15,8 +15,8 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
   // itself is driven entirely by CSS (see .reveal-layer in globals.css) -- no JS timing.
   const [isMounted, setIsMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  // Reveal origin in viewport px: the exact point MENU was clicked. CLOSE reuses it rather
-  // than measuring itself, so the menu retracts to the same point it grew out of instead of
+  // Reveal origin in viewport px: the MENU button's own position. CLOSE reuses it rather
+  // than measuring itself, so the menu retracts to the same place it grew out of instead of
   // jumping to wherever CLOSE happens to sit.
   const [origin, setOrigin] = useState({ x: 0, y: 0 });
   const openOrigin = useRef({ x: 0, y: 0 });
@@ -25,8 +25,8 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const reduced = useReducedMotion();
 
-  const openMenu = (e: MouseEvent<HTMLButtonElement>) => {
-    const point = originFromEvent(e, menuBtnRef.current);
+  const openMenu = () => {
+    const point = originOfElement(menuBtnRef.current);
     openOrigin.current = point;
     setOrigin(point);
     setIsClosing(false);

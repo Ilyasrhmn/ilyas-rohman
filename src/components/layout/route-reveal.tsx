@@ -42,22 +42,20 @@ const RouteRevealContext = createContext<RevealFn | null>(null);
 export const useRouteReveal = () => useContext(RouteRevealContext);
 
 /**
- * The exact point the user clicked, in viewport coordinates -- the same space the overlay
- * (position: fixed, inset-0) is laid out in, so no scroll or element-local offset has to be
- * reconciled. Keyboard activation fires a click carrying no pointer position (detail === 0,
- * clientX/Y both 0), which would otherwise anchor every keyboard navigation to the top-left
- * corner, so that case falls back to the middle of the element that was activated.
+ * The centre of the element that triggered the navigation, in viewport coordinates -- the
+ * same space the overlay (position: fixed, inset-0) is laid out in, so no scroll or
+ * element-local offset has to be reconciled.
+ *
+ * Deliberately the element and not the pointer: the link is the anchor of the transition,
+ * so a page always opens from the same place it is closed back to, and keyboard activation
+ * (which carries no pointer coordinates at all) behaves identically to a click. Measured
+ * live rather than cached, so a link that moved with a breakpoint change still reports
+ * where it actually is now.
  */
-export function originFromEvent(
-  e: MouseEvent<HTMLElement>,
-  fallbackEl: HTMLElement | null
-): RevealOrigin {
-  if (e.detail !== 0) return { x: e.clientX, y: e.clientY };
-  if (fallbackEl) {
-    const r = fallbackEl.getBoundingClientRect();
-    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-  }
-  return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+export function originOfElement(el: HTMLElement | null): RevealOrigin {
+  if (!el) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 }
 
 /**
@@ -100,7 +98,7 @@ export function RouteReveal({ children }: { children: ReactNode }) {
       }
       busy.current = true;
       // Landing on a page directly (deep link, refresh, browser back) leaves nothing to
-      // pop, so the back link's own click point is the only sensible anchor.
+      // pop, so the back link's own position is the only sensible anchor.
       const from = dir === "forward" ? point : originStack.current.pop() ?? point;
       if (dir === "forward") originStack.current.push(point);
       setOrigin(from);
@@ -185,7 +183,8 @@ export function RevealLink({
     // middle click should still open a new tab rather than animate this one.
     if (!reveal || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
-    reveal(href, originFromEvent(e, e.currentTarget), direction);
+    // currentTarget is the <a> itself, never whatever child was under the pointer.
+    reveal(href, originOfElement(e.currentTarget), direction);
   };
 
   return (
