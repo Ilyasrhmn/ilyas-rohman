@@ -318,37 +318,22 @@ body[data-nav-theme="world-a"] {
   animation: reveal-out 650ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
-/* Forward route navigation opens a hole in the dark layer instead of growing a disc.
-   A growing disc would COVER the page you are leaving, which then needs a second,
-   opposite animation to uncover the page you arrived at -- two animations for one
-   navigation. A growing hole reveals the page you are arriving at directly, so one
-   animation completes the whole trip: the destination irises open from the click point
-   and stays. Going back reuses "out" (the shrinking disc) so the dark layer retracts
-   toward the button, which is the same motion CLOSE already uses. */
-@property --reveal-r {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 0%;
+/* Forward route navigation: the dark disc grows out of the clicked link exactly like the
+   menu grows out of MENU -- same keyframes, same easing, same duration -- so entering a
+   page reads as the same gesture as opening the menu.
+
+   The page underneath is swapped while the disc is already covering the screen, then the
+   disc dissolves over 250ms. That tail is a plain opacity fade, deliberately NOT a second
+   reveal running backwards: the shape only ever travels one direction per navigation. It
+   exists because the destination can be light (the archive is cream) and cutting straight
+   from a full dark screen to it would flash. */
+@keyframes reveal-fade {
+  to { opacity: 0; }
 }
-@keyframes reveal-open {
-  from { --reveal-r: 0%; }
-  to   { --reveal-r: 110%; }
-}
-.reveal-layer[data-reveal="open"] {
-  /* In a radial-gradient sized farthest-corner, 100% is exactly the distance to the
-     farthest corner, so 110% clears the viewport from any origin. The two stops sit
-     together so the edge stays hard instead of feathering. */
-  -webkit-mask-image: radial-gradient(
-    circle at var(--reveal-ox) var(--reveal-oy),
-    transparent var(--reveal-r),
-    #000 var(--reveal-r)
-  );
-  mask-image: radial-gradient(
-    circle at var(--reveal-ox) var(--reveal-oy),
-    transparent var(--reveal-r),
-    #000 var(--reveal-r)
-  );
-  animation: reveal-open 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.reveal-layer[data-reveal="enter"] {
+  animation:
+    reveal-in 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    reveal-fade 250ms linear 800ms forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -361,10 +346,8 @@ body[data-nav-theme="world-a"] {
     animation: none;
     clip-path: circle(0% at var(--reveal-ox) var(--reveal-oy));
   }
-  .reveal-layer[data-reveal="open"] {
+  .reveal-layer[data-reveal="enter"] {
     animation: none;
-    -webkit-mask-image: none;
-    mask-image: none;
     opacity: 0;
   }
 }

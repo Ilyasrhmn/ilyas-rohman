@@ -15,14 +15,18 @@ import {
 } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
-// Must match the reveal-open / reveal-out animations in globals.css.
-const FORWARD_MS = 800;
+// Must match the reveal-in / reveal-fade / reveal-out animations in globals.css.
+const FORWARD_COVER_MS = 800; // disc grows out of the link and covers the screen
+const FORWARD_FADE_MS = 250; // then the cover dissolves onto the destination
 const BACK_MS = 650;
 
-// "forward" = going deeper (home -> projects -> a project). The dark layer opens a hole
-// that irises the destination into view from the click point.
-// "back" = returning the way you came. The dark layer is a disc that retracts toward the
-// button, uncovering the page behind it -- the same motion CLOSE uses on the menu.
+// "forward" = going deeper (home -> projects -> a project). The dark disc grows out of the
+// clicked link and covers the page being left, exactly like MENU grows out of the MENU
+// button. The route is swapped once that cover is complete -- swapping any earlier would
+// put the destination on screen before the transition had played over it.
+// "back" = returning the way you came. The route is swapped immediately, under a disc that
+// already covers the screen, and the disc then retracts toward the button to uncover it --
+// the same motion CLOSE uses on the menu.
 export type RevealDirection = "forward" | "back";
 
 type RevealFn = (
@@ -45,6 +49,8 @@ export function RouteReveal({ children }: { children: ReactNode }) {
   const [playing, setPlaying] = useState(false);
   const [direction, setDirection] = useState<RevealDirection>("forward");
   const [origin, setOrigin] = useState({ x: 0, y: 0 });
+  // The forward destination, held until the cover animation has finished.
+  const [pending, setPending] = useState<string | null>(null);
   const router = useRouter();
   const reduced = useReducedMotion();
   // A ref, not state, so revealTo stays referentially stable and doesn't churn the
@@ -62,27 +68,32 @@ export function RouteReveal({ children }: { children: ReactNode }) {
       setOrigin(centerOf(el));
       setDirection(dir);
       setPlaying(true);
-      // Navigate straight away rather than after the animation. The overlay already
-      // hides the swap (a forward transition starts fully dark, a back transition starts
-      // as a full-screen disc), so the destination is in place by the time the animation
-      // uncovers it -- which is what lets a single animation finish the whole navigation
-      // instead of needing a second one to undo a cover.
-      router.push(href);
+      setPending(dir === "forward" ? href : null);
+      // Going back, the disc already covers the screen on its very first frame, so the
+      // swap can happen right now and be hidden by it. Going forward the disc starts at
+      // nothing, so the swap has to wait until it has covered (see the effect below).
+      if (dir === "back") router.push(href);
     },
     [reduced, router]
   );
 
-  // One animation per navigation: when it has played out, drop the overlay. There is no
-  // second phase and nothing waits on the route -- if navigation is slow the destination
-  // simply appears under an overlay that is already on its way out.
+  // Forward only: swap the route once the disc has finished covering the screen.
+  useEffect(() => {
+    if (!pending) return;
+    const id = setTimeout(() => router.push(pending), FORWARD_COVER_MS);
+    return () => clearTimeout(id);
+  }, [pending, router]);
+
+  // One shape animation per navigation: when it has played out, drop the overlay.
   useEffect(() => {
     if (!playing) return;
     const id = setTimeout(
       () => {
         busy.current = false;
+        setPending(null);
         setPlaying(false);
       },
-      direction === "forward" ? FORWARD_MS : BACK_MS
+      direction === "forward" ? FORWARD_COVER_MS + FORWARD_FADE_MS : BACK_MS
     );
     return () => clearTimeout(id);
   }, [playing, direction]);
@@ -93,7 +104,7 @@ export function RouteReveal({ children }: { children: ReactNode }) {
       {playing && (
         <div
           aria-hidden
-          data-reveal={direction === "forward" ? "open" : "out"}
+          data-reveal={direction === "forward" ? "enter" : "out"}
           style={
             {
               "--reveal-ox": `${origin.x}px`,
