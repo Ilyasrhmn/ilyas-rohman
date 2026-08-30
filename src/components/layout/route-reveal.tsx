@@ -29,9 +29,11 @@ const BACK_MS = 650;
 // the same motion CLOSE uses on the menu.
 export type RevealDirection = "forward" | "back";
 
+export type RevealOrigin = { x: number; y: number };
+
 type RevealFn = (
   href: string,
-  origin: HTMLElement | null,
+  origin: RevealOrigin,
   direction: RevealDirection
 ) => void;
 
@@ -39,11 +41,24 @@ const RouteRevealContext = createContext<RevealFn | null>(null);
 
 export const useRouteReveal = () => useContext(RouteRevealContext);
 
-const centerOf = (el: HTMLElement | null) => {
-  if (!el) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-  const r = el.getBoundingClientRect();
-  return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-};
+/**
+ * The exact point the user clicked, in viewport coordinates -- the same space the overlay
+ * (position: fixed, inset-0) is laid out in, so no scroll or element-local offset has to be
+ * reconciled. Keyboard activation fires a click carrying no pointer position (detail === 0,
+ * clientX/Y both 0), which would otherwise anchor every keyboard navigation to the top-left
+ * corner, so that case falls back to the middle of the element that was activated.
+ */
+export function originFromEvent(
+  e: MouseEvent<HTMLElement>,
+  fallbackEl: HTMLElement | null
+): RevealOrigin {
+  if (e.detail !== 0) return { x: e.clientX, y: e.clientY };
+  if (fallbackEl) {
+    const r = fallbackEl.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+  return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+}
 
 export function RouteReveal({ children }: { children: ReactNode }) {
   const [playing, setPlaying] = useState(false);
@@ -56,16 +71,31 @@ export function RouteReveal({ children }: { children: ReactNode }) {
   // A ref, not state, so revealTo stays referentially stable and doesn't churn the
   // context value while a transition is running.
   const busy = useRef(false);
+  // Where each still-open navigation was entered from. Going forward pushes the click
+  // point; going back pops it, so a page always closes toward the exact point it was
+  // opened from rather than toward wherever the back link happens to sit. It is a stack
+  // rather than a single value so nesting unwinds correctly: home -> projects -> a
+  // project, then back, back, returns to the project link's point and then the "View my
+  // work" point, in that order. This lives in a ref on a provider above <main>, so it
+  // survives the route change it describes.
+  const originStack = useRef<RevealOrigin[]>([]);
 
   const revealTo = useCallback<RevealFn>(
-    (href, el, dir) => {
+    (href, point, dir) => {
       if (busy.current) return;
       if (reduced) {
         router.push(href);
         return;
       }
       busy.current = true;
-      setOrigin(centerOf(el));
+      if (dir === "forward") {
+        originStack.current.push(point);
+        setOrigin(point);
+      } else {
+        // Landing here directly (deep link, refresh, browser back) leaves nothing to pop,
+        // so the back link's own click point is the only sensible anchor.
+        setOrigin(originStack.current.pop() ?? point);
+      }
       setDirection(dir);
       setPlaying(true);
       setPending(dir === "forward" ? href : null);
@@ -143,7 +173,7 @@ export function RevealLink({
     // middle click should still open a new tab rather than animate this one.
     if (!reveal || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
-    reveal(href, e.currentTarget, direction);
+    reveal(href, originFromEvent(e, e.currentTarget), direction);
   };
 
   return (

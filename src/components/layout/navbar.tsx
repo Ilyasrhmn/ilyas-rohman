@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { originFromEvent } from "@/components/layout/route-reveal";
 
 // Must stay >= the reveal-out animation in globals.css, so the overlay isn't yanked
 // out of the DOM before the collapse has finished playing.
@@ -14,32 +15,26 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
   // itself is driven entirely by CSS (see .reveal-layer in globals.css) -- no JS timing.
   const [isMounted, setIsMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  // Reveal origin in viewport px, read from whichever button was actually clicked, so it
-  // follows the buttons across breakpoints instead of assuming a fixed corner offset.
+  // Reveal origin in viewport px: the exact point MENU was clicked. CLOSE reuses it rather
+  // than measuring itself, so the menu retracts to the same point it grew out of instead of
+  // jumping to wherever CLOSE happens to sit.
   const [origin, setOrigin] = useState({ x: 0, y: 0 });
+  const openOrigin = useRef({ x: 0, y: 0 });
 
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const reduced = useReducedMotion();
 
-  const centerOf = (el: HTMLElement | null) => {
-    if (!el) {
-      // Only reachable if a ref hasn't attached yet; approximates the buttons' shared
-      // top-right position rather than collapsing the reveal to the viewport's corner.
-      return { x: window.innerWidth - 48, y: 48 };
-    }
-    const r = el.getBoundingClientRect();
-    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-  };
-
-  const openMenu = () => {
-    setOrigin(centerOf(menuBtnRef.current));
+  const openMenu = (e: MouseEvent<HTMLButtonElement>) => {
+    const point = originFromEvent(e, menuBtnRef.current);
+    openOrigin.current = point;
+    setOrigin(point);
     setIsClosing(false);
     setIsMounted(true);
   };
 
   const closeMenu = useCallback(() => {
-    setOrigin(centerOf(closeBtnRef.current));
+    setOrigin(openOrigin.current);
     setIsClosing(true);
   }, []);
 
@@ -53,14 +48,10 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
     return () => clearTimeout(id);
   }, [isMounted, isClosing, reduced]);
 
-  // Keep the origin correct if the viewport changes while the menu is up, so a later
-  // close still collapses toward where CLOSE actually is now.
-  useEffect(() => {
-    if (!isMounted) return;
-    const onResize = () => setOrigin(centerOf(closeBtnRef.current));
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [isMounted]);
+  // No resize handler recomputing the origin: it used to re-anchor to the CLOSE button,
+  // which defeats the point of closing toward where the user actually opened from. A
+  // resize can only shift that stored point slightly relative to the new layout, and the
+  // circle(150%) radius still covers the viewport at any size, so nothing needs fixing up.
 
   useEffect(() => {
     if (!isMounted) return;

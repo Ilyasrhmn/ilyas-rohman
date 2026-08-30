@@ -1,10 +1,10 @@
-import Link from "next/link";
+import { RevealLink } from "@/components/layout/route-reveal";
 import Image from "next/image";
 import type { Project } from "@/types";
 
 export function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
-    <Link
+    <RevealLink
       href={`/projects/${project.slug}`}
       className="group relative block aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[var(--world-a-border)] bg-[var(--world-a-surface)] transition-colors hover:border-[var(--world-a-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
     >
@@ -40,6 +40,6 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
           </p>
         </div>
       </div>
-    </Link>
+    </RevealLink>
   );
 }
