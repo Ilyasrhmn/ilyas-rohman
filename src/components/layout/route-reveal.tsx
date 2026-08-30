@@ -60,10 +60,21 @@ export function originFromEvent(
   return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 }
 
+/**
+ * Distance from the origin to the farthest viewport corner: the smallest radius that still
+ * covers the screen. Sizing the circle to the click is what makes the growth visible --
+ * the fixed 150% it replaces resolves against sqrt((w² + h²) / 2) regardless of where the
+ * origin is, so a click near the middle overshot by ~2x (1801px against the 875px needed,
+ * measured) and the screen was already black 80ms into an 800ms animation.
+ */
+const radiusToCover = ({ x, y }: RevealOrigin) =>
+  Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+
 export function RouteReveal({ children }: { children: ReactNode }) {
   const [playing, setPlaying] = useState(false);
   const [direction, setDirection] = useState<RevealDirection>("forward");
   const [origin, setOrigin] = useState({ x: 0, y: 0 });
+  const [radius, setRadius] = useState(0);
   // The forward destination, held until the cover animation has finished.
   const [pending, setPending] = useState<string | null>(null);
   const router = useRouter();
@@ -88,14 +99,14 @@ export function RouteReveal({ children }: { children: ReactNode }) {
         return;
       }
       busy.current = true;
-      if (dir === "forward") {
-        originStack.current.push(point);
-        setOrigin(point);
-      } else {
-        // Landing here directly (deep link, refresh, browser back) leaves nothing to pop,
-        // so the back link's own click point is the only sensible anchor.
-        setOrigin(originStack.current.pop() ?? point);
-      }
+      // Landing on a page directly (deep link, refresh, browser back) leaves nothing to
+      // pop, so the back link's own click point is the only sensible anchor.
+      const from = dir === "forward" ? point : originStack.current.pop() ?? point;
+      if (dir === "forward") originStack.current.push(point);
+      setOrigin(from);
+      // Derived from the viewport as it is now rather than stored with the point: a popped
+      // origin still has to cover the current window, which may have been resized since.
+      setRadius(radiusToCover(from));
       setDirection(dir);
       setPlaying(true);
       setPending(dir === "forward" ? href : null);
@@ -139,6 +150,7 @@ export function RouteReveal({ children }: { children: ReactNode }) {
             {
               "--reveal-ox": `${origin.x}px`,
               "--reveal-oy": `${origin.y}px`,
+              "--reveal-radius": `${radius}px`,
             } as CSSProperties
           }
           // Above the navbar (z-100) and the menu overlay (z-200) so nothing pokes

@@ -303,13 +303,21 @@ body[data-nav-theme="world-a"] {
    150% because a circle()'s percentage radius resolves against sqrt((w² + h²) / 2); a
    corner origin needs sqrt(w² + h²), i.e. √2 ≈ 141.4%, so 150% always covers the viewport
    at any aspect ratio with a little margin (and without recomputing a pixel radius). */
+/* --reveal-radius, when set, is the exact distance from the origin to the farthest
+   viewport corner -- the smallest circle that still covers the screen. The 150% fallback
+   is the old fixed value and is what the menu still uses (it never sets the property), so
+   MENU/CLOSE animate exactly as they always have. A percentage radius resolves against
+   sqrt((w² + h²) / 2) wherever the origin sits, so for a click near the middle of the
+   screen it overshot by ~2x: measured 1801px against the 875px actually needed, which
+   covered the screen 80ms into an 800ms animation and hid the fact that it grew out of the
+   cursor at all. 0px rather than 0% so the start and end are the same unit and interpolate. */
 @keyframes reveal-in {
-  from { clip-path: circle(0% at var(--reveal-ox) var(--reveal-oy)); }
-  to   { clip-path: circle(150% at var(--reveal-ox) var(--reveal-oy)); }
+  from { clip-path: circle(0px at var(--reveal-ox) var(--reveal-oy)); }
+  to   { clip-path: circle(var(--reveal-radius, 150%) at var(--reveal-ox) var(--reveal-oy)); }
 }
 @keyframes reveal-out {
-  from { clip-path: circle(150% at var(--reveal-ox) var(--reveal-oy)); }
-  to   { clip-path: circle(0% at var(--reveal-ox) var(--reveal-oy)); }
+  from { clip-path: circle(var(--reveal-radius, 150%) at var(--reveal-ox) var(--reveal-oy)); }
+  to   { clip-path: circle(0px at var(--reveal-ox) var(--reveal-oy)); }
 }
 .reveal-layer[data-reveal="in"] {
   animation: reveal-in 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -344,7 +352,7 @@ body[data-nav-theme="world-a"] {
   }
   .reveal-layer[data-reveal="out"] {
     animation: none;
-    clip-path: circle(0% at var(--reveal-ox) var(--reveal-oy));
+    clip-path: circle(0px at var(--reveal-ox) var(--reveal-oy));
   }
   .reveal-layer[data-reveal="enter"] {
     animation: none;
