@@ -20,6 +20,7 @@ export function ProjectsHero() {
         <BlurReveal>
           <RevealLink
             href="/"
+            direction="back"
             className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)] transition-colors hover:text-[var(--world-a-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             &larr; Index

@@ -318,6 +318,39 @@ body[data-nav-theme="world-a"] {
   animation: reveal-out 650ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
+/* Forward route navigation opens a hole in the dark layer instead of growing a disc.
+   A growing disc would COVER the page you are leaving, which then needs a second,
+   opposite animation to uncover the page you arrived at -- two animations for one
+   navigation. A growing hole reveals the page you are arriving at directly, so one
+   animation completes the whole trip: the destination irises open from the click point
+   and stays. Going back reuses "out" (the shrinking disc) so the dark layer retracts
+   toward the button, which is the same motion CLOSE already uses. */
+@property --reveal-r {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+@keyframes reveal-open {
+  from { --reveal-r: 0%; }
+  to   { --reveal-r: 110%; }
+}
+.reveal-layer[data-reveal="open"] {
+  /* In a radial-gradient sized farthest-corner, 100% is exactly the distance to the
+     farthest corner, so 110% clears the viewport from any origin. The two stops sit
+     together so the edge stays hard instead of feathering. */
+  -webkit-mask-image: radial-gradient(
+    circle at var(--reveal-ox) var(--reveal-oy),
+    transparent var(--reveal-r),
+    #000 var(--reveal-r)
+  );
+  mask-image: radial-gradient(
+    circle at var(--reveal-ox) var(--reveal-oy),
+    transparent var(--reveal-r),
+    #000 var(--reveal-r)
+  );
+  animation: reveal-open 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* Keep everything fully functional, just without the spatial reveal. */
   .reveal-layer[data-reveal="in"] {
@@ -327,6 +360,12 @@ body[data-nav-theme="world-a"] {
   .reveal-layer[data-reveal="out"] {
     animation: none;
     clip-path: circle(0% at var(--reveal-ox) var(--reveal-oy));
+  }
+  .reveal-layer[data-reveal="open"] {
+    animation: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 0;
   }
 }
 
