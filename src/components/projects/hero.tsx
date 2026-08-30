@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { RevealLink } from "@/components/layout/route-reveal";
 import { BlurReveal } from "@/components/effects/blur-reveal";
 import { projects } from "@/data/projects";
 
@@ -18,12 +18,12 @@ export function ProjectsHero() {
 
       <div className="relative z-10 mx-auto max-w-4xl">
         <BlurReveal>
-          <Link
+          <RevealLink
             href="/"
             className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)] transition-colors hover:text-[var(--world-a-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             &larr; Index
-          </Link>
+          </RevealLink>
         </BlurReveal>
 
         <BlurReveal delay={0.05}>

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { RevealLink } from "@/components/layout/route-reveal";
 import { certificates } from "@/data/certificates";
 import { BlurReveal } from "@/components/effects/blur-reveal";
 import { lastAddedLabel } from "./data";
@@ -20,12 +20,12 @@ export function AchievementsHero() {
 
       <div className="relative z-10 mx-auto max-w-4xl">
         <BlurReveal>
-          <Link
+          <RevealLink
             href="/"
             className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-b-muted)] transition-colors hover:text-[var(--world-b-accent)]"
           >
             ← Index
-          </Link>
+          </RevealLink>
         </BlurReveal>
 
         <BlurReveal delay={0.05}>

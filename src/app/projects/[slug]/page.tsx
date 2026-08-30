@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { RevealLink } from "@/components/layout/route-reveal";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { projects, getProject } from "@/data/projects";
@@ -37,12 +37,12 @@ export default async function ProjectDetailPage({
     <div className="min-h-screen bg-[var(--world-a-bg)]">
       <div className="px-6 pb-16 pt-32 sm:px-10 md:pt-40">
         <div className="mx-auto max-w-3xl">
-          <Link
+          <RevealLink
             href="/projects"
             className="inline-flex min-h-[44px] items-center font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)] transition-colors hover:text-[var(--world-a-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             &larr; Back to projects
-          </Link>
+          </RevealLink>
         </div>
         <div className="mt-8">
           <ProjectDetail project={project} />

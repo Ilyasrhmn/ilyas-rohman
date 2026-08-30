@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { RevealLink } from "@/components/layout/route-reveal";
 import { BlurReveal } from "@/components/effects/blur-reveal";
 import { projects } from "@/data/projects";
 
@@ -9,7 +9,7 @@ export function NextProject({ currentSlug }: { currentSlug: string }) {
 
   return (
     <BlurReveal delay={0.1}>
-      <Link
+      <RevealLink
         href={`/projects/${next.slug}`}
         className="group mx-auto mt-16 flex max-w-3xl flex-col items-center gap-2 border-t border-[var(--world-a-border)] py-10 text-center transition-colors hover:border-[var(--world-a-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       >
@@ -19,7 +19,7 @@ export function NextProject({ currentSlug }: { currentSlug: string }) {
         <span className="font-serif text-3xl text-[var(--world-a-text)] transition-colors group-hover:text-[var(--world-a-accent)] sm:text-4xl">
           {next.title} &rarr;
         </span>
-      </Link>
+      </RevealLink>
     </BlurReveal>
   );
 }
