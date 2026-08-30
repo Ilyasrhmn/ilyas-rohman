@@ -4,14 +4,14 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
-// Must stay >= the menu-conceal animation in globals.css, so the overlay isn't yanked
+// Must stay >= the reveal-out animation in globals.css, so the overlay isn't yanked
 // out of the DOM before the collapse has finished playing.
 const CLOSE_MS = 650;
 
 export default function Navbar({ onContact }: { onContact: () => void }) {
   // Two flags, not one: the overlay has to stay in the DOM while it animates closed, so
   // "is it rendered" and "is it collapsing" are genuinely different questions. The reveal
-  // itself is driven entirely by CSS (see .menu-overlay in globals.css) -- no JS timing.
+  // itself is driven entirely by CSS (see .reveal-layer in globals.css) -- no JS timing.
   const [isMounted, setIsMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   // Reveal origin in viewport px, read from whichever button was actually clicked, so it
@@ -101,16 +101,16 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
       {/* Fullscreen Menu Overlay */}
       {isMounted && (
         <div
-          data-menu-state={isClosing ? "closing" : "open"}
+          data-reveal={isClosing ? "out" : "in"}
           style={
             {
               // The overlay is inset-0, so its border-box is exactly the viewport and
               // these viewport-space px coordinates map straight onto it.
-              "--menu-ox": `${origin.x}px`,
-              "--menu-oy": `${origin.y}px`,
+              "--reveal-ox": `${origin.x}px`,
+              "--reveal-oy": `${origin.y}px`,
             } as React.CSSProperties
           }
-          className="menu-overlay fixed inset-0 z-[200] flex flex-col bg-[var(--world-a-bg)] text-[var(--world-a-text)]"
+          className="reveal-layer fixed inset-0 z-[200] flex flex-col bg-[var(--world-a-bg)] text-[var(--world-a-text)]"
         >
           <div className="flex items-start justify-between p-5 sm:p-10">
             <div className="flex flex-col gap-0.5">
@@ -138,6 +138,13 @@ export default function Navbar({ onContact }: { onContact: () => void }) {
               className="font-serif text-4xl sm:text-6xl font-light uppercase tracking-widest hover:text-[var(--world-a-accent)] transition-colors"
             >
               Projects
+            </Link>
+            <Link
+              href="/achievements"
+              onClick={closeMenu}
+              className="font-serif text-4xl sm:text-6xl font-light uppercase tracking-widest hover:text-[var(--world-a-accent)] transition-colors"
+            >
+              Archive
             </Link>
             <button
               onClick={() => {

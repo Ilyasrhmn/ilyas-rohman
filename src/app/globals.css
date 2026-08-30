@@ -286,10 +286,12 @@ body[data-nav-theme="world-a"] {
   .marquee-track { animation-play-state: paused; }
 }
 
-/* ─── Fullscreen Menu Reveal ───
-   The overlay grows out of the MENU button and collapses back toward CLOSE. The origin
-   (--menu-ox / --menu-oy) is set inline from the button's real bounding rect, so it
-   follows the buttons across breakpoints instead of assuming a fixed corner.
+/* ─── Reveal Layer (fullscreen menu + route transitions) ───
+   A dark layer that grows out of whatever element was clicked and collapses back toward
+   it. The origin (--reveal-ox / --reveal-oy) is set inline from that element's real
+   bounding rect, so it follows the trigger across breakpoints instead of assuming a
+   fixed position. Shared by the fullscreen menu overlay and the route-change overlay --
+   same motion, same timings, one definition.
 
    Keyframes rather than a transition on purpose: a transition needs the collapsed value
    to be painted before the expanded one is applied, which means staging the second value
@@ -301,30 +303,30 @@ body[data-nav-theme="world-a"] {
    150% because a circle()'s percentage radius resolves against sqrt((w² + h²) / 2); a
    corner origin needs sqrt(w² + h²), i.e. √2 ≈ 141.4%, so 150% always covers the viewport
    at any aspect ratio with a little margin (and without recomputing a pixel radius). */
-@keyframes menu-reveal {
-  from { clip-path: circle(0% at var(--menu-ox) var(--menu-oy)); }
-  to   { clip-path: circle(150% at var(--menu-ox) var(--menu-oy)); }
+@keyframes reveal-in {
+  from { clip-path: circle(0% at var(--reveal-ox) var(--reveal-oy)); }
+  to   { clip-path: circle(150% at var(--reveal-ox) var(--reveal-oy)); }
 }
-@keyframes menu-conceal {
-  from { clip-path: circle(150% at var(--menu-ox) var(--menu-oy)); }
-  to   { clip-path: circle(0% at var(--menu-ox) var(--menu-oy)); }
+@keyframes reveal-out {
+  from { clip-path: circle(150% at var(--reveal-ox) var(--reveal-oy)); }
+  to   { clip-path: circle(0% at var(--reveal-ox) var(--reveal-oy)); }
 }
-.menu-overlay[data-menu-state="open"] {
-  animation: menu-reveal 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.reveal-layer[data-reveal="in"] {
+  animation: reveal-in 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.menu-overlay[data-menu-state="closing"] {
-  animation: menu-conceal 650ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+.reveal-layer[data-reveal="out"] {
+  animation: reveal-out 650ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Keep the menu fully functional, just without the spatial reveal. */
-  .menu-overlay[data-menu-state="open"] {
+  /* Keep everything fully functional, just without the spatial reveal. */
+  .reveal-layer[data-reveal="in"] {
     animation: none;
     clip-path: none;
   }
-  .menu-overlay[data-menu-state="closing"] {
+  .reveal-layer[data-reveal="out"] {
     animation: none;
-    clip-path: circle(0% at var(--menu-ox) var(--menu-oy));
+    clip-path: circle(0% at var(--reveal-ox) var(--reveal-oy));
   }
 }
 

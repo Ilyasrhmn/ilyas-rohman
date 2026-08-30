@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Link from "next/link";
+import { RevealLink } from "@/components/layout/route-reveal";
 import { GooeyText } from "@/components/ui/gooey-text-morphing";
 import { useContact } from "@/components/layout/chrome-shell";
 
@@ -64,12 +64,12 @@ export default function CTASection() {
                     >
                         Start a project
                     </button>
-                    <Link
+                    <RevealLink
                         href="/projects"
                         className="inline-flex min-h-[44px] items-center justify-center gap-2 border border-[var(--world-a-border)] px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-text)] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
                         View my work
-                    </Link>
+                    </RevealLink>
                 </div>
             </div>
         </section>
