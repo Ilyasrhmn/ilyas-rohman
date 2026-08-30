@@ -9,6 +9,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
   type MouseEvent,
   type ReactNode,
 } from "react";
@@ -119,11 +120,13 @@ export function RouteReveal({ children }: { children: ReactNode }) {
 export function RevealLink({
   href,
   className,
+  style,
   children,
   onClick,
 }: {
   href: string;
   className?: string;
+  style?: CSSProperties;
   children: ReactNode;
   onClick?: () => void;
 }) {
@@ -139,7 +142,7 @@ export function RevealLink({
   };
 
   return (
-    <Link href={href} className={className} onClick={handleClick}>
+    <Link href={href} className={className} style={style} onClick={handleClick}>
       {children}
     </Link>
   );

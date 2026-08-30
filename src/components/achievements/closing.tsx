@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
+import { RevealLink } from "@/components/layout/route-reveal";
 import { gsap, ScrollTrigger, registerGsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useContact } from "@/components/layout/chrome-shell";
@@ -71,13 +71,13 @@ export function AchievementsClosing() {
           them, the work is one click away.
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
-          <Link
+          <RevealLink
             href="/projects"
             className="inline-flex min-h-[44px] items-center gap-2 border px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: "inherit", borderColor: "currentColor" }}
           >
             See the work →
-          </Link>
+          </RevealLink>
           <button
             type="button"
             onClick={openContact}
