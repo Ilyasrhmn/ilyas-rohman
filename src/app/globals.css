@@ -286,6 +286,48 @@ body[data-nav-theme="world-a"] {
   .marquee-track { animation-play-state: paused; }
 }
 
+/* ─── Fullscreen Menu Reveal ───
+   The overlay grows out of the MENU button and collapses back toward CLOSE. The origin
+   (--menu-ox / --menu-oy) is set inline from the button's real bounding rect, so it
+   follows the buttons across breakpoints instead of assuming a fixed corner.
+
+   Keyframes rather than a transition on purpose: a transition needs the collapsed value
+   to be painted before the expanded one is applied, which means staging the second value
+   in a requestAnimationFrame -- and rAF never fires in a hidden/backgrounded tab, which
+   left the overlay mounted-but-never-opened and then self-closing on its unmount timer
+   (measured directly). A CSS animation runs from its own `from` state the moment the
+   element mounts, so the reveal no longer depends on any JS timing at all.
+
+   150% because a circle()'s percentage radius resolves against sqrt((w² + h²) / 2); a
+   corner origin needs sqrt(w² + h²), i.e. √2 ≈ 141.4%, so 150% always covers the viewport
+   at any aspect ratio with a little margin (and without recomputing a pixel radius). */
+@keyframes menu-reveal {
+  from { clip-path: circle(0% at var(--menu-ox) var(--menu-oy)); }
+  to   { clip-path: circle(150% at var(--menu-ox) var(--menu-oy)); }
+}
+@keyframes menu-conceal {
+  from { clip-path: circle(150% at var(--menu-ox) var(--menu-oy)); }
+  to   { clip-path: circle(0% at var(--menu-ox) var(--menu-oy)); }
+}
+.menu-overlay[data-menu-state="open"] {
+  animation: menu-reveal 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.menu-overlay[data-menu-state="closing"] {
+  animation: menu-conceal 650ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Keep the menu fully functional, just without the spatial reveal. */
+  .menu-overlay[data-menu-state="open"] {
+    animation: none;
+    clip-path: none;
+  }
+  .menu-overlay[data-menu-state="closing"] {
+    animation: none;
+    clip-path: circle(0% at var(--menu-ox) var(--menu-oy));
+  }
+}
+
 /* ─── Custom Scrollbar ─── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--background); }
