@@ -116,7 +116,7 @@ export const certificates: Certificate[] = [
     skills: ["Blockchain", "Web3", "Smart Contracts", "DeFi"],
     credentialUrl: "",
     track: "Blockchain",
-    image: "/certificate/Bulan Literasi Blockchain.png",
+    image: "/certificate/Bulan Literasi Blockchain.webp",
     issuedDate: "2026",
   },
   {
@@ -127,7 +127,7 @@ export const certificates: Certificate[] = [
     credentialUrl: "https://www.hackerrank.com/certificates/d67e28b881bb",
     credentialId: "d67e28b881bb",
     track: "Problem Solving",
-    image: "/certificate/Problem Solving (Basic) Certificate.png",
+    image: "/certificate/Problem Solving (Basic) Certificate.webp",
     issuedDate: "2026",
   },
 ];
