@@ -163,6 +163,13 @@ export function PongGame() {
     const resizeCanvas = () => {
       const width = container.clientWidth
       const height = container.clientHeight
+      // A zero measurement means the footer was laid out before its size settled, which
+      // happens when a route transition mounts it underneath a covering overlay. Writing
+      // it through would bake a 0-wide backing store into the canvas and the game would
+      // render nothing, and the ResizeObserver below could not rescue it: the container's
+      // CSS size never actually changes afterwards, so it never fires again. Skipping
+      // leaves the last good size in place and waits for a real measurement.
+      if (width === 0 || height === 0) return
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
       dimsRef.current = { width, height }
       canvas.width = width * dpr
@@ -415,6 +422,12 @@ export function PongGame() {
     }
 
     resizeCanvas()
+    // If that first call was the one that measured zero, the guard above rejected it and
+    // nothing else would retry -- the ResizeObserver only reacts to the container actually
+    // changing size, which it does not do afterwards. Re-measure once the frame has been
+    // laid out to pick up the real size. Harmless when the first measurement was already
+    // good: the dimensions are the same and the redraw is a single frame's work.
+    const settleFrame = requestAnimationFrame(resizeCanvas)
     const resizeObserver = new ResizeObserver(resizeCanvas)
     resizeObserver.observe(container)
 
@@ -459,6 +472,7 @@ export function PongGame() {
     }
 
     return () => {
+      cancelAnimationFrame(settleFrame)
       resizeObserver.disconnect()
       intersectionObserver.disconnect()
       canvas.removeEventListener("mousemove", handleMouseMove)
