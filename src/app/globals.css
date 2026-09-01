@@ -360,6 +360,21 @@ body[data-nav-theme="world-a"] {
   }
 }
 
+/* ─── Pong: countdown tick ───
+   Re-triggered on every number change by keying the element on the count, so each second
+   lands with a beat instead of the digit silently swapping. */
+@keyframes pixel-tick {
+  0%   { transform: scale(1.35); opacity: 0.55; }
+  60%  { transform: scale(0.97); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.pixel-tick {
+  animation: pixel-tick 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pixel-tick { animation: none; }
+}
+
 /* ─── Custom Scrollbar ─── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--background); }

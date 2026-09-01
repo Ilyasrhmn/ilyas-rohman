@@ -16,6 +16,9 @@ const HEART_COLOR = "#8FAF8F"
 const LETTER_SPACING = 1
 
 const LIVES_START = 3
+// Seconds the life-lost panel waits before resuming on its own. Long enough to re-grip the
+// paddle without stranding a player who is ready immediately -- they can press Continue.
+const RESUME_COUNTDOWN = 10
 
 const PIXEL_MAP = {
   I: [
@@ -138,11 +141,13 @@ export function PongGame() {
   const gameStateRef = useRef<GameState>("idle")
   const startGameRef = useRef<() => void>(() => {})
   const resumeGameRef = useRef<() => void>(() => {})
+  const quitGameRef = useRef<() => void>(() => {})
   const playAgainRef = useRef<() => void>(() => {})
   const redrawRef = useRef<() => void>(() => {})
 
   const [gameState, setGameState] = useState<GameState>("idle")
   const [lives, setLives] = useState(LIVES_START)
+  const [countdown, setCountdown] = useState(RESUME_COUNTDOWN)
   const reducedMotion = useReducedMotion()
 
   // Keep gameState (for the DOM overlay) and gameStateRef (for the rAF loop) in lockstep.
@@ -281,9 +286,10 @@ export function PongGame() {
         return
       }
       respawnBall()
-      // Hold here until the player asks to carry on. Resuming on a timer meant the ball
-      // was already live again before they had re-gripped the paddle, so the next life
-      // could be lost to the pause rather than to the game.
+      // Seeded here rather than in the countdown effect: setting state straight from an
+      // effect body forces an extra render pass, and this path is already an event-style
+      // callback from the game loop.
+      setCountdown(RESUME_COUNTDOWN)
       setGameStateBoth("life-lost")
     }
 
@@ -475,6 +481,11 @@ export function PongGame() {
     resumeGameRef.current = () => {
       setGameStateBoth("playing")
     }
+    quitGameRef.current = () => {
+      // Ending early lands on the same terminal screen as running out of lives, so there
+      // is one place that offers Play Again rather than two ways to finish a run.
+      setGameStateBoth("gameover")
+    }
     playAgainRef.current = () => {
       setLivesBoth(LIVES_START)
       initializeGame()
@@ -490,6 +501,22 @@ export function PongGame() {
       if (rafId !== null) cancelAnimationFrame(rafId)
     }
   }, [])
+
+  // Life-lost auto-resume. Every state write happens inside the interval callback rather
+  // than the effect body, so this never triggers an extra render pass on mount.
+  useEffect(() => {
+    if (gameState !== "life-lost") return
+    let remaining = RESUME_COUNTDOWN
+    const id = setInterval(() => {
+      remaining -= 1
+      setCountdown(remaining)
+      if (remaining <= 0) {
+        clearInterval(id)
+        resumeGameRef.current()
+      }
+    }, 1000)
+    return () => clearInterval(id)
+  }, [gameState])
 
   // Keyboard control: attach only while playing, per spec, so arrow keys don't hijack the page otherwise.
   useEffect(() => {
@@ -554,15 +581,35 @@ export function PongGame() {
             <p className={`${pixelFont.className} text-sm uppercase tracking-[0.05em]`} style={{ color: BALL_COLOR }}>
               Life lost
             </p>
+
+            {/* Keyed on the value so the tick animation replays on every second. */}
+            <p
+              key={countdown}
+              className={`${pixelFont.className} pixel-tick text-4xl leading-none tabular-nums`}
+              style={{ color: BALL_COLOR }}
+              aria-live="polite"
+            >
+              {countdown}
+            </p>
             <p
               className={`${pixelFont.className} text-[10px] uppercase tracking-[0.05em]`}
               style={{ color: PADDLE_COLOR }}
             >
+              Resuming
+            </p>
+
+            <p className={`${pixelFont.className} text-sm uppercase tracking-[0.05em]`} style={{ color: PADDLE_COLOR }}>
               {lives} {lives === 1 ? "life" : "lives"} left
             </p>
-            <button type="button" onClick={() => resumeGameRef.current()} className={buttonClass} style={buttonStyle}>
-              Continue
-            </button>
+
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button type="button" onClick={() => resumeGameRef.current()} className={buttonClass} style={buttonStyle}>
+                Continue
+              </button>
+              <button type="button" onClick={() => quitGameRef.current()} className={buttonClass} style={buttonStyle}>
+                Quit
+              </button>
+            </div>
           </div>
         </div>
       )}
