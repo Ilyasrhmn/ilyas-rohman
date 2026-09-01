@@ -1,19 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 function useMedia(query: string): boolean {
-  const [match, setMatch] = useState(false);
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const media = window.matchMedia(query);
+      media.addEventListener("change", onChange);
+      return () => media.removeEventListener("change", onChange);
+    },
+    [query]
+  );
 
-  useEffect(() => {
-    const m = window.matchMedia(query);
-    setMatch(m.matches);
-    const on = () => setMatch(m.matches);
-    m.addEventListener("change", on);
-    return () => m.removeEventListener("change", on);
-  }, [query]);
-
-  return match;
+  // This used to be useState + a setState inside an effect, which made every consumer
+  // render once with a placeholder and then immediately re-render with the real value --
+  // an extra render in each of the 19 components that read it, several of them on the
+  // critical path. useSyncExternalStore reads the media query during render instead, so
+  // there is only one render, while getServerSnapshot keeps SSR and hydration agreeing
+  // (the server has no matchMedia). Matches the pattern already used by useMediaQuery.
+  return useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(query).matches,
+    () => false
+  );
 }
 
 export const useReducedMotion = () => useMedia("(prefers-reduced-motion: reduce)");
