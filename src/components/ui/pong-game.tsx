@@ -16,7 +16,6 @@ const HEART_COLOR = "#8FAF8F"
 const LETTER_SPACING = 1
 
 const LIVES_START = 3
-const LIFE_LOST_PAUSE_MS = 700
 
 const PIXEL_MAP = {
   I: [
@@ -137,12 +136,13 @@ export function PongGame() {
   const paddleStepRef = useRef(20)
   const livesRef = useRef(LIVES_START)
   const gameStateRef = useRef<GameState>("idle")
-  const lifeLostTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const startGameRef = useRef<() => void>(() => {})
+  const resumeGameRef = useRef<() => void>(() => {})
   const playAgainRef = useRef<() => void>(() => {})
   const redrawRef = useRef<() => void>(() => {})
 
   const [gameState, setGameState] = useState<GameState>("idle")
+  const [lives, setLives] = useState(LIVES_START)
   const reducedMotion = useReducedMotion()
 
   // Keep gameState (for the DOM overlay) and gameStateRef (for the rAF loop) in lockstep.
@@ -150,6 +150,14 @@ export function PongGame() {
     gameStateRef.current = next
     redrawRef.current()
     setGameState(next)
+  }
+
+  // Same split as above: the canvas HUD reads the ref from inside the rAF loop, while the
+  // life-lost panel needs a real state value -- reading the ref during render would not
+  // reliably re-render the count.
+  const setLivesBoth = (next: number) => {
+    livesRef.current = next
+    setLives(next)
   }
 
   useEffect(() => {
@@ -267,17 +275,16 @@ export function PongGame() {
     }
 
     const loseLife = () => {
-      livesRef.current -= 1
+      setLivesBoth(livesRef.current - 1)
       if (livesRef.current <= 0) {
         setGameStateBoth("gameover")
         return
       }
       respawnBall()
+      // Hold here until the player asks to carry on. Resuming on a timer meant the ball
+      // was already live again before they had re-gripped the paddle, so the next life
+      // could be lost to the pause rather than to the game.
       setGameStateBoth("life-lost")
-      if (lifeLostTimeoutRef.current) clearTimeout(lifeLostTimeoutRef.current)
-      lifeLostTimeoutRef.current = setTimeout(() => {
-        setGameStateBoth("playing")
-      }, LIFE_LOST_PAUSE_MS)
     }
 
     const updateGame = () => {
@@ -465,8 +472,11 @@ export function PongGame() {
     startGameRef.current = () => {
       setGameStateBoth("playing")
     }
+    resumeGameRef.current = () => {
+      setGameStateBoth("playing")
+    }
     playAgainRef.current = () => {
-      livesRef.current = LIVES_START
+      setLivesBoth(LIVES_START)
       initializeGame()
       setGameStateBoth("idle")
     }
@@ -478,7 +488,6 @@ export function PongGame() {
       canvas.removeEventListener("mousemove", handleMouseMove)
       canvas.removeEventListener("touchmove", handleTouchMove)
       if (rafId !== null) cancelAnimationFrame(rafId)
-      if (lifeLostTimeoutRef.current) clearTimeout(lifeLostTimeoutRef.current)
     }
   }, [])
 
@@ -542,9 +551,18 @@ export function PongGame() {
       {gameState === "life-lost" && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className={panelClass} style={panelStyle}>
-            <p className={`${pixelFont.className} text-xs uppercase tracking-[0.05em]`} style={{ color: BALL_COLOR }}>
+            <p className={`${pixelFont.className} text-sm uppercase tracking-[0.05em]`} style={{ color: BALL_COLOR }}>
               Life lost
             </p>
+            <p
+              className={`${pixelFont.className} text-[10px] uppercase tracking-[0.05em]`}
+              style={{ color: PADDLE_COLOR }}
+            >
+              {lives} {lives === 1 ? "life" : "lives"} left
+            </p>
+            <button type="button" onClick={() => resumeGameRef.current()} className={buttonClass} style={buttonStyle}>
+              Continue
+            </button>
           </div>
         </div>
       )}
