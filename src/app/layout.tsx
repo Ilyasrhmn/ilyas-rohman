@@ -21,10 +21,12 @@ const grotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: `${profile.name} — ${profile.role}`,
+  // Just the name. The role still reaches both the tab's tooltip and link previews
+  // through the description below, so nothing is lost by keeping the title itself clean.
+  title: profile.name,
   description: profile.positioning,
   openGraph: {
-    title: `${profile.name} — ${profile.role}`,
+    title: profile.name,
     description: profile.positioning,
     type: "website",
   },
