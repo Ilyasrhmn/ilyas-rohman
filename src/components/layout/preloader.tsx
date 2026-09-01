@@ -69,7 +69,7 @@ export function Preloader() {
         return () => clearTimeout(timer);
     }, [isLoading, removed, reduced]);
 
-    // Forces a full, synchronous unmount — bypassing any animation library's
+    // Forces a full, synchronous unmount, bypassing any animation library's
     // deferred-exit machinery, which is exactly what leaves the overlay stuck.
     if (removed) return null;
 

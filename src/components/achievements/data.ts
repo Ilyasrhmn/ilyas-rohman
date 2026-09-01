@@ -7,7 +7,7 @@ export type CertificateGroup = {
 };
 
 // Editorial notes per spec (docs/superpowers/specs/2026-07-31-achievements-redesign-design.md).
-// Fixed copy, not derived — only the counts and ordering come from certificates.ts.
+// Fixed copy, not derived: only the counts and ordering come from certificates.ts.
 const TRACK_NOTES: Record<string, string> = {
   Frontend: "The bulk of it. This is the part I do for a living.",
   "AI & Machine Learning": "Where the maths stopped being optional.",
@@ -48,7 +48,7 @@ export function issuedYear(issuedDate: string): string {
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 // ponytail: bare "YYYY" dates (no month) rank as January of that year, so they never
-// beat a same-year "Mon YYYY" entry for "last added" — good enough without a real date type.
+// beat a same-year "Mon YYYY" entry for "last added", good enough without a real date type.
 function issuedRank(issuedDate: string): number {
   const parts = issuedDate.split(" ");
   const year = Number(parts[parts.length - 1]);

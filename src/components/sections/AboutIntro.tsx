@@ -9,7 +9,7 @@ const Lanyard = dynamic(() => import("../motion/Lanyard"), { ssr: false });
 
 export default function AboutIntro() {
   const lanyardRef = useRef<HTMLDivElement>(null);
-  // Hold the 3D chunk back until the section is close — it is ~3.3MB of JS.
+  // Hold the 3D chunk back until the section is close, since it is ~3.3MB of JS.
   const nearViewport = useInViewport(lanyardRef, { rootMargin: "600px" });
 
   // The 600px proximity gate above only avoids paying for the chunk + GLB + texture on
@@ -126,7 +126,7 @@ export default function AboutIntro() {
             </h3>
           </motion.div>
 
-          {/* Vertical connector — short, just enough to bridge label → rope */}
+          {/* Vertical connector, short: just enough to bridge label → rope */}
           <motion.div
             initial={{ scaleY: 0 }}
             whileInView={{ scaleY: 1 }}
@@ -135,7 +135,7 @@ export default function AboutIntro() {
             className="w-px h-10 bg-[var(--world-a-border)] mt-4 origin-top hidden lg:block"
           />
 
-          {/* Lanyard — rope naturally continues the vertical flow */}
+          {/* Lanyard: rope naturally continues the vertical flow */}
           <motion.div
             ref={lanyardRef}
             initial={{ opacity: 0 }}

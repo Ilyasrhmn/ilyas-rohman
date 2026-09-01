@@ -63,7 +63,7 @@ export function ContactModal({
 
         {status === "success" ? (
           <p className="py-6 text-sm text-foreground">
-            Thanks — your message has been sent. I&apos;ll get back to you soon.
+            Thanks, your message has been sent. I&apos;ll get back to you soon.
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">

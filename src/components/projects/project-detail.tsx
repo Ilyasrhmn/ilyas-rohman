@@ -54,7 +54,7 @@ export function ProjectDetail({ project }: { project: Project }) {
       {project.status === "building" ? (
         <BlurReveal delay={0}>
           <div className="mt-6 rounded-full border border-[var(--world-a-accent)] bg-[var(--world-a-accent)]/10 px-4 py-3 text-sm text-[var(--world-a-text)]">
-            Currently building — this project is in progress. Details will be added as it
+            Currently building. This project is in progress, and details will be added as it
             develops.
           </div>
         </BlurReveal>

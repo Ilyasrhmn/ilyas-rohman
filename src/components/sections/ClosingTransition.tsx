@@ -32,10 +32,10 @@ export default function ClosingTransition() {
         },
       });
 
-      // Bg darkens — starts at 2.0, takes 1 full unit of scroll to complete
+      // Bg darkens, starting at 2.0, takes 1 full unit of scroll to complete
       tl.to(".closing-bg", { backgroundColor: "#101612", duration: 1.0, ease: "none" }, 2.0)
 
-        // Nav colors — same window as bg
+        // Nav colors, same window as bg
         .to(
           document.documentElement,
           {

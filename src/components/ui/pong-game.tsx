@@ -415,7 +415,7 @@ export function PongGame() {
       rafId = requestAnimationFrame(gameLoop)
     }
 
-    // The idle, game-over and win screens are static pictures — repainting them
+    // The idle, game-over and win screens are static pictures, so repainting them
     // 60x a second is pure waste while the footer sits on screen.
     let needsRedraw = true
     redrawRef.current = () => {
@@ -542,7 +542,7 @@ export function PongGame() {
   const buttonClass = `${pixelFont.className} inline-flex min-h-[44px] min-w-[44px] items-center justify-center border px-6 py-3 text-xs uppercase tracking-[0.05em] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2`
   const buttonStyle = { color: BALL_COLOR, borderColor: PADDLE_COLOR, backgroundColor: BACKGROUND_COLOR }
   // Overlay text sits on top of the pixel letters, which are the same green as some of this
-  // text/border — a solid backdrop keeps it legible regardless of which pixels are lit behind it.
+  // text/border, so a solid backdrop keeps it legible regardless of which pixels are lit behind it.
   // border-4 (vs. the site's usual hairline border) reads as a chunky arcade-cabinet frame.
   const panelStyle = { backgroundColor: BACKGROUND_COLOR, borderColor: PADDLE_COLOR }
   const panelClass = "border-4 px-8 py-6 flex flex-col items-center gap-4"

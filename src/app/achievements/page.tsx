@@ -10,7 +10,7 @@ import { AchievementsFooter } from "@/components/achievements/footer";
 const trackCount = new Set(certificates.map((c) => c.track ?? "Other")).size;
 
 export const metadata: Metadata = {
-  title: "Achievements — Archive",
+  title: "Archive",
   description: `${certificates.length} certificates across ${trackCount} tracks, ordered by track.`,
 };
 

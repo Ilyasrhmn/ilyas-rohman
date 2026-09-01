@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="relative bg-[#101612] overflow-hidden border-t border-[#29342C] flex flex-col">
       <div className="flex flex-col">
-        {/* Full-width info row — name/location/email pinned to the left edge, socials to
+        {/* Full-width info row: name/location/email pinned to the left edge, socials to
             the right edge. Own space, nothing overlapping the game below it. The game box
             stays completely clear of any overlay/obstruction. */}
         <div className="flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-6 sm:px-10 md:flex-nowrap">

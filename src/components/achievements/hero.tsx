@@ -31,7 +31,7 @@ export function AchievementsHero() {
 
         <BlurReveal delay={0.05}>
           <p className="mt-10 font-mono text-xs uppercase tracking-[0.25em] text-[var(--world-b-accent)]">
-            Archive — {String(count).padStart(3, "0")} certificates
+            Archive &middot; {String(count).padStart(3, "0")} certificates
           </p>
         </BlurReveal>
 
@@ -44,7 +44,7 @@ export function AchievementsHero() {
         <BlurReveal delay={0.15}>
           <p className="mt-6 max-w-[65ch] font-serif text-lg text-[var(--world-b-muted)]">
             Most of them Dicoding, one HackerRank, one from a blockchain literacy month. None
-            of them make me a senior engineer — they just mark where I stopped guessing and
+            of them make me a senior engineer. They just mark where I stopped guessing and
             started knowing.
           </p>
         </BlurReveal>

@@ -29,7 +29,7 @@ export function ProjectsHero() {
 
         <BlurReveal delay={0.05}>
           <p className="mt-10 font-mono text-xs uppercase tracking-[0.25em] text-[var(--world-a-accent)]">
-            Index &mdash; {String(total).padStart(3, "0")} projects
+            Index &middot; {String(total).padStart(3, "0")} projects
           </p>
         </BlurReveal>
 
@@ -41,7 +41,7 @@ export function ProjectsHero() {
 
         <BlurReveal delay={0.15}>
           <p className="mt-6 max-w-[65ch] font-serif text-lg text-[var(--world-a-muted)]">
-            Hackathon platforms, campus systems, and the odd late-night prototype —{" "}
+            Hackathon platforms, campus systems, and the odd late-night prototype:{" "}
             {shipped < total
               ? `${shipped} shipped, the rest still building.`
               : `all ${shipped} shipped.`}

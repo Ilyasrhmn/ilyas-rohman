@@ -5,7 +5,7 @@ import { ProjectsGrid } from "@/components/projects/grid";
 import { ProjectsFooter } from "@/components/projects/footer";
 
 export const metadata: Metadata = {
-  title: "Projects — Ilyas Nur Rohman",
+  title: "Projects",
   description: "Hackathon, campus, and in-progress projects.",
 };
 
