@@ -578,36 +578,37 @@ export function PongGame() {
       {gameState === "life-lost" && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className={panelClass} style={panelStyle}>
-            <p className={`${pixelFont.className} text-sm uppercase tracking-[0.05em]`} style={{ color: BALL_COLOR }}>
-              Life lost
+            <p className={`${pixelFont.className} text-xs uppercase tracking-[0.05em]`} style={{ color: PADDLE_COLOR }}>
+              Resuming
             </p>
 
-            {/* Keyed on the value so the tick animation replays on every second. */}
+            {/* The panel's focus, sized to take the room the old heading and the smaller
+                lives line gave up. Keyed on the value so the tick animation replays on
+                every second rather than the digit silently swapping. */}
             <p
               key={countdown}
-              className={`${pixelFont.className} pixel-tick text-4xl leading-none tabular-nums`}
+              className={`${pixelFont.className} pixel-tick text-7xl leading-none tabular-nums`}
               style={{ color: BALL_COLOR }}
               aria-live="polite"
             >
               {countdown}
             </p>
+
             <p
               className={`${pixelFont.className} text-[10px] uppercase tracking-[0.05em]`}
               style={{ color: PADDLE_COLOR }}
             >
-              Resuming
-            </p>
-
-            <p className={`${pixelFont.className} text-sm uppercase tracking-[0.05em]`} style={{ color: PADDLE_COLOR }}>
               {lives} {lives === 1 ? "life" : "lives"} left
             </p>
 
+            {/* Quit first, Continue last: the affirmative action sits where the thumb and
+                the reading order both end. */}
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <button type="button" onClick={() => resumeGameRef.current()} className={buttonClass} style={buttonStyle}>
-                Continue
-              </button>
               <button type="button" onClick={() => quitGameRef.current()} className={buttonClass} style={buttonStyle}>
                 Quit
+              </button>
+              <button type="button" onClick={() => resumeGameRef.current()} className={buttonClass} style={buttonStyle}>
+                Continue
               </button>
             </div>
           </div>
