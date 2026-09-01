@@ -89,6 +89,27 @@ export function RouteReveal({ children }: { children: ReactNode }) {
   // survives the route change it describes.
   const originStack = useRef<RevealOrigin[]>([]);
 
+  // The browser's own back/forward buttons navigate without going through RevealLink, so
+  // nothing pops the origin they should have consumed. Left alone, those entries stay on
+  // the stack and a later in-app back pops an origin belonging to a navigation the user
+  // already left, contracting toward a link that is no longer on screen. Once history has
+  // moved underneath us the stack no longer describes where the user came from, so drop
+  // it: subsequent back links fall back to their own position, which is correct for a
+  // journey the app never saw the entry click for.
+  //
+  // Deliberately not animating popstate itself. A transition needs an origin, and a
+  // history entry the app never saw has none -- the only options would be a fixed
+  // viewport centre or the last known point, both of which contract toward somewhere the
+  // user never clicked. A clean cut is more honest than an animation aimed at the wrong
+  // place.
+  useEffect(() => {
+    const onPopState = () => {
+      originStack.current.length = 0;
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   const revealTo = useCallback<RevealFn>(
     (href, point, dir) => {
       if (busy.current) return;
