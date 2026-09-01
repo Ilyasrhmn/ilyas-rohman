@@ -33,9 +33,17 @@ export default function AboutIntro() {
   // Kept anyway since it's free and does still eliminate its own (smaller) cost; the
   // shader-compile cost itself can't be prefetched without creating the WebGL context
   // early, which would undo the whole point of deferring this component's mount.
+  // The warm-up is held back until well after load, not merely until the first idle gap.
+  // Downloading the chunk is cheap; *evaluating* ~1.1MB of Three.js and Rapier is not, and
+  // it cannot be moved off the main thread. Profiled on a 4x-throttled CPU, requesting it
+  // at the first idle moment landed that evaluation in a single 985ms long task -- 53% of
+  // all blocking time on the home page -- because "idle" arrives while hydration is still
+  // settling on a slow device. Waiting for the load event and then a further quiet period
+  // pushes the same work past the point where it competes with becoming interactive, while
+  // still finishing long before the user can scroll 600px down to the lanyard.
   useEffect(() => {
     const w = window as Window & {
-      requestIdleCallback?: (cb: () => void) => number;
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
       cancelIdleCallback?: (id: number) => void;
     };
     const warm = () => {
@@ -44,12 +52,33 @@ export default function AboutIntro() {
         .then((RAPIER) => RAPIER.init())
         .catch(() => {});
     };
-    if (w.requestIdleCallback) {
-      const id = w.requestIdleCallback(warm);
-      return () => w.cancelIdleCallback?.(id);
+
+    let idleId: number | undefined;
+    let delayId: number | undefined;
+
+    const scheduleWarm = () => {
+      delayId = window.setTimeout(() => {
+        if (w.requestIdleCallback) {
+          // The timeout is a floor, not a target: if the main thread never goes idle the
+          // warm-up still runs rather than being starved forever.
+          idleId = w.requestIdleCallback(warm, { timeout: 2000 });
+        } else {
+          warm();
+        }
+      }, 1200);
+    };
+
+    if (document.readyState === "complete") {
+      scheduleWarm();
+    } else {
+      window.addEventListener("load", scheduleWarm, { once: true });
     }
-    const id = window.setTimeout(warm, 200);
-    return () => window.clearTimeout(id);
+
+    return () => {
+      window.removeEventListener("load", scheduleWarm);
+      if (delayId !== undefined) window.clearTimeout(delayId);
+      if (idleId !== undefined) w.cancelIdleCallback?.(idleId);
+    };
   }, []);
   // Once mounted, stay mounted: unmounting/remounting tears down and rebuilds the WebGL
   // context on every pass through the 600px window, which is far more expensive than the
