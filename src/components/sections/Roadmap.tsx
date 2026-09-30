@@ -102,12 +102,6 @@ export default function Roadmap() {
                 {/* Section Header */}
                 <div className="flex flex-col md:items-center mb-24 md:mb-40 gap-4 text-center">
                     <BlurReveal>
-                        <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-b-accent)]">
-                            [004]
-                        </span>
-                    </BlurReveal>
-
-                    <BlurReveal>
                         <h2 className="text-5xl md:text-7xl font-bold font-serif text-[var(--world-b-text)]">
                             Roadmap
                         </h2>

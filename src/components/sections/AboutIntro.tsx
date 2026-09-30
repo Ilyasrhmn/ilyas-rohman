@@ -118,9 +118,6 @@ export default function AboutIntro() {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col items-center lg:items-start"
           >
-            <span className="font-mono text-[10px] tracking-[0.22em] text-[var(--world-a-muted)] mb-1 uppercase">
-              [001]
-            </span>
             <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--world-a-text)] uppercase leading-none">
               ABOUT
             </h3>

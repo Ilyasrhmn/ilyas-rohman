@@ -121,12 +121,6 @@ export default function HorizontalProjects() {
                     <>
                         <div className="flex flex-col gap-4 px-6 md:px-12 lg:px-24 mb-10">
                             <BlurReveal>
-                                <span className="text-sm font-mono tracking-[0.2em] text-[var(--world-b-accent)]">
-                                    [003]
-                                </span>
-                            </BlurReveal>
-
-                            <BlurReveal>
                                 <h2 className="text-3xl md:text-5xl font-black uppercase text-[var(--world-b-text)] tracking-tighter">
                                     Projects
                                 </h2>
@@ -156,12 +150,6 @@ export default function HorizontalProjects() {
                         <div className="w-[60vw] xl:w-[40vw] shrink-0 flex flex-col justify-center">
 
                             <div className="flex flex-col gap-4 pr-12">
-
-                                <BlurReveal>
-                                    <span className="text-sm font-mono tracking-[0.2em] text-[var(--world-b-accent)] uppercase">
-                                        [003]
-                                    </span>
-                                </BlurReveal>
 
                                 <BlurReveal>
                                     <h2 className="text-6xl lg:text-[7rem] font-black uppercase text-[var(--world-b-text)] tracking-tighter leading-[0.85]">
