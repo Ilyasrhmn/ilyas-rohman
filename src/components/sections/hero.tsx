@@ -59,9 +59,6 @@ export function Hero() {
           <h1 className="font-serif text-[clamp(2rem,5.5vw,5rem)] font-light leading-[1.05] tracking-[-0.02em] text-[var(--nav-text)] mb-3 sm:mb-5">
             {profile.name}
           </h1>
-          <p className="font-sans text-[clamp(0.5625rem,0.9vw,0.75rem)] font-light tracking-[0.2em] uppercase text-[var(--nav-muted)] leading-relaxed">
-            {profile.role}
-          </p>
           <p className="font-serif text-[clamp(0.875rem,1.5vw,1.25rem)] font-light italic tracking-[0.02em] text-[var(--nav-text)] opacity-80 mt-2 sm:mt-3">
             Crafting Interactive Digital Experiences
           </p>

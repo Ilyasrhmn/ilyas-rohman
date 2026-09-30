@@ -9,6 +9,6 @@ export const profile: Profile = {
   email: "ilyasnurrohman14@gmail.com",
   socials: [
     { label: "GitHub", url: "https://github.com/Ilyasrhmn" },
-    { label: "LinkedIn", url: "https://linkedin.com/in/" },
+    { label: "LinkedIn", url: "https://linkedin.com/in/ilyasrhmn" },
   ],
 };
