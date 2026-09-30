@@ -28,7 +28,7 @@ export function GalleryCard({ cert, index, onOpen }: GalleryCardProps) {
         }}
       >
         <span ref={imageRef} className="certificate-gallery__image" data-certificate-image>
-          <Image src={cert.image} alt="" fill sizes="(max-width: 767px) 70vw, 460px" loading={index < 2 ? "eager" : "lazy"} />
+          <Image src={cert.image} alt="" fill sizes="(max-width: 767px) 86vw, (max-width: 1199px) 72vw, 48vw" loading={index < 2 ? "eager" : "lazy"} />
         </span>
         <span className="certificate-gallery__caption" data-certificate-caption>{galleryContent[index].title}</span>
       </button>

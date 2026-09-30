@@ -61,6 +61,7 @@ export function AchievementsIndex() {
       gsap.set(source.trigger.querySelector("[data-certificate-caption]"), { clearProps: "opacity,visibility" });
       source.trigger.focus({ preventScroll: true });
     }
+    if (overlay) gsap.set(overlay.querySelector(".certificate-content__verify"), { clearProps: "opacity,visibility" });
     if (galleryRef.current) gsap.set(galleryRef.current.querySelectorAll("[data-certificate-slide]"), { clearProps: "opacity,visibility" });
     if (overlay) gsap.set(overlay, { display: "none" });
     if (previewRef.current) gsap.set(previewRef.current, { clearProps: "transform,top,left,width,height,position" });
@@ -91,10 +92,12 @@ export function AchievementsIndex() {
     const others = Array.from(galleryRef.current?.querySelectorAll("[data-certificate-slide]") ?? []).filter((slide) => slide !== source.trigger.closest("[data-certificate-slide]"));
     const caption = source.trigger.querySelector("[data-certificate-caption]");
     const previewImg = preview.querySelector("img");
+    const verify = overlay.querySelector(".certificate-content__verify");
     const fit = Flip.fit(preview, source.image, { duration: 1, ease: "power3.inOut", absolute: true });
     timelineRef.current = gsap.timeline({ onComplete: reset })
       .to(splitRef.current?.lines ?? [], { autoAlpha: 0, duration: 0.4, stagger: 0.04, ease: "power1.out" }, 0)
-      .to(previewImg, { scale: 1.2, duration: 1, ease: "power3.inOut" }, 0)
+      .to(previewImg, { scale: 1.04, duration: 1, ease: "power3.inOut" }, 0)
+      .to(verify, { autoAlpha: 0, duration: 0.2 }, 0)
       .to(others, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 0.5)
       .to(caption, { autoAlpha: 1, duration: 0.4, ease: "power2.out" }, 0.6);
     if (fit) timelineRef.current.add(fit as gsap.core.Tween, 0);
@@ -132,7 +135,8 @@ export function AchievementsIndex() {
       gsap.set(source.image, { autoAlpha: 0 });
       const caption = source.trigger.querySelector("[data-certificate-caption]");
       const others = Array.from(galleryRef.current?.querySelectorAll("[data-certificate-slide]") ?? []).filter((slide) => slide !== source.trigger.closest("[data-certificate-slide]"));
-      splitRef.current = new SplitText(overlay.querySelectorAll(".certificate-content__back, .certificate-content__group > *"), { type: "lines,chars", charsClass: "certificate-char" });
+      const verify = overlay.querySelector(".certificate-content__verify");
+      splitRef.current = new SplitText(overlay.querySelectorAll(".certificate-content__back, .certificate-content__title, .certificate-content__description"), { type: "lines,chars", charsClass: "certificate-char" });
       timelineRef.current = gsap.timeline({
         onComplete: () => { phaseRef.current = "open"; overlay.querySelector("button")?.focus(); },
         onReverseComplete: reset,
@@ -141,6 +145,7 @@ export function AchievementsIndex() {
         .to(caption, { autoAlpha: 0, duration: 0.3, ease: "power2.out" }, 0)
         .add(Flip.from(state, { targets: preview, duration: 1.2, ease: "power4.inOut", absolute: true }), 0)
         .to(previewImg, { scale: 1, duration: 1.2, ease: "power4.inOut" }, 0);
+      if (verify) timelineRef.current.fromTo(verify, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 0.9);
       splitRef.current.lines.forEach((line, index) => {
         timelineRef.current?.fromTo(line.querySelectorAll(".certificate-char"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 1, ease: "power3.out", stagger: 0.01 }, 0.8 + index * 0.06);
       });
@@ -214,7 +219,10 @@ export function AchievementsIndex() {
 
   useEffect(() => {
     const sync = () => {
-      if (sectionRef.current && sectionRef.current.getBoundingClientRect().top < window.innerHeight * .72) document.body.setAttribute("data-nav-theme", "world-b");
+      // The closing threshold owns the theme once the gallery has left the viewport.
+      if (sectionRef.current && sectionRef.current.getBoundingClientRect().bottom > window.innerHeight * .3) {
+        document.body.setAttribute("data-nav-theme", "world-b");
+      }
     };
     sync();
     window.addEventListener("scroll", sync, { passive: true });
@@ -224,7 +232,7 @@ export function AchievementsIndex() {
   useEffect(() => () => { timelineRef.current?.kill(); splitRef.current?.revert(); }, []);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-[#eaeeed] text-[var(--world-b-text)]">
+    <section ref={sectionRef} className="relative overflow-hidden bg-[var(--world-b-bg)] text-[var(--world-b-text)]">
       <ol ref={galleryRef} data-certificate-gallery className="certificate-gallery">
         {orderedCerts.map((cert, index) => <GalleryCard key={cert.slug} cert={cert} index={index} onOpen={openCertificate} />)}
       </ol>

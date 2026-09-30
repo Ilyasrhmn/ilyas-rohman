@@ -19,7 +19,7 @@ export function CertificateDetail({ cert, index, rootRef, previewRef, onClose }:
       {cert && (
         <>
           <div ref={previewRef} className="certificate-content__preview" data-certificate-detail-image data-flip-id="preview">
-            <Image src={cert.image} alt={`${cert.program} certificate from ${cert.issuer}`} fill sizes="(max-width: 767px) 100vw, 60vw" priority />
+            <Image src={cert.image} alt={`${cert.program} certificate from ${cert.issuer}`} fill sizes="(max-width: 767px) 100vw, 58vw" priority />
           </div>
           <div className="certificate-content__copy">
             <button type="button" onClick={() => onClose()} className="certificate-content__back focus-visible:outline-2">← back [ESC]</button>

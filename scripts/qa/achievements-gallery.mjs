@@ -17,6 +17,14 @@ try {
 
   assert.equal(await page.locator("[data-certificate-gallery]").count(), 1);
   assert.equal(await page.locator("[data-certificate-card]").count(), 11);
+  assert.equal(await page.evaluate(() => {
+    const hero = document.querySelector("h1")?.closest("section");
+    const gallery = document.querySelector("[data-certificate-gallery]")?.closest("section");
+    const threshold = document.querySelector("[data-achievements-threshold]");
+    return Boolean(hero && gallery && threshold &&
+      (hero.compareDocumentPosition(gallery) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+      (gallery.compareDocumentPosition(threshold) & Node.DOCUMENT_POSITION_FOLLOWING));
+  }), true);
   assert.deepEqual(await page.locator("[data-certificate-caption]").allTextContents(), [
     "Inherited Light", "Red Earth Theory", "Soft Sovereignty", "Gathering Weather",
     "Worn Horizon", "The Fifth Fire", "Ancestor Season", "A Field Listening",
@@ -24,7 +32,7 @@ try {
   ]);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
   assert.deepEqual(await page.locator("[data-certificate-slide]").evaluateAll((slides) =>
-    slides.slice(0, 4).map((slide) => getComputedStyle(slide).width)), ["290px", "330px", "270px", "450px"].map((width) => Math.min(parseInt(width), 375 * .7) + "px"));
+    slides.slice(0, 4).map((slide) => Math.round(slide.getBoundingClientRect().width / innerWidth * 100))), [80, 85, 74, 84]);
   await mkdir("test-results", { recursive: true });
   await page.locator("[data-certificate-card]").first().scrollIntoViewIfNeeded();
   await page.waitForTimeout(500);
@@ -37,6 +45,9 @@ try {
   await page.waitForTimeout(2600);
   assert.equal(await page.locator('[role="dialog"]').isVisible(), true);
   assert.equal(await page.locator(".certificate-content__title").textContent(), "Inherited Light");
+  assert.equal(await page.locator(".certificate-content__verify").textContent(), "Verify Belajar Dasar Pemrograman JavaScript ↗");
+  assert.equal(await page.locator(".certificate-content").evaluate((el) => getComputedStyle(el).backgroundColor),
+    await page.locator("[data-certificate-gallery]").evaluate((el) => getComputedStyle(el.closest("section")).backgroundColor));
   await page.screenshot({ path: "test-results/achievements-detail-mobile.png" });
   await page.keyboard.press("Escape");
   await page.waitForURL((url) => !url.searchParams.has("cert"));
@@ -76,19 +87,36 @@ try {
     await page.locator("[data-certificate-card]").last().scrollIntoViewIfNeeded();
     await page.getByText("That's the whole shelf.").scrollIntoViewIfNeeded();
     assert.equal(await page.getByText("That's the whole shelf.").isVisible(), true);
+    assert.equal(await page.getByText("Everything below is the full list, ordered by track.").count(), 0);
     if (viewport.width === 1440) {
-      assert.deepEqual(await page.locator("[data-certificate-slide]").evaluateAll((slides) =>
-        slides.slice(0, 4).map((slide) => getComputedStyle(slide).width)), ["290px", "330px", "270px", "450px"]);
+      await page.locator("[data-achievements-threshold]").evaluate((el) => el.scrollIntoView({ block: "start" }));
+      await page.waitForTimeout(1100);
+      const lightColor = await page.locator("[data-achievements-threshold] > div").evaluate((el) => getComputedStyle(el).backgroundColor);
+      await page.locator("[data-achievements-threshold]").evaluate((el) => el.scrollIntoView({ block: "end" }));
+      await page.waitForTimeout(1100);
+      const darkColor = await page.locator("[data-achievements-threshold] > div").evaluate((el) => getComputedStyle(el).backgroundColor);
+      const brightness = (color) => color.match(/\d+/g).slice(0, 3).map(Number).reduce((a, b) => a + b, 0);
+      assert.equal(brightness(lightColor) > brightness(darkColor) + 300, true);
+      assert.equal(await page.locator("body").getAttribute("data-nav-theme"), "world-a");
+      await page.screenshot({ path: "test-results/achievements-closing-desktop.png" });
+    }
+    if (viewport.width === 1440) {
+      const widths = await page.locator("[data-certificate-slide]").evaluateAll((slides) =>
+        slides.map((slide) => slide.getBoundingClientRect().width));
+      assert.equal(Math.min(...widths) >= 340, true);
+      assert.equal(Math.max(...widths) - Math.min(...widths) > 180, true);
       await page.locator("[data-certificate-card]").first().scrollIntoViewIfNeeded();
       await page.waitForTimeout(500);
       await page.screenshot({ path: "test-results/achievements-gallery-desktop.png" });
       await page.locator("[data-certificate-card]").first().click();
       await page.waitForTimeout(2600);
+      assert.equal(await page.locator(".certificate-content__title").evaluate((el) => el.getBoundingClientRect().top < innerHeight * .55), true);
       await page.screenshot({ path: "test-results/achievements-detail-desktop.png" });
       await page.keyboard.press("Escape");
       await page.locator('[role="dialog"]').waitFor({ state: "detached" });
     }
     assert.equal(await page.getByText("That's the whole shelf.").count(), 1);
+    assert.equal(await page.locator("footer").evaluate((el) => getComputedStyle(el).backgroundColor), "rgb(16, 22, 18)");
     assert.equal(await page.getByRole("button", { name: /back to top/i }).count(), 1);
   }
   assert.deepEqual(errors, []);
@@ -96,9 +124,14 @@ try {
   const reducedPage = await browser.newPage({ viewport: { width: 375, height: 812 } });
   await reducedPage.emulateMedia({ reducedMotion: "reduce" });
   await reducedPage.goto(`${baseUrl}/achievements`, { waitUntil: "networkidle" });
+  assert.equal(await reducedPage.locator("body").getAttribute("data-nav-theme"), "world-b");
   await reducedPage.locator("[data-certificate-card]").first().click();
   await reducedPage.waitForURL(/\?cert=/);
   assert.equal(await reducedPage.locator("[data-certificate-flight]").count(), 0);
+  await reducedPage.keyboard.press("Escape");
+  await reducedPage.locator("[data-achievements-threshold]").evaluate((el) => el.scrollIntoView({ block: "start" }));
+  await reducedPage.waitForTimeout(200);
+  assert.equal(await reducedPage.locator("body").getAttribute("data-nav-theme"), "world-a");
   await reducedPage.close();
 
   await page.close();
