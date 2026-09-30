@@ -8,6 +8,15 @@ const executablePath =
 
 const browser = await chromium.launch({ headless: true, executablePath });
 
+async function assertHeroAlignedWithFirstCertificate(page) {
+  const distance = await page.evaluate(() => {
+    const hero = document.querySelector("[data-achievements-hero-content]");
+    const certificate = document.querySelector("[data-certificate-image]");
+    return Math.abs(hero.getBoundingClientRect().left - certificate.getBoundingClientRect().left);
+  });
+  assert.equal(distance < 7, true, `Hero and first certificate differ by ${distance.toFixed(1)}px`);
+}
+
 try {
   const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
   const errors = [];
@@ -31,6 +40,7 @@ try {
     "Language of Dust", "Between Sweetgrass", "Open Country",
   ]);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+  await assertHeroAlignedWithFirstCertificate(page);
   assert.deepEqual(await page.locator("[data-certificate-slide]").evaluateAll((slides) =>
     slides.slice(0, 4).map((slide) => Math.round(slide.getBoundingClientRect().width / innerWidth * 100))), [80, 85, 74, 84]);
   await mkdir("test-results", { recursive: true });
@@ -79,11 +89,19 @@ try {
   await page.keyboard.press("Escape");
   await page.waitForURL((url) => !url.searchParams.has("cert"));
 
-  for (const viewport of [{ width: 320, height: 700 }, { width: 768, height: 1024 }, { width: 1440, height: 900 }]) {
+  for (const viewport of [
+    { width: 320, height: 700 }, { width: 768, height: 1024 },
+    { width: 1024, height: 768 }, { width: 1440, height: 900 },
+    { width: 1920, height: 1080 },
+  ]) {
     await page.setViewportSize(viewport);
     await page.goto(`${baseUrl}/achievements`, { waitUntil: "networkidle" });
     await page.waitForTimeout(2300);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+    await assertHeroAlignedWithFirstCertificate(page);
+    if (viewport.width === 1440) {
+      await page.screenshot({ path: "test-results/achievements-hero-aligned-desktop.png" });
+    }
     await page.locator("[data-certificate-card]").last().scrollIntoViewIfNeeded();
     await page.getByText("That's the whole shelf.").scrollIntoViewIfNeeded();
     assert.equal(await page.getByText("That's the whole shelf.").isVisible(), true);

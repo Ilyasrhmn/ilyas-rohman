@@ -2,6 +2,7 @@ import { RevealLink } from "@/components/layout/route-reveal";
 import { certificates } from "@/data/certificates";
 import { BlurReveal } from "@/components/effects/blur-reveal";
 import { lastAddedLabel } from "./data";
+import styles from "./hero.module.css";
 
 export function AchievementsHero() {
   const count = certificates.length;
@@ -10,7 +11,7 @@ export function AchievementsHero() {
   const lastAdded = lastAddedLabel(certificates);
 
   return (
-    <section className="relative overflow-hidden bg-[var(--world-b-bg)] text-[var(--world-b-text)] px-6 sm:px-10 pt-32 pb-28 md:pt-44 md:pb-40">
+    <section className="relative overflow-hidden bg-[var(--world-b-bg)] text-[var(--world-b-text)] px-6 sm:px-10 pt-32 pb-28 md:pt-44 md:pb-12">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-0 flex select-none items-center justify-center overflow-hidden opacity-[0.03]"
@@ -18,7 +19,7 @@ export function AchievementsHero() {
         <span className="whitespace-nowrap font-serif text-[22vw] leading-none">CERTIFIED</span>
       </div>
 
-      <div className="relative z-10 mx-auto max-w-4xl">
+      <div data-achievements-hero-content className={`relative z-10 ${styles.content}`}>
         <BlurReveal>
           <RevealLink
             href="/"

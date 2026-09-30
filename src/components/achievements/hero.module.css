@@ -1,0 +1,20 @@
+.content {
+  margin-inline: auto;
+  max-width: 56rem;
+}
+
+/* Match the left edge of the first gallery image as its responsive width changes. */
+@media (min-width: 768px) {
+  .content {
+    --gallery-left: calc(50vw - min(36vw, clamp(180px, 18vw, 315px)) - 6.65vw);
+    margin-left: calc(var(--gallery-left) - 40px);
+    margin-right: 0;
+    max-width: min(56rem, calc(100% - var(--gallery-left) + 40px));
+  }
+}
+
+@media (min-width: 1200px) {
+  .content {
+    --gallery-left: calc(50vw - clamp(180px, 18vw, 315px) - 19vw);
+  }
+}
