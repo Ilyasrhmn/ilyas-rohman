@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger, registerGsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { certificates } from "@/data/certificates";
-import { groupByTrack } from "./data";
+import { RevealLink } from "@/components/layout/route-reveal";
+import { useContact } from "@/components/layout/chrome-shell";
 
 // Same turbulence texture as the global .backdrop-grain, scoped locally so it can fade
 // in with the scrub instead of always being on.
@@ -16,9 +16,8 @@ export function AchievementsThreshold() {
   const stickyRef = useRef<HTMLDivElement>(null);
   const watermarkRef = useRef<HTMLDivElement>(null);
   const grainRef = useRef<HTMLDivElement>(null);
-  const manifestRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
-  const groups = useMemo(() => groupByTrack(certificates), []);
+  const openContact = useContact();
 
   useEffect(() => {
     registerGsap();
@@ -32,8 +31,16 @@ export function AchievementsThreshold() {
 
     if (reducedMotion) {
       gsap.set(stickyRef.current, { backgroundColor: aBg, color: aText });
-      document.body.setAttribute("data-nav-theme", "world-a");
-      return;
+      const syncNavTheme = () => {
+        if (!wrapperRef.current) return;
+        document.body.setAttribute(
+          "data-nav-theme",
+          wrapperRef.current.getBoundingClientRect().top < window.innerHeight * 0.5 ? "world-a" : "world-b"
+        );
+      };
+      syncNavTheme();
+      window.addEventListener("scroll", syncNavTheme, { passive: true });
+      return () => window.removeEventListener("scroll", syncNavTheme);
     }
 
     const ctx = gsap.context(() => {
@@ -70,18 +77,9 @@ export function AchievementsThreshold() {
           0
         );
       }
-      if (manifestRef.current) {
-        tl.fromTo(
-          manifestRef.current.children,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "none" },
-          0.35
-        );
-      }
-
       ScrollTrigger.create({
         trigger: wrapperRef.current,
-        start: "center center",
+        start: "top -50%",
         onEnter: () => document.body.setAttribute("data-nav-theme", "world-a"),
         onLeaveBack: () => document.body.setAttribute("data-nav-theme", "world-b"),
       });
@@ -91,7 +89,7 @@ export function AchievementsThreshold() {
   }, [reducedMotion]);
 
   return (
-    <section ref={wrapperRef} className={reducedMotion ? "relative" : "relative h-[220vh]"}>
+    <section ref={wrapperRef} data-achievements-threshold className={reducedMotion ? "relative" : "relative h-[220vh]"}>
       <div
         ref={stickyRef}
         className={
@@ -121,25 +119,18 @@ export function AchievementsThreshold() {
           }}
         />
 
-        <div className="relative z-10 mx-auto flex max-w-md flex-col items-center gap-6 px-6 text-center">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] opacity-80 sm:text-sm">
-            Everything below is the full list, ordered by track.
+        <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-8 px-6 text-center sm:px-10">
+          <h2 className="font-serif text-3xl md:text-5xl">That&apos;s the whole shelf.</h2>
+          <p className="max-w-[55ch] font-serif text-base opacity-75 md:text-lg">
+            Certificates are a floor, not a ceiling. If you want to see what I built on top of them, the work is one click away.
           </p>
-
-          <div
-            ref={manifestRef}
-            className="flex w-full max-w-xs flex-col divide-y divide-current divide-opacity-10"
-          >
-            {groups.map((group) => (
-              <div
-                key={group.track}
-                className="flex items-center justify-between py-2 font-mono text-[11px] uppercase tracking-wide opacity-60"
-                style={reducedMotion ? undefined : { opacity: 0 }}
-              >
-                <span>{group.track}</span>
-                <span>{String(group.certs.length).padStart(2, "0")}</span>
-              </div>
-            ))}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
+            <RevealLink href="/projects" className="inline-flex min-h-[44px] items-center gap-2 border border-current px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+              See the work →
+            </RevealLink>
+            <button type="button" onClick={openContact} className="inline-flex min-h-[44px] items-center gap-2 px-2 py-3 font-mono text-xs uppercase tracking-[0.2em] underline underline-offset-4 transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+              Start a conversation
+            </button>
           </div>
         </div>
       </div>
