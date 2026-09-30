@@ -7,7 +7,6 @@ import HorizontalProjects from "@/components/sections/HorizontalProjects";
 import Achievements from "@/components/sections/Achievements";
 import Roadmap from "@/components/sections/Roadmap";
 import ClosingTransition from "@/components/sections/ClosingTransition";
-import CTASection from "@/components/sections/CTASection";
 import { NavObserver } from "@/components/layout/nav-observer";
 
 export default function Home() {
@@ -48,7 +47,6 @@ export default function Home() {
         <ClosingTransition />
       </div>
 
-      <CTASection />
     </>
   );
 }
