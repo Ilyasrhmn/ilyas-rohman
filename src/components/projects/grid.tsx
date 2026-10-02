@@ -1,15 +1,18 @@
-import { BlurReveal } from "@/components/effects/blur-reveal";
-import { ProjectCard } from "./project-card";
 import type { Project } from "@/types";
+import { ProjectCard } from "./project-card";
+import { ProjectReveal } from "./project-reveal";
 
 export function ProjectsGrid({ projects }: { projects: Project[] }) {
   return (
-    <section className="bg-[var(--world-a-bg)] px-6 pb-24 sm:px-10">
-      <div className="mx-auto grid max-w-6xl gap-6 sm:grid-cols-2">
-        {projects.map((project, i) => (
-          <BlurReveal key={project.slug} delay={(i % 2) * 0.08}>
-            <ProjectCard project={project} index={i} />
-          </BlurReveal>
+    <section
+      aria-label="Project collection"
+      className="bg-[var(--world-b-bg)] px-6 pb-24 text-[var(--world-b-text)] sm:px-10 md:pb-32"
+    >
+      <div className="mx-auto flex max-w-6xl flex-col gap-16 md:gap-24 lg:gap-32">
+        {projects.map((project, index) => (
+          <ProjectReveal key={project.slug} className="min-w-0">
+            <ProjectCard project={project} reverse={index % 2 === 1} eager={index === 0} />
+          </ProjectReveal>
         ))}
       </div>
     </section>

@@ -6,12 +6,12 @@ import { ProjectsFooter } from "@/components/projects/footer";
 
 export const metadata: Metadata = {
   title: "Projects",
-  description: "Hackathon, campus, and in-progress projects.",
+  description: "Built around real needs, ideas, and practical problems.",
 };
 
 export default function ProjectsPage() {
   return (
-    <div className="min-h-screen bg-[var(--world-a-bg)]">
+    <div className="min-h-screen bg-[var(--world-b-bg)] text-[var(--world-b-text)]">
       <ProjectsHero />
       <ProjectsGrid projects={projects} />
       <ProjectsFooter />
