@@ -25,7 +25,7 @@ export function ChromeShell({ children }: { children: React.ReactNode }) {
   const openContact = () => setContactOpen(true);
   const pathname = usePathname();
   // These archive-style routes supply their own themed footer.
-  const hasPageFooter = pathname === "/achievements" || pathname === "/projects";
+  const hasPageFooter = pathname === "/achievements" || pathname.startsWith("/projects");
 
   return (
     <SmoothScroll>
