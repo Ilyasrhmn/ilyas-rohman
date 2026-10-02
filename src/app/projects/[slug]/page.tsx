@@ -5,6 +5,7 @@ import { ProjectDetail } from "@/components/projects/project-detail";
 import { NextProject } from "@/components/projects/next-project";
 import { ProjectsFooter } from "@/components/projects/footer";
 import { ProjectDetailTheme } from "@/components/projects/detail-theme";
+import { ProjectClosing } from "@/components/projects/project-closing";
 
 export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
@@ -37,8 +38,10 @@ export default async function ProjectDetailPage({
     <div className="min-h-screen bg-[var(--world-b-bg)] text-[var(--world-b-text)]">
       <ProjectDetailTheme />
       <ProjectDetail project={project} />
-      <NextProject currentSlug={slug} />
-      <ProjectsFooter />
+      <ProjectClosing key={slug}>
+        <NextProject currentSlug={slug} />
+        <ProjectsFooter variant="detail" />
+      </ProjectClosing>
     </div>
   );
 }

@@ -4,7 +4,8 @@ import { useLenis } from "@/components/layout/smooth-scroll";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { profile } from "@/data/profile";
 
-export function ProjectsFooter() {
+export function ProjectsFooter({ variant = "default" }: { variant?: "default" | "detail" }) {
+  const isDetail = variant === "detail";
   const lenis = useLenis();
   const reducedMotion = useReducedMotion();
 
@@ -18,18 +19,18 @@ export function ProjectsFooter() {
 
   return (
     <footer
-      className="border-t px-6 py-6 sm:px-10"
+      className={isDetail ? "px-6 pb-8 pt-10 sm:px-10 md:pt-14" : "border-t px-6 py-6 sm:px-10"}
       style={{
-        backgroundColor: "var(--world-a-bg)",
+        backgroundColor: isDetail ? "transparent" : "var(--world-a-bg)",
         borderColor: "var(--world-a-border)",
         color: "var(--world-a-muted)",
       }}
     >
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className={`mx-auto flex max-w-6xl flex-col gap-3 font-mono text-xs uppercase tracking-[0.2em] sm:flex-row sm:items-center sm:justify-between sm:gap-4 ${isDetail ? "items-start" : "items-center"}`}>
         <p>
           &copy; {new Date().getFullYear()} {profile.name}
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <div className={`flex flex-wrap items-center gap-x-6 gap-y-2 ${isDetail ? "justify-start" : "justify-center"}`}>
           {profile.socials.map((social) => (
             <a
               key={social.label}
