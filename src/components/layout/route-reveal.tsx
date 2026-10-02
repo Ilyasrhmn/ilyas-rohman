@@ -109,7 +109,7 @@ export function RouteReveal({ children }: { children: ReactNode }) {
   return (
     <>
       {children}
-      <ShaderTransition progress={progress} invalidateRef={invalidateRef} />
+      {!reducedMotion && <ShaderTransition progress={progress} invalidateRef={invalidateRef} />}
     </>
   );
 }

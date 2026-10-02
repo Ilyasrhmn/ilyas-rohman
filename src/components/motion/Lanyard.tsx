@@ -2,7 +2,7 @@
 'use client';
 import { useEffect, useRef, useState, Component, type ReactNode, Suspense } from 'react';
 import { Canvas, extend, useFrame, type ThreeElement, type ThreeEvent } from '@react-three/fiber';
-import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
+import { useGLTF, useTexture } from '@react-three/drei';
 import {
   BallCollider,
   CuboidCollider,
@@ -59,11 +59,13 @@ if (typeof window !== 'undefined') {
 interface LanyardProps {
   transparent?: boolean;
   className?: string;
+  onReady?: () => void;
 }
 
 export default function Lanyard({
   transparent = true,
   className = '',
+  onReady,
 }: LanyardProps) {
   const [isMobile, setIsMobile] = useState<boolean>(
     () => typeof window !== 'undefined' && window.innerWidth < 768
@@ -104,27 +106,11 @@ export default function Lanyard({
           onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
         >
           <ambientLight intensity={Math.PI} />
+          <directionalLight intensity={3.5} position={[0, 2, 8]} />
           <Suspense fallback={null}>
             <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
-              <Band isMobile={isMobile} />
+              <Band isMobile={isMobile} onReady={onReady} />
             </Physics>
-            {/* PMREMGenerator (used internally by <Environment>) is a well-documented source of a
-                benign "X4122 sum of 1 and [tiny epsilon] cannot be represented accurately" shader
-                compiler warning on some GPU/driver combinations -- a cosmetic Three.js/PMREM
-                artifact that doesn't affect rendered output. It didn't reproduce in this session's
-                automated test browser (no console entry via the JS console API or the CDP Log
-                domain, on a real hardware-accelerated ANGLE/D3D11 NVIDIA backend, with or without
-                this block present), so a local before/after repro wasn't possible here; the
-                attribution to PMREMGenerator is based on the warning's known signature and prior
-                confirmation (via git history) that it already existed before any work this session,
-                not a fresh local reproduction. Not something to "fix" by patching library internals
-                -- doing so would risk silencing real warnings too. */}
-            <Environment blur={0.75}>
-              <Lightformer intensity={2} color="white" position={[0, -1, 5]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
-              <Lightformer intensity={3} color="white" position={[-1, -1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
-              <Lightformer intensity={3} color="white" position={[1, 1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
-              <Lightformer intensity={10} color="white" position={[-10, 0, 14]} rotation={[0, Math.PI / 2, Math.PI / 3]} scale={[100, 10, 1]} />
-            </Environment>
           </Suspense>
         </Canvas>
       </CanvasErrorBoundary>
@@ -139,11 +125,12 @@ interface BandProps {
   minSpeed?: number;
   isMobile?: boolean;
   gravity?: [number, number, number];
+  onReady?: () => void;
 }
 
 type LanyardRigidBody = RapierRigidBody & { lerped?: THREE.Vector3 };
 
-function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
+function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false, onReady }: BandProps) {
   const band = useRef<THREE.Mesh<
     InstanceType<typeof MeshLineGeometry>,
     InstanceType<typeof MeshLineMaterial>
@@ -162,6 +149,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   const clipWorld = new THREE.Vector3();
   const hasLoggedFrameCrash = useRef(false);
   const hasLoggedAnchorGap = useRef(false);
+  const renderedFrames = useRef(0);
 
   const segmentProps: RigidBodyProps = {
     type: 'dynamic',
@@ -247,19 +235,17 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
       // real rope-constrained one -- exceeding a rope segment's natural length here during
       // fast motion is expected smoothing lag, not necessarily a bug. So the warning below
       // checks j2's REAL (unlerped) position against the card anchor instead: the rope joints
-      // (useRopeJoint calls above) constrain that real position to 1 unit, so exceeding it
-      // there is genuine evidence of the card diverging from the rope-physics chain. The
+      // (useRopeJoint calls above) constrain that real position approximately to 1 unit.
+      // Rapier's iterative solver normally exceeds the nominal limit by a few hundredths;
+      // only report a substantially larger deviation, not its ordinary solver tolerance. The
       // clamp, separately, always operates on the rendered gap (points[0] to points[1]),
       // since a visual kink is a kink regardless of whether it's smoothing lag or a real bug.
       const MAX_SEGMENT_GAP = 1;
       const realAnchorGap = clipWorld.distanceTo(j2.current.translation() as unknown as THREE.Vector3);
-      if (realAnchorGap > MAX_SEGMENT_GAP && process.env.NODE_ENV !== 'production' && !hasLoggedAnchorGap.current) {
+      if (realAnchorGap > 1.2 && !dragged && process.env.NODE_ENV !== 'production' && !hasLoggedAnchorGap.current) {
         hasLoggedAnchorGap.current = true;
         console.warn(
-          `[Lanyard] card-anchor/j2 real-position gap ${realAnchorGap.toFixed(2)} exceeded ${MAX_SEGMENT_GAP}. ` +
-          'This means the card diverged from the rope-physics chain by more than a rope segment ' +
-          'can naturally stretch -- concrete evidence for investigating why (e.g. log cardRotation ' +
-          'and the rope bodies\' positions at this moment). Logged once per mount to avoid spam.'
+          `[Lanyard] card-anchor/j2 gap ${realAnchorGap.toFixed(2)} is above the expected physics tolerance.`
         );
       }
       const renderGap = curve.points[0].distanceTo(curve.points[1]);
@@ -284,7 +270,10 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
     // shape of bug reported and never reproduced. Logging here, not just at the React
     // error boundary, covers the code path where the real logic actually runs.
     try {
+      if (!fixed.current || !j1.current || !j2.current || !j3.current || !card.current || !band.current) return;
       runBandFrame(state, delta);
+      // Keep the still poster visible while the first physics frames settle the card.
+      if (renderedFrames.current < 45 && ++renderedFrames.current === 45) onReady?.();
     } catch (error) {
       // If the failure persists (e.g. a NaN propagating through physics state every tick),
       // this would otherwise log up to 60x/sec forever -- report only the first occurrence

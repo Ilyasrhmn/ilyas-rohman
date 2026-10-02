@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useInViewport } from "@/hooks/use-in-viewport";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const Lanyard = dynamic(() => import("../motion/Lanyard"), { ssr: false });
 
@@ -11,46 +13,19 @@ export default function AboutIntro() {
   const lanyardRef = useRef<HTMLDivElement>(null);
   // Hold the 3D chunk back until the section is close, since it is ~3.3MB of JS.
   const nearViewport = useInViewport(lanyardRef, { rootMargin: "600px" });
+  const reducedMotion = useReducedMotion();
+  const [lanyardReady, setLanyardReady] = useState(false);
 
-  // The 600px proximity gate above only avoids paying for the chunk + GLB + texture on
-  // initial page load -- it doesn't need to be the moment those start downloading too.
-  // Measured (Playwright, production build): waiting for proximity before fetching meant
-  // the texture alone was still loading ~1s after the user had already scrolled into
-  // position. Warm the module cache (which also triggers Lanyard.tsx's own GLB/texture
-  // preload as a side effect) once the browser is idle after initial load, so by the time
-  // the user actually scrolls down to it, everything is already cached -- confirmed via
-  // network-request timing: both requests now complete within ~700ms of page load, well
-  // before the user can scroll into range.
-  //
-  // Also separately warm Rapier's WASM physics engine, since @react-three/rapier only
-  // imports and calls `@dimforge/rapier3d-compat`'s `.init()` (WASM compile+instantiate)
-  // once its own <Physics> component mounts. Confirmed this resolves in ~250ms, well ahead
-  // of scrolling into range too -- but CPU-profiling the actual remaining gap (see the
-  // lanyard-debug-followup investigation notes) found it's dominated by one-time WebGL
-  // shader compilation inside Three.js's renderer (multiple materials: meshPhysicalMaterial
-  // with clearcoat, the custom meshLineMaterial band shader, PMREM environment convolution),
-  // not by this WASM init -- so this warm-up doesn't measurably close that remaining gap.
-  // Kept anyway since it's free and does still eliminate its own (smaller) cost; the
-  // shader-compile cost itself can't be prefetched without creating the WebGL context
-  // early, which would undo the whole point of deferring this component's mount.
-  // The warm-up is held back until well after load, not merely until the first idle gap.
-  // Downloading the chunk is cheap; *evaluating* ~1.1MB of Three.js and Rapier is not, and
-  // it cannot be moved off the main thread. Profiled on a 4x-throttled CPU, requesting it
-  // at the first idle moment landed that evaluation in a single 985ms long task -- 53% of
-  // all blocking time on the home page -- because "idle" arrives while hydration is still
-  // settling on a slow device. Waiting for the load event and then a further quiet period
-  // pushes the same work past the point where it competes with becoming interactive, while
-  // still finishing long before the user can scroll 600px down to the lanyard.
+  // Warm the 3D module and its assets after the initial page load. The poster
+  // covers the remaining WebGL/physics setup when someone scrolls here quickly.
   useEffect(() => {
+    if (reducedMotion) return;
     const w = window as Window & {
       requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
       cancelIdleCallback?: (id: number) => void;
     };
     const warm = () => {
       void import("../motion/Lanyard");
-      void import("@dimforge/rapier3d-compat")
-        .then((RAPIER) => RAPIER.init())
-        .catch(() => {});
     };
 
     let idleId: number | undefined;
@@ -79,7 +54,7 @@ export default function AboutIntro() {
       if (delayId !== undefined) window.clearTimeout(delayId);
       if (idleId !== undefined) w.cancelIdleCallback?.(idleId);
     };
-  }, []);
+  }, [reducedMotion]);
   // Once mounted, stay mounted: unmounting/remounting tears down and rebuilds the WebGL
   // context on every pass through the 600px window, which is far more expensive than the
   // frameloop pause Lanyard already does internally while off-screen. Adjusting state
@@ -133,16 +108,20 @@ export default function AboutIntro() {
           />
 
           {/* Lanyard: rope naturally continues the vertical flow */}
-          <motion.div
+          <div
             ref={lanyardRef}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.35 }}
-            className="w-full max-w-[420px] lg:max-w-none mt-8 lg:-mt-6 min-h-[480px] lg:min-h-[560px]"
+            className="relative w-full max-w-[420px] lg:max-w-none mt-8 lg:-mt-6 h-[480px] lg:h-[560px]"
           >
-            {hasBeenNear && <Lanyard />}
-          </motion.div>
+            {hasBeenNear && !reducedMotion && <Lanyard onReady={() => setLanyardReady(true)} />}
+            <Image
+              src="/assets/lanyard/card-poster.webp"
+              alt="Ilyas Nur Rohman's orange ID card hanging from a black lanyard"
+              fill
+              sizes="(min-width: 1024px) 35vw, (min-width: 640px) 420px, 100vw"
+              loading="eager"
+              className={`pointer-events-none object-cover ${lanyardReady && !reducedMotion ? "opacity-0" : "opacity-100"}`}
+            />
+          </div>
         </div>
 
         {/* ── RIGHT: editorial copy ── */}
