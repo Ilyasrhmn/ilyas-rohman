@@ -24,8 +24,8 @@ export function ChromeShell({ children }: { children: React.ReactNode }) {
   const [contactOpen, setContactOpen] = useState(false);
   const openContact = () => setContactOpen(true);
   const pathname = usePathname();
-  // The achievements route supplies its own bespoke footer, so skip the site-wide one here.
-  const isAchievements = pathname === "/achievements";
+  // These archive-style routes supply their own themed footer.
+  const hasPageFooter = pathname === "/achievements" || pathname === "/projects";
 
   return (
     <SmoothScroll>
@@ -38,7 +38,7 @@ export function ChromeShell({ children }: { children: React.ReactNode }) {
           <ScrollProgress />
           <Navbar onContact={openContact} />
           <main>{children}</main>
-          {!isAchievements && <Footer />}
+          {!hasPageFooter && <Footer />}
           <ContactModal open={contactOpen} onOpenChange={setContactOpen} />
         </ContactContext.Provider>
       </RouteReveal>
