@@ -57,7 +57,7 @@ export function ContactModal({
         if (!next) setStatus("idle");
       }}
     >
-      <DialogContent showCloseButton={false} overlayClassName="z-[300] bg-black/25" className="z-[300] max-h-[calc(100dvh-2rem)] gap-7 overflow-y-auto rounded-none border border-[var(--world-b-border)] bg-[var(--world-b-bg)] p-6 text-[var(--world-b-text)] ring-0 sm:max-w-xl sm:p-8">
+      <DialogContent showCloseButton={false} overlayClassName="z-[300] bg-black/25" className="contact-scroll z-[300] max-h-[calc(100dvh-2rem)] gap-7 overflow-y-auto rounded-none border border-[var(--world-b-border)] bg-[var(--world-b-bg)] p-6 text-[var(--world-b-text)] ring-0 sm:max-w-xl sm:p-8" data-lenis-prevent>
         <DialogClose aria-label="Close contact form" className="absolute right-3 top-3 inline-flex size-11 cursor-pointer items-center justify-center rounded-none text-[var(--world-b-muted)] transition-colors hover:text-[var(--world-b-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--world-b-accent)] sm:right-5 sm:top-5">
           <XIcon aria-hidden className="size-5" />
         </DialogClose>
@@ -111,7 +111,8 @@ export function ContactModal({
                 name="message"
                 required
                 rows={4}
-                className={`${fieldClass} min-h-32 resize-y`}
+                data-lenis-prevent
+                className={`${fieldClass} contact-scroll h-32 resize-none overflow-y-auto overscroll-contain leading-relaxed sm:h-40`}
               />
             </div>
 

@@ -384,6 +384,21 @@ body[data-nav-theme="world-a"] {
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(237, 237, 232, 0.35); }
 
+/* Native scrolling inside the cream contact form must use its own light palette. */
+.contact-scroll {
+  color-scheme: light;
+  scrollbar-width: thin;
+  scrollbar-color: var(--world-b-muted) var(--world-b-surface);
+}
+
+.contact-scroll::-webkit-scrollbar { width: 8px; }
+.contact-scroll::-webkit-scrollbar-track { background: var(--world-b-surface); }
+.contact-scroll::-webkit-scrollbar-thumb {
+  background: var(--world-b-muted);
+  border: 2px solid var(--world-b-surface);
+}
+.contact-scroll::-webkit-scrollbar-thumb:hover { background: var(--world-b-accent); }
+
 /* ─── Glow Pulse ─── */
 @keyframes glow-pulse {
   0%, 100% { box-shadow: 0 0 8px rgba(47, 93, 69, 0.3); }
