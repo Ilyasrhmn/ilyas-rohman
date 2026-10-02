@@ -4,7 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { gsap, registerGsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
-export function ProjectClosing({ children }: { children: ReactNode }) {
+export function ProjectClosing({ children, footer }: { children: ReactNode; footer: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const transitionRef = useRef<HTMLElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
@@ -38,19 +38,18 @@ export function ProjectClosing({ children }: { children: ReactNode }) {
   return (
     <div ref={rootRef} data-project-closing>
       <section ref={transitionRef} data-detail-closing-transition data-closing-motion={reducedMotion ? "reduced" : "scroll"} className={reducedMotion ? "relative" : "relative h-[240svh]"}>
-        <div ref={surfaceRef} data-closing-surface className={reducedMotion ? "relative flex items-center justify-center overflow-hidden px-6 py-24 sm:px-10" : "sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden px-6 sm:px-10"} style={{ backgroundColor: reducedMotion ? "var(--world-a-bg)" : "var(--world-b-bg)" }}>
+        <div ref={surfaceRef} data-closing-surface className={reducedMotion ? "relative flex items-center justify-center overflow-hidden py-20" : "sticky top-0 flex min-h-[100svh] items-center justify-center overflow-hidden"} style={{ backgroundColor: reducedMotion ? "var(--world-a-bg)" : "var(--world-b-bg)" }}>
           {!reducedMotion && (
-            <h2 data-closing-intro className="text-center text-[clamp(3rem,9vw,9rem)] font-black uppercase leading-[0.9] tracking-tighter text-[var(--world-b-text)]">
+            <h2 data-closing-intro className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-[clamp(3rem,9vw,9rem)] font-black uppercase leading-[0.9] tracking-tighter text-[var(--world-b-text)]">
               The work<br />continues.
             </h2>
           )}
-          <div data-closing-outro className={`${reducedMotion ? "relative" : "invisible absolute inset-0"} flex flex-col items-center justify-center gap-6 px-6 text-center text-[var(--world-a-text)]`}>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)]">There&apos;s more to explore</p>
-            <h2 className="font-serif text-[clamp(3rem,8vw,8rem)] leading-[1.05] tracking-[-0.03em]">Keep exploring.</h2>
+          <div data-closing-outro className={`${reducedMotion ? "relative" : "invisible relative py-20"} w-full text-[var(--world-a-text)]`}>
+            {children}
           </div>
         </div>
       </section>
-      <div className="bg-[var(--world-a-bg)] text-[var(--world-a-text)]">{children}</div>
+      <div className="bg-[var(--world-a-bg)] text-[var(--world-a-text)]">{footer}</div>
     </div>
   );
 }

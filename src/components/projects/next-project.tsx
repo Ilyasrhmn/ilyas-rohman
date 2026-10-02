@@ -10,7 +10,7 @@ export function NextProject({ currentSlug }: { currentSlug: string }) {
   return (
     <section
       data-next-project
-      className="overflow-hidden px-6 pb-8 pt-10 text-[var(--world-a-text)] sm:px-10 md:pb-10 md:pt-12"
+      className="px-6 text-[var(--world-a-text)] sm:px-10"
     >
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 md:mb-12">

@@ -38,9 +38,8 @@ export default async function ProjectDetailPage({
     <div className="min-h-screen bg-[var(--world-b-bg)] text-[var(--world-b-text)]">
       <ProjectDetailTheme />
       <ProjectDetail project={project} />
-      <ProjectClosing key={slug}>
+      <ProjectClosing key={slug} footer={<ProjectsFooter variant="detail" />}>
         <NextProject currentSlug={slug} />
-        <ProjectsFooter variant="detail" />
       </ProjectClosing>
     </div>
   );
