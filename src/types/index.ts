@@ -40,10 +40,6 @@ export type Certificate = {
   expiryDate?: string;
 };
 
-export type StackGroup = {
-  label: string;
-  items: string[];
-};
 
 export type Profile = {
   name: string;

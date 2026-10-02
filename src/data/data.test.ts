@@ -1,7 +1,6 @@
 import assert from "node:assert";
 import { test } from "node:test";
 import { getFeaturedProjects, getProject, projects } from "./projects";
-import { stackGroups } from "./stack";
 
 test("featured projects are a subset of all projects", () => {
   const featured = getFeaturedProjects();
@@ -16,11 +15,4 @@ test("getProject finds by slug and misses cleanly", () => {
 test("every project slug is unique", () => {
   const slugs = projects.map((p) => p.slug);
   assert.equal(new Set(slugs).size, slugs.length);
-});
-
-test("stack has exactly the four capability groups", () => {
-  assert.deepEqual(
-    stackGroups.map((g) => g.label),
-    ["FRONTEND ENGINEERING", "MOTION & INTERACTION", "BACKEND & INTEGRATION", "TOOLS & DELIVERY"]
-  );
 });

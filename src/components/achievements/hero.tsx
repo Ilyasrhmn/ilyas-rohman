@@ -1,15 +1,8 @@
 import { RevealLink } from "@/components/layout/route-reveal";
-import { certificates } from "@/data/certificates";
 import { BlurReveal } from "@/components/effects/blur-reveal";
-import { lastAddedLabel } from "./data";
 import styles from "./hero.module.css";
 
 export function AchievementsHero() {
-  const count = certificates.length;
-  const trackCount = new Set(certificates.map((c) => c.track ?? "Other")).size;
-  const issuerCount = new Set(certificates.map((c) => c.issuer)).size;
-  const lastAdded = lastAddedLabel(certificates);
-
   return (
     <section className="relative overflow-hidden bg-[var(--world-b-bg)] text-[var(--world-b-text)] px-6 sm:px-10 pt-32 pb-28 md:pt-44 md:pb-12">
       <div
@@ -30,43 +23,18 @@ export function AchievementsHero() {
           </RevealLink>
         </BlurReveal>
 
-        <BlurReveal delay={0.05}>
-          <p className="mt-10 font-mono text-xs uppercase tracking-[0.25em] text-[var(--world-b-accent)]">
-            Archive &middot; {String(count).padStart(3, "0")} certificates
-          </p>
-        </BlurReveal>
-
         <BlurReveal delay={0.1}>
-          <h1 className="mt-4 font-serif leading-[0.95] text-[clamp(2.75rem,8vw,8rem)]">
-            Eleven certificates.
+          <h1 className="mt-10 font-serif leading-[0.95] text-[clamp(2.75rem,8vw,8rem)]">
+            Certificates
           </h1>
         </BlurReveal>
 
         <BlurReveal delay={0.15}>
           <p className="mt-6 max-w-[65ch] font-serif text-lg text-[var(--world-b-muted)]">
-            Most of them Dicoding, one HackerRank, one from a blockchain literacy month. None
-            of them make me a senior engineer. They just mark where I stopped guessing and
-            started knowing.
+            A collection of learning milestones behind the work I build.
           </p>
         </BlurReveal>
 
-        <BlurReveal delay={0.2}>
-          <div className="mt-12 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-wide text-[var(--world-b-muted)]">
-            <span>{count} certificates</span>
-            <span aria-hidden className="text-[var(--world-b-border)]">
-              ·
-            </span>
-            <span>{trackCount} tracks</span>
-            <span aria-hidden className="text-[var(--world-b-border)]">
-              ·
-            </span>
-            <span>{issuerCount} issuers</span>
-            <span aria-hidden className="text-[var(--world-b-border)]">
-              ·
-            </span>
-            <span>Last added {lastAdded}</span>
-          </div>
-        </BlurReveal>
       </div>
     </section>
   );

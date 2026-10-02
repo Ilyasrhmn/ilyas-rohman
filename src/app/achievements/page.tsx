@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { certificates } from "@/data/certificates";
 import { AchievementsHero } from "@/components/achievements/hero";
 import { AchievementsIndex } from "@/components/achievements/index-section";
 import { AchievementsThreshold } from "@/components/achievements/threshold";
 import { AchievementsFooter } from "@/components/achievements/footer";
 
-const trackCount = new Set(certificates.map((c) => c.track ?? "Other")).size;
-
 export const metadata: Metadata = {
   title: "Archive",
-  description: `${certificates.length} certificates across ${trackCount} tracks, ordered by track.`,
+  description: "A collection of learning milestones behind the work I build.",
 };
 
 export default function AchievementsPage() {

@@ -1,6 +1,5 @@
 import { Hero } from "@/components/sections/hero";
 import AboutIntro from "@/components/sections/AboutIntro";
-import CapabilitiesChoreography from "@/components/sections/CapabilitiesChoreography";
 import { ScrollScale } from "@/components/motion/scroll-scale";
 import Manifesto from "@/components/sections/Manifesto";
 import HorizontalProjects from "@/components/sections/HorizontalProjects";
@@ -15,8 +14,6 @@ export default function Home() {
       <NavObserver />
       <Hero />
       <AboutIntro />
-      <CapabilitiesChoreography />
-      
       {/* The Narrative Portal (Zoom Transition) */}
       <ScrollScale />
 
