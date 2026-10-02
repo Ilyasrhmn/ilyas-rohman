@@ -1,137 +1,129 @@
 import Image from "next/image";
-import { BlurReveal } from "@/components/effects/blur-reveal";
+import { RevealLink } from "@/components/layout/route-reveal";
+import { ProjectReveal } from "./project-reveal";
 import type { Project } from "@/types";
+
+const labelClass = "font-mono text-xs uppercase tracking-[0.16em] text-[var(--world-b-muted)]";
+const linkClass = "group inline-flex min-h-11 items-center justify-between gap-8 border-b border-[var(--world-b-border)] py-3 font-mono text-xs uppercase tracking-[0.12em] transition-colors hover:text-[var(--world-b-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4";
 
 export function ProjectDetail({ project }: { project: Project }) {
   return (
-    <article className="mx-auto max-w-3xl">
-      <BlurReveal>
-        <div className="flex items-center justify-between font-mono text-xs uppercase tracking-[0.2em] text-[var(--world-a-muted)]">
-          <span>{project.category}</span>
-          <span>{project.year}</span>
-        </div>
-      </BlurReveal>
+    <article className="mx-auto max-w-6xl px-6 pb-20 pt-32 text-[var(--world-b-text)] sm:px-10 md:pb-28 md:pt-44 xl:px-0">
+      <ProjectReveal>
+        <RevealLink
+          href="/projects"
+          direction="back"
+          className="inline-flex min-h-11 items-center gap-3 font-mono text-xs uppercase tracking-[0.16em] text-[var(--world-b-muted)] transition-colors hover:text-[var(--world-b-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+        >
+          <span aria-hidden>←</span> All projects
+        </RevealLink>
+      </ProjectReveal>
 
-      <BlurReveal delay={0.05}>
-        <h1 className="mt-4 font-serif leading-[0.95] text-[clamp(2.5rem,7vw,5rem)] text-[var(--world-a-text)]">
-          {project.title}
-        </h1>
-      </BlurReveal>
+      <header className="mb-12 mt-8 grid min-w-0 gap-10 md:mb-16 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:items-end lg:gap-20">
+        <ProjectReveal delay={0.08} className="min-w-0">
+          <h1 className="break-words font-serif text-[clamp(3.5rem,10vw,9rem)] leading-[0.96] tracking-[-0.04em]">
+            {project.title}
+          </h1>
+          <p className="mt-7 max-w-[42ch] text-pretty font-serif text-xl leading-relaxed text-[var(--world-b-muted)] sm:text-2xl">
+            {project.summary}
+          </p>
+        </ProjectReveal>
 
-      <BlurReveal delay={0.1}>
-        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-wide text-[var(--world-a-muted)]">
-          <span>{project.status === "shipped" ? "Shipped" : "Currently building"}</span>
-          <span aria-hidden className="text-[var(--world-a-border)]">
-            &middot;
-          </span>
-          <span>{project.stack.length} technologies</span>
-        </div>
-      </BlurReveal>
-
-      {project.achievement && (
-        <BlurReveal delay={0}>
-          <div className="mt-6 inline-flex items-start gap-2 rounded-full border border-[var(--world-a-accent)]/40 bg-[var(--world-a-accent)]/10 px-4 py-3 text-sm text-[var(--world-a-text)]">
-            <span className="mt-0.5 shrink-0 font-mono text-xs font-medium uppercase tracking-wide text-[var(--world-a-accent)]">
-              Achievement
-            </span>
-            <span className="text-[var(--world-a-text)]/90">{project.achievement}</span>
-          </div>
-        </BlurReveal>
-      )}
-
-      <BlurReveal delay={0}>
-        <div className="relative -mx-6 mt-8 aspect-[16/9] overflow-hidden border border-[var(--world-a-border)] sm:mx-0 sm:rounded-lg">
-          <Image
-            src={project.image}
-            alt=""
-            fill
-            sizes="(min-width: 768px) 768px, 100vw"
-            className="object-cover"
-          />
-        </div>
-      </BlurReveal>
-
-      {project.status === "building" ? (
-        <BlurReveal delay={0}>
-          <div className="mt-6 rounded-full border border-[var(--world-a-accent)] bg-[var(--world-a-accent)]/10 px-4 py-3 text-sm text-[var(--world-a-text)]">
-            Currently building. This project is in progress, and details will be added as it
-            develops.
-          </div>
-        </BlurReveal>
-      ) : (
-        (project.demo || project.repo) && (
-          <BlurReveal delay={0}>
-            <div className="mt-6 flex gap-4">
+        <ProjectReveal delay={0.16} className="min-w-0">
+          <dl className="grid gap-5 border-t border-[var(--world-b-border)] pt-5">
+            <div>
+              <dt className={labelClass}>Project type</dt>
+              <dd className="mt-2 max-w-[30ch] text-base leading-relaxed">{project.category}</dd>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <dt className={labelClass}>Year</dt>
+                <dd className="mt-2 text-base">{project.year}</dd>
+              </div>
+              <div>
+                <dt className={labelClass}>Status</dt>
+                <dd className="mt-2 text-base">{project.status === "shipped" ? "Shipped" : "In progress"}</dd>
+              </div>
+            </div>
+          </dl>
+          {project.status === "shipped" && (project.demo || project.repo) && (
+            <div className="mt-6 flex flex-col">
               {project.demo && (
-                <a
-                  href={project.demo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-[44px] items-center rounded-full bg-[var(--world-a-accent)] px-5 py-2 text-sm font-medium text-[var(--world-a-bg)] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                >
-                  Live demo
+                <a href={project.demo} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                  Live demo <span aria-hidden className="text-lg motion-safe:transition-transform motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5">↗</span>
                 </a>
               )}
               {project.repo && (
-                <a
-                  href={project.repo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-[44px] items-center rounded-full border border-[var(--world-a-border)] px-5 py-2 text-sm font-medium text-[var(--world-a-text)] transition-colors hover:border-[var(--world-a-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                >
-                  Repository
+                <a href={project.repo} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                  Repository <span aria-hidden className="text-lg motion-safe:transition-transform motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5">↗</span>
                 </a>
               )}
             </div>
-          </BlurReveal>
-        )
-      )}
+          )}
+        </ProjectReveal>
+      </header>
 
-      <BlurReveal delay={0}>
-        <p className="mt-8 font-serif text-lg leading-relaxed text-[var(--world-a-text)]/85">
-          {project.description}
-        </p>
-      </BlurReveal>
+      <ProjectReveal delay={0.1}>
+        <figure className="relative aspect-video overflow-hidden bg-[var(--world-b-surface)] ring-1 ring-[var(--world-b-border)]" data-project-detail-image>
+          <Image
+            src={project.image}
+            alt={`${project.title} website interface`}
+            fill
+            loading="eager"
+            sizes="(min-width: 1280px) 1152px, (min-width: 640px) calc(100vw - 80px), calc(100vw - 48px)"
+            className="object-contain"
+          />
+        </figure>
+      </ProjectReveal>
+
+      <section aria-labelledby="overview-heading" className="mt-16 grid gap-7 border-t border-[var(--world-b-border)] pt-8 md:mt-24 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-16 md:pt-10">
+        <ProjectReveal>
+          <h2 id="overview-heading" className={labelClass}>The project</h2>
+        </ProjectReveal>
+        <ProjectReveal className="min-w-0">
+          <p className="text-pretty font-serif text-2xl leading-relaxed sm:text-3xl sm:leading-relaxed">
+            {project.description}
+          </p>
+          {project.achievement && (
+            <aside className="mt-9 border-l border-[var(--world-b-accent)] pl-5">
+              <h3 className={labelClass}>Recognition</h3>
+              <p className="mt-3 text-base leading-relaxed text-[var(--world-b-muted)]">{project.achievement}</p>
+            </aside>
+          )}
+        </ProjectReveal>
+      </section>
 
       {project.contributions && project.contributions.length > 0 && (
-        <BlurReveal delay={0}>
-          <div className="mt-10">
-            <h2 className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-[var(--world-a-muted)]">
-              Contributions
-            </h2>
-            <ol className="mt-4 flex flex-col divide-y divide-[var(--world-a-border)] border-y border-[var(--world-a-border)]">
-              {project.contributions.map((item, i) => (
-                <li key={item} className="flex gap-4 py-4">
-                  <span className="shrink-0 font-mono text-xs text-[var(--world-a-accent)]">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="text-base leading-relaxed text-[var(--world-a-text)]/85">
-                    {item}
-                  </span>
+        <section aria-labelledby="contributions-heading" className="mt-14 grid gap-7 border-t border-[var(--world-b-border)] pt-8 md:mt-20 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-16 md:pt-10">
+          <ProjectReveal>
+            <h2 id="contributions-heading" className={labelClass}>My contribution</h2>
+          </ProjectReveal>
+          <ProjectReveal className="min-w-0">
+            <ul className="divide-y divide-[var(--world-b-border)]">
+              {project.contributions.map((contribution) => (
+                <li key={contribution} className="py-6 text-base leading-relaxed first:pt-0 last:pb-0 sm:text-lg">
+                  {contribution}
                 </li>
               ))}
-            </ol>
-          </div>
-        </BlurReveal>
+            </ul>
+          </ProjectReveal>
+        </section>
       )}
 
-      <BlurReveal delay={0}>
-        <div className="mt-10">
-          <h2 className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-[var(--world-a-muted)]">
-            Stack
-          </h2>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {project.stack.map((tech) => (
-              <li
-                key={tech}
-                className="rounded-full border border-[var(--world-a-border)] px-3 py-1 font-mono text-xs text-[var(--world-a-text)] transition-colors hover:border-[var(--world-a-accent)]"
-              >
-                {tech}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </BlurReveal>
+      {project.stack.length > 0 && (
+        <section aria-labelledby="stack-heading" className="mt-14 grid gap-7 border-t border-[var(--world-b-border)] pt-8 md:mt-20 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-16 md:pt-10">
+          <ProjectReveal>
+            <h2 id="stack-heading" className={labelClass}>Built with</h2>
+          </ProjectReveal>
+          <ProjectReveal className="min-w-0">
+            <ul className="flex flex-wrap gap-x-8 gap-y-4">
+              {project.stack.map((technology) => (
+                <li key={technology} className="border-b border-[var(--world-b-border)] pb-2 text-base text-[var(--world-b-muted)] sm:text-lg">{technology}</li>
+              ))}
+            </ul>
+          </ProjectReveal>
+        </section>
+      )}
     </article>
   );
 }

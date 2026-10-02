@@ -19,6 +19,7 @@ export function ProjectReveal({
     <motion.div
       className={className}
       initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+      animate={reducedMotion ? { opacity: 1, y: 0 } : undefined}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{
