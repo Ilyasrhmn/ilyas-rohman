@@ -87,10 +87,10 @@ export default function Achievements() {
                 Certifications & Achievements
               </h2>
               <h3 className="font-serif italic text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-[var(--world-b-text)]">
-                Proof I stopped <span className="text-[var(--world-b-accent)]">guessing.</span>
+                Learning along <span className="text-[var(--world-b-accent)]">the way.</span>
               </h3>
               <p className="text-lg md:text-xl text-[var(--world-b-muted)] font-serif max-w-xl mx-auto mt-6">
-                Eleven certificates, mostly Dicoding. The full archive is one click away.
+                Certificates from courses and programs across the fields I explore.
               </p>
             </div>
           </div>

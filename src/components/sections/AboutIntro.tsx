@@ -138,15 +138,15 @@ export default function AboutIntro() {
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
           >
-            I enjoy building{" "}
+            I enjoy turning{" "}
             <em className="font-serif not-italic italic text-[var(--world-a-accent)] normal-case">
-              interactive
+              ideas
             </em>{" "}
-            web experiences where design,{" "}
+            into projects, understanding problems, and building{" "}
             <em className="font-serif not-italic italic text-[var(--world-a-accent)] normal-case">
-              motion
-            </em>
-            , and code work together.
+              solutions
+            </em>{" "}
+            from start to finish.
           </motion.h2>
 
           <motion.p
@@ -160,9 +160,10 @@ export default function AboutIntro() {
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
           >
-            I&apos;m Ilyas, a frontend-focused developer based in Yogyakarta. I learn
-            best by building, experimenting with interaction, and turning ideas into
-            real digital experiences.
+            I&apos;m Ilyas, an Information Systems student based in Yogyakarta. I like
+            talking to people, understanding their needs, and thinking through the
+            systems behind a project. Working across different fields keeps me
+            curious and learning.
           </motion.p>
         </div>
       </div>

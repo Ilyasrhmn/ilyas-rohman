@@ -16,8 +16,8 @@ export default function Manifesto() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-xl md:text-3xl font-serif text-[var(--world-b-muted)] italic tracking-wide">
-            I don't just write code. I engineer
+          <h2 className="relative top-[4px] text-xl md:text-3xl font-serif text-[var(--world-b-muted)] italic tracking-wide">
+            I don&apos;t just write code. I build
           </h2>
         </motion.div>
 
@@ -27,13 +27,13 @@ export default function Manifesto() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="h-[120px] md:h-[200px] w-full flex items-center justify-center my-4"
+          className="h-[120px] md:h-[200px] w-full flex items-center justify-center my-[14px]"
         >
           <GooeyText
-            texts={["Experiences.", "Interfaces.", "Solutions.", "Aesthetics."]}
+            texts={["Systems.", "Products.", "Solutions.", "Tools."]}
             morphTime={1.2}
             cooldownTime={1.5}
-            textClassName="text-6xl md:text-8xl lg:text-[8rem] font-bold font-serif text-[var(--world-b-accent)] tracking-tighter"
+            textClassName="text-[3.875rem] md:text-[6.25rem] lg:text-[8.25rem] font-bold font-serif text-[var(--world-b-accent)] tracking-tighter"
           />
         </motion.div>
 
@@ -44,8 +44,8 @@ export default function Manifesto() {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <p className="text-lg md:text-2xl font-light text-[var(--world-b-muted)] max-w-2xl leading-relaxed">
-            Merging precise logic with stunning design to build software that actually matters.
+          <p className="relative -top-[4px] text-lg md:text-2xl font-light text-[var(--world-b-muted)] max-w-2xl leading-relaxed">
+            Understanding people and business processes to build software that solves real problems.
           </p>
         </motion.div>
 

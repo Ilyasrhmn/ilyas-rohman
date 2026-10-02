@@ -190,13 +190,13 @@ export function ScrollScale() {
               ref={statement1Ref} 
               className="text-5xl md:text-7xl lg:text-[7rem] font-black uppercase text-[var(--world-a-text)] tracking-tighter leading-[0.85] max-w-4xl"
             >
-              I Build For<br/>The Web
+              From Ideas<br/>To Real Projects
             </h2>
             <p 
               ref={statement2Ref} 
               className="mt-12 text-2xl md:text-4xl lg:text-5xl font-medium text-[var(--world-a-muted)] self-end text-right max-w-3xl leading-[1.1] tracking-tight"
             >
-              With <span className="text-[var(--world-a-accent)] italic pr-2">Motion</span>, Purpose,<br/>And Curiosity.
+              Built with <span className="text-[var(--world-a-accent)] italic">curiosity.</span><br/>Made to be used.
             </p>
           </div>
 

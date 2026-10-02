@@ -128,7 +128,7 @@ export default function HorizontalProjects() {
 
                             <BlurReveal>
                                 <p className="mt-4 text-[var(--world-b-muted)] text-lg font-light leading-relaxed">
-                                    A collection of experiments, products, and digital artifacts forged in the void.
+                                    Projects built around real needs, ideas, and practical problems.
                                 </p>
                             </BlurReveal>
                         </div>
@@ -159,7 +159,7 @@ export default function HorizontalProjects() {
 
                                 <BlurReveal>
                                     <p className="mt-8 text-2xl lg:text-4xl font-light leading-tight text-[var(--world-b-text)] max-w-2xl">
-                                        A collection of experiments, products, and digital artifacts forged in the void.
+                                        Projects built around real needs, ideas, and practical problems.
                                     </p>
                                 </BlurReveal>
 
