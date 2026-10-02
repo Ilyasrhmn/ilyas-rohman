@@ -13,7 +13,6 @@ export type Project = {
   image: string;
   stack: string[];
   demo?: string;
-  repo?: string;
   featured?: boolean;
 };
 

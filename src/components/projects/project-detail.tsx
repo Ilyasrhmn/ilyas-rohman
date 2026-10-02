@@ -46,18 +46,11 @@ export function ProjectDetail({ project }: { project: Project }) {
               </div>
             </div>
           </dl>
-          {project.status === "shipped" && (project.demo || project.repo) && (
+          {project.status === "shipped" && project.demo && (
             <div className="mt-6 flex flex-col">
-              {project.demo && (
-                <a href={project.demo} target="_blank" rel="noopener noreferrer" className={linkClass}>
-                  Live demo <span aria-hidden className="text-lg motion-safe:transition-transform motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5">↗</span>
-                </a>
-              )}
-              {project.repo && (
-                <a href={project.repo} target="_blank" rel="noopener noreferrer" className={linkClass}>
-                  Repository <span aria-hidden className="text-lg motion-safe:transition-transform motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5">↗</span>
-                </a>
-              )}
+              <a href={project.demo} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                Live demo <span aria-hidden className="text-lg motion-safe:transition-transform motion-safe:duration-200 motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5">↗</span>
+              </a>
             </div>
           )}
         </ProjectReveal>

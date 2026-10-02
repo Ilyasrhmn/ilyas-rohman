@@ -6,6 +6,5 @@ export type ProjectItem = {
     description: string;
     image: string;
     demo?: string;
-    repo?: string;
     stack?: string[];
 };

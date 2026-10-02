@@ -41,7 +41,7 @@ export function ProjectClosing({ children, footer }: { children: ReactNode; foot
         <div ref={surfaceRef} data-closing-surface className={reducedMotion ? "relative flex items-center justify-center overflow-hidden py-20" : "sticky top-0 flex min-h-[100svh] items-center justify-center overflow-hidden"} style={{ backgroundColor: reducedMotion ? "var(--world-a-bg)" : "var(--world-b-bg)" }}>
           {!reducedMotion && (
             <h2 data-closing-intro className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-[clamp(3rem,9vw,9rem)] font-black uppercase leading-[0.9] tracking-tighter text-[var(--world-b-text)]">
-              The work<br />continues.
+              More to<br />explore.
             </h2>
           )}
           <div data-closing-outro className={`${reducedMotion ? "relative" : "invisible relative py-20"} w-full text-[var(--world-a-text)]`}>

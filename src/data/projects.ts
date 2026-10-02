@@ -12,7 +12,7 @@ export const projects: Project[] = [
     description:
       "Nutrio connects schools, catering kitchens, vendors, and ingredient suppliers for Indonesia's Makanan Bergizi Gratis (MBG) free-meal program, tracking every meal in real time so it stays hygienic, nutritionally balanced, and traceable back to its source.",
     achievement:
-      "Digdaya X Hackathon 2026: Top 480 Practitioner Training, advancing to Top 80 finalist selection.",
+      "Digdaya X Hackathon 2026: Top 480 Practitioner Training.",
     contributions: [
       "Developed responsive interfaces for marketplace, procurement, inventory, and operational modules across multiple user roles.",
       "Integrated frontend modules with REST APIs, replacing mock data with live backend services while improving UI states and application reliability.",
@@ -83,7 +83,6 @@ export const projects: Project[] = [
     image: "/projects/portfolio.webp",
     stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "GSAP", "Framer Motion", "Lenis", "Three.js"],
     demo: "https://ilyas-rohman.vercel.app",
-    repo: "https://github.com/Ilyasrhmn/ilyas-rohman",
     featured: false,
   },
 ];

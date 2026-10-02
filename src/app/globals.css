@@ -388,14 +388,14 @@ body[data-nav-theme="world-a"] {
 .contact-scroll {
   color-scheme: light;
   scrollbar-width: thin;
-  scrollbar-color: var(--world-b-muted) var(--world-b-surface);
+  scrollbar-color: var(--world-b-text) var(--world-b-bg);
 }
 
 .contact-scroll::-webkit-scrollbar { width: 8px; }
-.contact-scroll::-webkit-scrollbar-track { background: var(--world-b-surface); }
+.contact-scroll::-webkit-scrollbar-track { background: var(--world-b-bg); }
 .contact-scroll::-webkit-scrollbar-thumb {
-  background: var(--world-b-muted);
-  border: 2px solid var(--world-b-surface);
+  background: var(--world-b-text);
+  border: 1px solid var(--world-b-bg);
 }
 .contact-scroll::-webkit-scrollbar-thumb:hover { background: var(--world-b-accent); }
 
